@@ -96,10 +96,11 @@ const main = async () => {
 
   server.applyMiddleware({
     app,
-    cors: {
-      credentials: true,
-      origin: "https://studio.apollographql.com",
-    },
+    cors: false,
+    // {
+    //   credentials: true,
+    //   origin: "https://studio.apollographql.com",
+    // },
   });
 
   app.listen(parseInt(process.env.PORT), () => {
