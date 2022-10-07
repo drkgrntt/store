@@ -37,7 +37,7 @@ class ImageUploadSignature {
 export class ImageResolver {
   @Query(() => [String])
   @UseMiddleware(isAdmin)
-  async getImageUrls(): Promise<string[]> {
+  async imageUrls(): Promise<string[]> {
     const result = await v2.api.resources({
       prefix: "store",
       resource_type: "image",
@@ -52,7 +52,7 @@ export class ImageResolver {
 
   @Query(() => ImageUploadSignature)
   @UseMiddleware(isAdmin)
-  getImageUploadSignature(): ImageUploadSignature {
+  imageUploadSignature(): ImageUploadSignature {
     const timestamp = Math.round(new Date().getTime() / 1000);
     const signature = v2.utils.api_sign_request(
       {

@@ -15,15 +15,15 @@ import { AddressType } from "../models/Address";
 export class AddressResolver {
   @Query(() => [Address])
   @UseMiddleware(isAuth)
-  async getAddresses(@Ctx() { me }: Context): Promise<Address[]> {
+  async addresses(@Ctx() { me }: Context): Promise<Address[]> {
     const addresses = await Address.findAll({ where: { userId: me.id } });
 
     return addresses;
   }
 
-  @Query(() => Address)
+  @Query(() => Address, { nullable: true })
   @UseMiddleware(isAuth)
-  async getAddress(
+  async address(
     @Ctx() { me }: Context,
     @Arg("id") id: string
   ): Promise<Address> {

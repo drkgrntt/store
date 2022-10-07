@@ -22,14 +22,14 @@ export class ProductResolver {
   }
 
   @Query(() => [Product])
-  async getProducts(): Promise<Product[]> {
+  async products(): Promise<Product[]> {
     const products = await Product.findAll();
 
     return products;
   }
 
-  @Query(() => Product)
-  async getProduct(@Arg("id") id: string): Promise<Product> {
+  @Query(() => Product, { nullable: true })
+  async product(@Arg("id") id: string): Promise<Product> {
     const product = await Product.findOne({ where: { id } });
     if (!product) throw new Error("Invalid id");
     return product;

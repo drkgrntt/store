@@ -81,7 +81,7 @@ export class OrderResolver {
 
   @Query(() => [Order])
   @UseMiddleware(isAdmin)
-  async getAllOrders(): Promise<Order[]> {
+  async allOrders(): Promise<Order[]> {
     const orders = await Order.findAll({
       order: [["createdAt", "asc"]],
     });
@@ -89,13 +89,27 @@ export class OrderResolver {
   }
 
   @Query(() => [Order])
-  @UseMiddleware(isAdmin)
-  async getOrders(@Ctx() { me }: Context): Promise<Order[]> {
+  @UseMiddleware(isAuth)
+  async orders(@Ctx() { me }: Context): Promise<Order[]> {
     const orders = await Order.findAll({
       where: { userId: me.id },
       order: [["createdAt", "asc"]],
     });
     return orders;
+  }
+
+  @Query(() => Order, { nullable: true })
+  @UseMiddleware(isAuth)
+  async order(
+    @Ctx() { me }: Context,
+    @Arg("id") id: string
+  ): Promise<Order | null> {
+    const where: { id: string; userId?: string } = { id };
+    if (!me.isAdmin) where.userId = me.id;
+    const order = await Order.findOne({
+      where,
+    });
+    return order;
   }
 
   @Mutation(() => Order)
