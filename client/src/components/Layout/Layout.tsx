@@ -9,6 +9,7 @@ const Layout: FC = (props) => {
         <meta name="language" content="en-us" />
         <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
       </PageHead>
+
       <main>{props.children}</main>
     </div>
   );

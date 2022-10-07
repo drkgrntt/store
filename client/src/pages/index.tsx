@@ -1,18 +1,10 @@
 import type { NextPage } from "next";
-import Head from "next/head";
 import styles from "./Home.module.css";
-import { gql, useQuery } from "@apollo/client";
-
-const QUERY = gql`
-  {
-    ping
-  }
-`;
+import ProductList from "../components/ProductList";
+import { withApollo } from "../utils/withApollo";
 
 const Home: NextPage = () => {
-  const query = useQuery(QUERY);
-  console.log(query);
-  return <div>nice</div>;
+  return <ProductList />;
 };
 
-export default Home;
+export default withApollo({ ssr: true })(Home);
