@@ -3,6 +3,7 @@ import Image from "next/image";
 import { gql, useQuery } from "@apollo/client";
 import { Product } from "../../types/Product";
 import Loader from "../Loader";
+import { priceToCurrency } from "../../utils";
 
 interface Props {}
 
@@ -49,7 +50,7 @@ export const ProductList: FC<Props> = () => {
             )}
             <h3>{product.title}</h3>
             <p>{product.description}</p>
-            <p>${(product.price / 100).toFixed(2)}</p>
+            <p>${priceToCurrency(product.price)}</p>
           </div>
         );
       })}
