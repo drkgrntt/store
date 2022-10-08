@@ -1,7 +1,26 @@
+import { gql, useMutation } from "@apollo/client";
 import { FC, FormEvent } from "react";
 import { useForm } from "../../hooks/useForm";
+import { User } from "../../types/User";
 import Button from "../Button";
 import Input from "../Input";
+
+const LOGIN = gql`
+  mutation Login($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      id
+      email
+      isAdmin
+      tokens {
+        id
+        value
+        userId
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
 
 const INITIAL_STATE = {
   email: "",
@@ -10,10 +29,12 @@ const INITIAL_STATE = {
 
 const LoginForm: FC = () => {
   const formState = useForm(INITIAL_STATE);
+  const [login] = useMutation<{ login: User }>(LOGIN);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formState);
+    const { email, password } = formState.values;
+    login({ variables: { email, password } });
   };
 
   return (
