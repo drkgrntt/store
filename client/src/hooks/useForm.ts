@@ -28,7 +28,7 @@ export const getValue = (
   }
 };
 
-const validate = (
+export const validate = (
   value: InputValueType,
   validations: Validation | Validation[]
 ): string => {
@@ -83,11 +83,14 @@ export const useForm = <FormState extends Record<string, InputValueType>>(
     }
   };
 
+  const isValid = !Object.values(errors).filter(Boolean).length;
+
   return {
     values,
     setValues,
     validateField,
     errors,
     handleChange,
+    isValid,
   };
 };

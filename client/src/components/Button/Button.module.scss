@@ -1,0 +1,22 @@
+.button {
+  padding: 0.5rem 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2rem;
+  border: 0.1rem solid var(--green);
+  background-color: var(--green);
+  color: var(--white);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s;
+  border-radius: var(--border-radius);
+  font-size: 1.2rem;
+
+  &:hover {
+    color: var(--green);
+    background-color: transparent;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}

@@ -1,10 +1,10 @@
-import { MutableRefObject, FC } from "react";
-import { useForm, InputValueType } from "../../hooks/useForm";
+import { MutableRefObject, FC, HTMLInputTypeAttribute } from "react";
+import { InputValueType } from "../../hooks/useForm";
 import styles from "./Input.module.scss";
 
 interface Props {
   className?: string;
-  type?: string;
+  type?: HTMLInputTypeAttribute;
   placeholder?: string;
   name?: string;
   id?: string;
@@ -15,31 +15,27 @@ interface Props {
   onFocus?: Function;
   onBlur?: Function;
   validation?: string;
-  tooltip?: string;
-  ref?: MutableRefObject<any>;
-  formState?: ReturnType<typeof useForm>;
+  ref?: MutableRefObject<HTMLInputElement | HTMLTextAreaElement>;
+  formState?: Record<string, any>; // ReturnType<typeof useForm>; <- Not quite type safe for some reason
 }
 
-const Input: FC<Props> = (props) => {
-  // Instantiate props with defaults
-  let {
-    className = "",
-    type = "text",
-    placeholder = "",
-    name = "",
-    id = name,
-    label = "",
-    value = "",
-    required = false,
-    onChange = () => null,
-    onFocus = () => null,
-    onBlur = () => null,
-    children = null,
-    validation,
-    formState,
-    ref,
-  } = props;
-
+const Input: FC<Props> = ({
+  className = "",
+  type = "text",
+  placeholder = "",
+  name = "",
+  id = name,
+  label = "",
+  value = "",
+  required = false,
+  onChange = () => null,
+  onFocus = () => null,
+  onBlur = () => null,
+  children = null,
+  validation,
+  formState,
+  ref,
+}) => {
   // Set formstate vars, but don't overwrite if passed explicitely
   if (formState) {
     if (!value) value = formState.values[name];
@@ -56,7 +52,7 @@ const Input: FC<Props> = (props) => {
           <label htmlFor={id}>
             {label}
             {required && " *"}
-          </label>{" "}
+          </label>
         </div>
       );
     }
@@ -69,7 +65,7 @@ const Input: FC<Props> = (props) => {
         <>
           {renderLabel()}
           <textarea
-            ref={ref}
+            ref={ref as MutableRefObject<HTMLTextAreaElement>}
             key={id}
             placeholder={placeholder}
             name={name}
@@ -87,7 +83,7 @@ const Input: FC<Props> = (props) => {
       return (
         <>
           <input
-            ref={ref}
+            ref={ref as MutableRefObject<HTMLInputElement>}
             key={id}
             type={type}
             placeholder={placeholder}
@@ -109,7 +105,7 @@ const Input: FC<Props> = (props) => {
       <>
         {renderLabel()}
         <input
-          ref={ref}
+          ref={ref as MutableRefObject<HTMLInputElement>}
           key={id}
           type={type}
           placeholder={placeholder}

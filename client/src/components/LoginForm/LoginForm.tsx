@@ -1,5 +1,6 @@
-import { FC } from "react";
-import { useForm, Validations } from "../../hooks/useForm";
+import { FC, FormEvent } from "react";
+import { useForm } from "../../hooks/useForm";
+import Button from "../Button";
 import Input from "../Input";
 
 const INITIAL_STATE = {
@@ -7,18 +8,16 @@ const INITIAL_STATE = {
   password: "",
 };
 
-const validations: Validations = {
-  email: {
-    test: (value) => (value as string).includes("h"),
-    message: 'Email must contain an "h"',
-  },
-};
-
 const LoginForm: FC = () => {
-  const formState = useForm(INITIAL_STATE, validations);
+  const formState = useForm(INITIAL_STATE);
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(formState);
+  };
 
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <Input required label="Email" name="email" formState={formState} />
       <Input
         required
@@ -27,6 +26,9 @@ const LoginForm: FC = () => {
         type="password"
         formState={formState}
       />
+      <Button type="submit" disabled={!formState.isValid}>
+        Login
+      </Button>
     </form>
   );
 };

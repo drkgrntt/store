@@ -8,10 +8,10 @@
 .input,
 .textarea {
   width: 100%;
-  padding: 1rem;
+  padding: 0.5rem;
   color: var(--black);
   border: 0.1rem solid var(--neutral-color);
-  border-radius: 0.2rem;
+  border-radius: var(--border-radius);
 }
 
 .invalid {
@@ -19,7 +19,6 @@
 }
 
 .input {
-  height: 1.5rem;
 }
 
 .textarea {
