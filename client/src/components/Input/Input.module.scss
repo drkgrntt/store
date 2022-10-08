@@ -1,0 +1,40 @@
+.container {
+  width: 100%;
+}
+
+.label {
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 1rem;
+  color: var(--black);
+  border: 0.1rem solid var(--neutral-color);
+  border-radius: 0.2rem;
+}
+
+.invalid {
+  border: 0.1rem solid var(--alert-color);
+}
+
+.input {
+  height: 1.5rem;
+}
+
+.textarea {
+  height: 6rem;
+  resize: vertical;
+}
+
+.checkbox {
+  vertical-align: middle;
+  height: 1rem;
+  width: 1rem;
+}
+
+.validation {
+  color: var(--alert-color);
+  margin: 0;
+  font-style: italic;
+}
