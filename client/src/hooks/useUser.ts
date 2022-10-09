@@ -1,4 +1,4 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, OperationVariables, useQuery } from "@apollo/client";
 import { User } from "../types/User";
 
 const ME = gql`
@@ -120,7 +120,6 @@ const ME = gql`
   }
 `;
 
-export const useUser = () => {
-  const { data } = useQuery<{ me: User }>(ME);
-  return data?.me;
+export const useUser = (options?: OperationVariables) => {
+  return useQuery<{ me: User }>(ME, options);
 };

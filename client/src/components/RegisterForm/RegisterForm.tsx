@@ -1,4 +1,5 @@
 import { gql, useMutation } from "@apollo/client";
+import { useRouter } from "next/router";
 import { FC, FormEvent, useState } from "react";
 import { useForm, Validations } from "../../hooks/useForm";
 import { User } from "../../types/User";
@@ -41,6 +42,7 @@ const RegisterForm: FC = () => {
   const formState = useForm(INITIAL_STATE, VALIDATIONS);
   const [register] = useMutation<{ register: User }>(REGISTER);
   const [validation, setValidation] = useState("");
+  const { query, push } = useRouter();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -54,6 +56,7 @@ const RegisterForm: FC = () => {
       },
       onCompleted() {
         formState.clear();
+        if (query.next) push(query.next as string);
       },
     });
   };
