@@ -1,15 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
 :root {
-  --pink: #ffcccc;
-  --green: #88ffcc;
+  // --pink: #ffcccc;
+  // --green: #88ffcc;
+  --green: #10898d;
+  --yellow: #ffd900;
   --red: #aa0000;
   --grey: #808080;
   --black: #333333;
   --white: #eeeeee;
 
-  --primary-color: var(--pink);
-  --secondary-color: var(--green);
+  --primary-color: var(--green);
+  --secondary-color: var(--yellow);
   --alert-color: var(--red);
   --neutral-color: var(--grey);
   --border-radius: 0.2rem;
