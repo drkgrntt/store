@@ -1,16 +1,18 @@
 import { gql, useMutation } from "@apollo/client";
 import { FC, FormEvent, useState } from "react";
-import { useForm } from "../../hooks/useForm";
+import { useForm, Validations } from "../../hooks/useForm";
 import { User } from "../../types/User";
 import Button from "../Button";
 import Input from "../Input";
 
-const LOGIN = gql`
-  mutation Login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
+const REGISTER = gql`
+  mutation Register($email: String!, $password: String!) {
+    register(email: $email, password: $password) {
       id
       email
       isAdmin
+      createdAt
+      updatedAt
       tokens {
         id
         value
@@ -25,22 +27,29 @@ const LOGIN = gql`
 const INITIAL_STATE = {
   email: "",
   password: "",
+  passwordVerify: "",
 };
 
-const LoginForm: FC = () => {
-  const formState = useForm(INITIAL_STATE);
-  const [login] = useMutation<{ login: User }>(LOGIN);
+const VALIDATIONS: Validations<typeof INITIAL_STATE> = {
+  passwordVerify: {
+    message: "Please make sure this matches what you set as your password.",
+    test: (value, values) => values.password === value,
+  },
+};
+
+const RegisterForm: FC = () => {
+  const formState = useForm(INITIAL_STATE, VALIDATIONS);
+  const [register] = useMutation<{ register: User }>(REGISTER);
   const [validation, setValidation] = useState("");
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { email, password } = formState.values;
-    login({
+    register({
       variables: { email, password },
       onError(error) {
         if (error.message === "Validation error")
           error.message = "Invalid email or password";
-
         setValidation(error.message);
       },
       onCompleted() {
@@ -53,25 +62,32 @@ const LoginForm: FC = () => {
     <form onSubmit={handleSubmit}>
       <Input
         required
-        id="login-email"
+        id="register-email"
         label="Email"
         name="email"
         formState={formState}
       />
       <Input
         required
+        id="register-password"
         label="Password"
         name="password"
-        id="login-password"
+        type="password"
+        formState={formState}
+      />
+      <Input
+        required
+        label="Verify Password"
+        name="passwordVerify"
         type="password"
         formState={formState}
       />
       <p>{validation}</p>
       <Button type="submit" disabled={!formState.isValid}>
-        Login
+        Sign Up
       </Button>
     </form>
   );
 };
 
-export default LoginForm;
+export default RegisterForm;

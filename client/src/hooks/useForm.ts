@@ -3,11 +3,14 @@ import { emptyValue } from "../utils";
 
 export type InputValueType = string | number | Date | boolean | null;
 
-export type Validation = {
+export type Validation<FormValues> = {
   message: string;
-  test: (value: InputValueType) => boolean;
+  test: (value: InputValueType, formValues: FormValues) => boolean;
 };
-export type Validations = Record<string, Validation | Validation[]>;
+export type Validations<FormValues> = Record<
+  string,
+  Validation<FormValues> | Validation<FormValues>[]
+>;
 
 export const getValue = (
   event: ChangeEvent<HTMLInputElement>
@@ -29,16 +32,17 @@ export const getValue = (
   }
 };
 
-export const validate = (
+export const validate = <FormValues>(
   value: InputValueType,
-  validations: Validation | Validation[]
+  validations: Validation<FormValues> | Validation<FormValues>[],
+  values: FormValues
 ): string => {
   if (!Array.isArray(validations)) {
     validations = [validations];
   }
 
   for (const validation of validations) {
-    const isValid = validation.test(value);
+    const isValid = validation.test(value, values);
     if (!isValid) return validation.message;
   }
   return "";
@@ -49,7 +53,7 @@ export const emailRegex =
 
 export const useForm = <FormState extends Record<string, InputValueType>>(
   initialState: FormState,
-  validations?: Partial<Validations>
+  validations?: Partial<Validations<FormState>>
 ) => {
   const initialErrors: Partial<Record<keyof FormState, string>> = {};
 
@@ -77,7 +81,7 @@ export const useForm = <FormState extends Record<string, InputValueType>>(
         [name]: "Please use at least 6 characters in your password.",
       }));
     } else if (validation) {
-      const message = validate(getValue(event), validation);
+      const message = validate(getValue(event), validation, values);
       setErrors((prev) => ({ ...prev, [name]: message }));
     } else if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
