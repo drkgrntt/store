@@ -1,5 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 import { FC } from "react";
+import { FaPen, FaTrash } from "react-icons/fa";
 import { Address } from "../../types/Address";
 import { ucFirst } from "../../utils";
 import Selectable from "../Selectable";
@@ -46,21 +47,23 @@ const AddressList: FC<Props> = ({
       <ul className={styles.addresses}>
         {addresses.map((address) => {
           return (
-            <li key={address.id} className={styles.address}>
-              <span>{ucFirst(address.type)}:</span>
-              <span>{address.lineOne}</span>
-              {address.lineTwo && <span>{address.lineTwo}</span>}
-              <span>
-                {address.city}, {address.state} {address.zipCode}
-              </span>
-              <span>{address.country}</span>
-              {editable && (
+            <li key={address.id} className={styles.listItem}>
+              <div className={styles.address}>
+                <span>{ucFirst(address.type)}:</span>
+                <span>{address.lineOne}</span>
+                {address.lineTwo && <span>{address.lineTwo}</span>}
                 <span>
+                  {address.city}, {address.state} {address.zipCode}
+                </span>
+                <span>{address.country}</span>
+              </div>
+              {editable && (
+                <span className={styles.actions}>
                   <Selectable onClick={() => onEditClick(address.id)}>
-                    E
+                    <FaPen />
                   </Selectable>
                   <Selectable onClick={() => handleDeleteClick(address.id)}>
-                    D
+                    <FaTrash />
                   </Selectable>
                 </span>
               )}

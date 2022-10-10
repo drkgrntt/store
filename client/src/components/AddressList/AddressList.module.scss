@@ -1,3 +1,8 @@
+.listItem {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .addresses {
   display: flex;
   flex-direction: column;
@@ -7,4 +12,9 @@
 .address {
   display: flex;
   flex-direction: column;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
 }
