@@ -29,7 +29,7 @@ const createClient = (ctx: NextPageContext) => {
   });
 
   /**
-   * The server will return dates as stringified unix timestanps,
+   * The server will return dates as iso strings,
    * so this will to convert those to date objects
    */
   const convertDates = (data: any) => {
