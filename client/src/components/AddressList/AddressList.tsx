@@ -1,13 +1,45 @@
+import { gql, useMutation } from "@apollo/client";
 import { FC } from "react";
 import { Address } from "../../types/Address";
 import { ucFirst } from "../../utils";
+import Selectable from "../Selectable";
 import styles from "./AddressList.module.scss";
 
 interface Props {
+  editable?: boolean;
   addresses: Address[];
+  onEditClick?: (addressId: string) => void;
 }
 
-const AddressList: FC<Props> = ({ addresses }) => {
+const DELETE_ADDRESS = gql`
+  mutation DeleteAddress($id: String!) {
+    deleteAddress(id: $id)
+  }
+`;
+
+const AddressList: FC<Props> = ({
+  addresses,
+  editable,
+  onEditClick = () => null,
+}) => {
+  const [deleteAddress] = useMutation(DELETE_ADDRESS);
+
+  const handleDeleteClick = (id: string) => {
+    const address = addresses.find((a) => a.id === id);
+    const addressString = `${address?.lineOne}${
+      address?.lineTwo ? " " + address.lineTwo : ""
+    }, ${address?.city}, ${address?.state} ${address?.zipCode}, ${
+      address?.country
+    }`;
+    const confirm = window.confirm(
+      `Are you sure you want to delete ${addressString}?`
+    );
+
+    if (!confirm) return;
+
+    deleteAddress({ variables: { id } });
+  };
+
   return (
     <>
       <h3>Addresses:</h3>
@@ -22,6 +54,16 @@ const AddressList: FC<Props> = ({ addresses }) => {
                 {address.city}, {address.state} {address.zipCode}
               </span>
               <span>{address.country}</span>
+              {editable && (
+                <span>
+                  <Selectable onClick={() => onEditClick(address.id)}>
+                    E
+                  </Selectable>
+                  <Selectable onClick={() => handleDeleteClick(address.id)}>
+                    D
+                  </Selectable>
+                </span>
+              )}
             </li>
           );
         })}

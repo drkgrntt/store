@@ -1,12 +1,20 @@
 import "../styles/globals.scss";
-import type { AppProps } from "next/app";
-import { withApollo } from "../utils/withApollo";
+import { AppPropsWithApollo, withApollo } from "../utils/withApollo";
 import Layout from "../components/Layout";
 
-const App = ({ Component, pageProps }: AppProps) => {
+const App = ({
+  Component,
+  pageProps,
+  apolloClient,
+  apolloState,
+}: AppPropsWithApollo) => {
   return (
     <Layout>
-      <Component {...pageProps} />
+      <Component
+        {...pageProps}
+        apolloClient={apolloClient}
+        apolloState={apolloState}
+      />
     </Layout>
   );
 };

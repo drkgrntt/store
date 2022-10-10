@@ -65,7 +65,8 @@ export class AddressResolver {
     @Arg("lineTwo", { nullable: true }) lineTwo?: string,
     @Arg("city", { nullable: true }) city?: string,
     @Arg("state", { nullable: true }) state?: string,
-    @Arg("zipCode", { nullable: true }) zipCode?: string
+    @Arg("zipCode", { nullable: true }) zipCode?: string,
+    @Arg("type", { nullable: true }) type?: AddressType
   ): Promise<Address> {
     const address = await Address.findOne({ where: { id, userId: me.id } });
     if (!address) throw new Error("Invalid id");
@@ -75,6 +76,7 @@ export class AddressResolver {
     if (city !== undefined) address.city = city;
     if (state !== undefined) address.state = state;
     if (zipCode !== undefined) address.zipCode = zipCode;
+    if (type !== undefined) address.type = type;
 
     await address.save();
 

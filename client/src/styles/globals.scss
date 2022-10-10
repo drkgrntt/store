@@ -1,28 +1,20 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
 :root {
-  // --pink: #ffcccc;
-  // --green: #88ffcc;
   --green: #10898d;
   --yellow: #ffd900;
   --red: #aa0000;
   --grey: #808080;
   --black: #333333;
-  --white: #eeeeee;
+  --white: #fafafa;
 
   --primary-color: var(--green);
   --secondary-color: var(--yellow);
   --alert-color: var(--red);
   --neutral-color: var(--grey);
-  --border-radius: 0.2rem;
 
+  --border-radius: 0.2rem;
   --heavy-shadow: rgba(0, 0, 0, 0.35) 0 0.3rem 1rem;
-  --background-gradient: linear-gradient(
-    to bottom right,
-    #f5e1e1,
-    #f7fff8,
-    #f0e6ff
-  );
 }
 
 * {
@@ -35,4 +27,5 @@ html,
 body {
   margin: 0;
   padding: 0;
+  background-color: var(--white);
 }

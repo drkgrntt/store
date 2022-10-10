@@ -1,21 +1,31 @@
-import { MutableRefObject, FC, HTMLInputTypeAttribute } from "react";
+import {
+  MutableRefObject,
+  FC,
+  HTMLInputTypeAttribute,
+  ChangeEvent,
+} from "react";
 import { InputValueType } from "../../hooks/useForm";
 import styles from "./Input.module.scss";
 
+type ElementTypes = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+type ElementTypeAttributes = HTMLInputTypeAttribute | "select" | "textarea";
+
 interface Props {
   className?: string;
-  type?: HTMLInputTypeAttribute;
+  type?: ElementTypeAttributes;
   placeholder?: string;
   name?: string;
   id?: string;
   label?: string;
+  disabled?: boolean;
   value?: InputValueType;
   required?: boolean;
-  onChange?: Function;
-  onFocus?: Function;
-  onBlur?: Function;
+  options?: { value: any; text: string }[];
+  onChange?: (event: ChangeEvent<ElementTypes>) => void;
+  onFocus?: (event: ChangeEvent<ElementTypes>) => void;
+  onBlur?: (event: ChangeEvent<ElementTypes>) => void;
   validation?: string;
-  ref?: MutableRefObject<HTMLInputElement | HTMLTextAreaElement>;
+  ref?: MutableRefObject<ElementTypes>;
   formState?: Record<string, any>; // ReturnType<typeof useForm>; <- Not quite type safe for some reason
 }
 
@@ -27,10 +37,12 @@ const Input: FC<Props> = ({
   id = name,
   label = "",
   value = "",
+  options = [],
+  disabled,
   required = false,
-  onChange = () => null,
+  onChange,
   onFocus = () => null,
-  onBlur = () => null,
+  onBlur,
   children = null,
   validation,
   formState,
@@ -40,9 +52,13 @@ const Input: FC<Props> = ({
   if (formState) {
     if (!value) value = formState.values[name];
     if (!validation) validation = formState.errors[name];
-    if (!onChange()) onChange = formState.handleChange;
-    if (!onBlur()) onBlur = formState.validateField;
+    if (!onChange) onChange = formState.handleChange;
+    if (!onBlur) onBlur = formState.validateField;
   }
+
+  // Set defaults now that they need to be set
+  if (!onChange) onChange = () => null;
+  if (!onBlur) onBlur = () => null;
 
   // Render label if present
   const renderLabel = () => {
@@ -70,12 +86,13 @@ const Input: FC<Props> = ({
             placeholder={placeholder}
             name={name}
             id={id}
+            disabled={disabled}
             className={`${styles.textarea} ${validation && styles.invalid}`}
             value={value?.toString() || ""}
             required={!!required}
-            onChange={(event) => onChange(event)}
-            onBlur={(event) => onBlur(event)}
-            onFocus={(event) => onFocus(event)}
+            onChange={onChange}
+            onBlur={onBlur}
+            onFocus={onFocus}
           />
         </>
       );
@@ -89,14 +106,39 @@ const Input: FC<Props> = ({
             placeholder={placeholder}
             name={name}
             id={id}
+            disabled={disabled}
             className={styles.checkbox}
             checked={!!value}
             required={!!required}
-            onChange={(event) => onChange(event)}
-            onBlur={(event) => onBlur(event)}
-            onFocus={(event) => onFocus(event)}
+            onChange={onChange}
+            onBlur={onBlur}
+            onFocus={onFocus}
           />
           {renderLabel()}
+        </>
+      );
+    } else if (type === "select") {
+      return (
+        <>
+          {renderLabel()}
+          <select
+            ref={ref as MutableRefObject<HTMLSelectElement>}
+            disabled={disabled}
+            name={name}
+            id={id}
+            className={`${styles.input} ${validation && styles.invalid}`}
+            value={value?.toString() || ""}
+            required={!!required}
+            onChange={onChange}
+            onBlur={onBlur}
+            onFocus={onFocus}
+          >
+            {options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.text}
+              </option>
+            ))}
+          </select>
         </>
       );
     }
@@ -111,12 +153,13 @@ const Input: FC<Props> = ({
           placeholder={placeholder}
           name={name}
           id={id}
+          disabled={disabled}
           className={`${styles.input} ${validation && styles.invalid}`}
           value={value?.toString() || ""}
           required={!!required}
-          onChange={(event) => onChange(event)}
-          onBlur={(event) => onBlur(event)}
-          onFocus={(event) => onFocus(event)}
+          onChange={onChange}
+          onBlur={onBlur}
+          onFocus={onFocus}
         />
       </>
     );

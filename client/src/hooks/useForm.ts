@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { emptyValue } from "../utils";
 
 export type InputValueType = string | number | Date | boolean | null;
@@ -103,6 +103,8 @@ export const useForm = <FormState extends Record<string, InputValueType>>(
     setValues(initialState);
     setErrors(initialErrors);
   };
+
+  useEffect(reset, [initialState]);
 
   return {
     values,

@@ -4,9 +4,11 @@ import {
   InMemoryCache,
   createHttpLink,
   ApolloLink,
+  NormalizedCacheObject,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { createWithApollo } from "./createWithApollo";
+import { AppProps } from "next/app";
 
 const createClient = (ctx: NextPageContext) => {
   const httpLink = createHttpLink({
@@ -35,13 +37,7 @@ const createClient = (ctx: NextPageContext) => {
     Object.keys(data).forEach((key) => {
       switch (typeof data[key]) {
         case "string":
-          if (
-            key === "currentPeriodStart" ||
-            key === "currentPeriodEnd" ||
-            key === "createdAt" ||
-            key === "publishedAt" ||
-            key === "updatedAt"
-          ) {
+          if (key === "createdAt" || key === "updatedAt") {
             // This is what we came here to do
             data[key] = new Date(parseInt(data[key]));
           }
@@ -81,3 +77,8 @@ const createClient = (ctx: NextPageContext) => {
 };
 
 export const withApollo = createWithApollo(createClient);
+
+export type AppPropsWithApollo = AppProps & {
+  apolloClient: ApolloClient<NormalizedCacheObject>;
+  apolloState: Record<string, any>;
+};
