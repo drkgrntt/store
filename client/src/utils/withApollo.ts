@@ -39,7 +39,7 @@ const createClient = (ctx: NextPageContext) => {
         case "string":
           if (key === "createdAt" || key === "updatedAt") {
             // This is what we came here to do
-            data[key] = new Date(parseInt(data[key]));
+            data[key] = new Date(data[key]);
           }
           break;
         case "object":
