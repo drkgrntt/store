@@ -2,6 +2,7 @@ import { gql, useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
 import { FC, FormEvent, useState } from "react";
 import { useForm, Validations } from "../../hooks/useForm";
+import { useUser } from "../../hooks/useUser";
 import { User } from "../../types/User";
 import Button from "../Button";
 import Input from "../Input";
@@ -43,6 +44,7 @@ const RegisterForm: FC = () => {
   const [register] = useMutation<{ register: User }>(REGISTER);
   const [validation, setValidation] = useState("");
   const { query, push } = useRouter();
+  const { refetch } = useUser();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -54,9 +56,10 @@ const RegisterForm: FC = () => {
           error.message = "Invalid email or password";
         setValidation(error.message);
       },
-      onCompleted() {
+      async onCompleted() {
         formState.clear();
-        if (query.next) push(query.next as string);
+        await refetch();
+        push((query.next as string) ?? "/");
       },
     });
   };

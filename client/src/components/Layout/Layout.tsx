@@ -1,5 +1,6 @@
 import { FC } from "react";
 import PageHead from "../PageHead";
+import NavMenu from "./NavMenu";
 
 const Layout: FC = (props) => {
   return (
@@ -9,6 +10,8 @@ const Layout: FC = (props) => {
         <meta name="language" content="en-us" />
         <meta httpEquiv="X-UA-Compatible" content="ie=edge" />
       </PageHead>
+
+      <NavMenu />
 
       <main>{props.children}</main>
     </div>

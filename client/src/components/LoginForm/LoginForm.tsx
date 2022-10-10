@@ -2,6 +2,7 @@ import { gql, useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
 import { FC, FormEvent, useState } from "react";
 import { useForm } from "../../hooks/useForm";
+import { useUser } from "../../hooks/useUser";
 import { User } from "../../types/User";
 import Button from "../Button";
 import Input from "../Input";
@@ -33,6 +34,7 @@ const LoginForm: FC = () => {
   const [login] = useMutation<{ login: User }>(LOGIN);
   const [validation, setValidation] = useState("");
   const { query, push } = useRouter();
+  const { refetch } = useUser();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,9 +47,10 @@ const LoginForm: FC = () => {
 
         setValidation(error.message);
       },
-      onCompleted() {
+      async onCompleted() {
         formState.clear();
-        if (query.next) push(query.next as string);
+        await refetch();
+        push((query.next as string) ?? "/");
       },
     });
   };

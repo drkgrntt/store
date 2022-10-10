@@ -1,7 +1,7 @@
 .button {
-  padding: 0.5rem 2rem;
+  padding: 0.5rem 1rem;
   text-transform: uppercase;
-  letter-spacing: 0.2rem;
+  letter-spacing: 0.1rem;
   border: 0.1rem solid var(--primary-color);
   background-color: var(--primary-color);
   color: var(--white);
@@ -9,7 +9,6 @@
   cursor: pointer;
   transition: all 0.3s;
   border-radius: var(--border-radius);
-  font-size: 1.2rem;
 
   &:hover {
     color: var(--primary-color);

@@ -1,0 +1,37 @@
+.nav {
+  width: 100%;
+  height: 3rem;
+  z-index: 10;
+  background-color: var(--primary-color);
+
+  display: flex;
+  justify-content: flex-end;
+}
+
+.link {
+  color: var(--white);
+  height: 100%;
+  padding-inline: 1rem;
+  text-decoration: none;
+
+  display: flex;
+  align-items: center;
+  transition: all 0.3s;
+
+  &.active {
+    border-bottom: 0.1rem solid var(--white);
+  }
+
+  &:hover {
+    color: var(--primary-color);
+    background-color: var(--white);
+
+    &.active {
+      border-bottom: 0.1rem solid var(--primary-color);
+    }
+  }
+}
+
+.home {
+  margin-right: auto;
+}
