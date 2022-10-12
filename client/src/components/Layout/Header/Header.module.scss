@@ -1,0 +1,11 @@
+.header {
+  height: 20rem;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url("https://res.cloudinary.com/drkgrntt/image/upload/v1665355769/store/isbl_3360x840.52109674_ams88wr0.webp");
+
+  @media (min-width: 1200px) {
+    background-position: center;
+    background-size: cover;
+  }
+}

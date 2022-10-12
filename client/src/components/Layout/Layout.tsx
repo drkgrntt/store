@@ -1,5 +1,6 @@
 import { FC } from "react";
 import PageHead from "../PageHead";
+import Header from "./Header";
 import NavMenu from "./NavMenu";
 
 const Layout: FC = (props) => {
@@ -12,6 +13,8 @@ const Layout: FC = (props) => {
       </PageHead>
 
       <NavMenu />
+
+      <Header />
 
       <main>{props.children}</main>
     </div>
