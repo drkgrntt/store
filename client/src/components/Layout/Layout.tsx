@@ -1,9 +1,10 @@
 import { FC } from "react";
 import PageHead from "../PageHead";
+import Footer from "./Footer";
 import Header from "./Header";
 import NavMenu from "./NavMenu";
 
-const Layout: FC = (props) => {
+const Layout: FC = ({ children }) => {
   return (
     <div>
       <PageHead title="Store">
@@ -16,7 +17,9 @@ const Layout: FC = (props) => {
 
       <Header />
 
-      <main>{props.children}</main>
+      <main>{children}</main>
+
+      <Footer />
     </div>
   );
 };
