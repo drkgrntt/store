@@ -4,7 +4,7 @@
   --green: #10898d;
   --yellow: #ffd900;
   --red: #aa0000;
-  --grey: #808080;
+  --grey: #cccccc;
   --black: #333333;
   --white: #fafafa;
 
@@ -17,6 +17,9 @@
 
   --light-shadow: rgba(0, 0, 0, 0.4) 0.1rem 0.1rem 0.5rem;
   --heavy-shadow: rgba(0, 0, 0, 0.35) 0 0.3rem 1rem;
+
+  --footer-height: 3rem;
+  --header-height: 20rem;
 }
 
 * {

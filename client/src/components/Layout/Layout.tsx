@@ -3,6 +3,7 @@ import PageHead from "../PageHead";
 import Footer from "./Footer";
 import Header from "./Header";
 import NavMenu from "./NavMenu";
+import styles from "./Layout.module.scss";
 
 const Layout: FC = ({ children }) => {
   return (
@@ -17,7 +18,7 @@ const Layout: FC = ({ children }) => {
 
       <Header />
 
-      <main>{children}</main>
+      <main className={styles.container}>{children}</main>
 
       <Footer />
     </div>
