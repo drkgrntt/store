@@ -1,37 +1,112 @@
-.nav {
-  width: 100%;
-  height: 3rem;
-  z-index: 10;
-  background-color: var(--primary-color);
+.toggle {
+  opacity: 0;
+  position: absolute;
 
-  display: flex;
-  justify-content: flex-end;
+  &:checked {
+    & + .toggleButton > span {
+      transform: rotate(45deg);
+
+      &::before {
+        top: 0;
+        transform: rotate(0deg);
+      }
+
+      &::after {
+        top: 0;
+        transform: rotate(90deg);
+      }
+
+      &,
+      &::before,
+      &::after {
+        background-color: var(--white);
+      }
+    }
+
+    & ~ .nav {
+      right: 0 !important;
+    }
+  }
+}
+
+.toggleButton {
+  position: absolute;
+  top: 2rem;
+  right: 1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  cursor: pointer;
+  z-index: 1;
+
+  & > span {
+    &:before {
+      content: "";
+      top: -8px;
+    }
+
+    &:after {
+      content: "";
+      top: 8px;
+    }
+
+    &,
+    &::before,
+    &::after {
+      display: block;
+      position: absolute;
+      width: 100%;
+      height: 0.1rem;
+      background-color: var(--primary-color);
+      transition-duration: 0.3s;
+    }
+  }
+}
+
+.nav {
+  display: block;
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 18rem;
+  height: 100%;
+  margin: 0;
+  padding: 5rem 0;
+  list-style: none;
+  background-color: var(--primary-color);
+  box-shadow: var(--light-shadow);
+  transition-duration: 0.3s;
 }
 
 .link {
+  padding: 1rem 1rem;
   color: var(--white);
-  height: 100%;
-  padding-inline: 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
   text-decoration: none;
-
+  transition-duration: 0.3s;
   display: flex;
   align-items: center;
-  transition: all 0.3s;
+  gap: 0.5rem;
+
+  & * {
+    color: var(--white);
+    transition-duration: 0.3s;
+  }
 
   &.active {
-    border-bottom: 0.1rem solid var(--white);
+    border-left: 0.2rem solid var(--white);
   }
 
   &:hover {
     color: var(--primary-color);
     background-color: var(--white);
 
+    & * {
+      color: var(--primary-color);
+    }
+
     &.active {
-      border-bottom: 0.1rem solid var(--primary-color);
+      border-left: 0.2rem solid var(--primary-color);
     }
   }
-}
-
-.home {
-  margin-right: auto;
 }
