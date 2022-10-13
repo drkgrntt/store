@@ -50,7 +50,7 @@ export const ProductList: FC<Props> = () => {
             )}
             <h3>{product.title}</h3>
             <p>{product.description}</p>
-            <p>${priceToCurrency(product.price)}</p>
+            <p>{priceToCurrency(product.price)}</p>
           </div>
         );
       })}

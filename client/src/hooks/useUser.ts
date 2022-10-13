@@ -62,6 +62,7 @@ const ME = gql`
         totalCost
         isShipped
         isComplete
+        createdAt
         orderedProducts {
           id
           count

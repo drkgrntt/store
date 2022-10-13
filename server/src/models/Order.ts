@@ -69,4 +69,10 @@ export class Order extends Model {
   @Default(false)
   @Column
   isComplete: boolean;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
 }

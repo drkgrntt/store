@@ -1,6 +1,7 @@
 import { FC, useReducer } from "react";
 import AddressForm from "../../components/AddressForm";
 import AddressList from "../../components/AddressList";
+import OrderList from "../../components/OrderList";
 import { useIsAuth } from "../../hooks/useIsAuth";
 import { useUser } from "../../hooks/useUser";
 
@@ -33,6 +34,7 @@ const Profile: FC = () => {
 
   return (
     <div>
+      <OrderList orders={user.orders} />
       <AddressList
         addresses={user.addresses}
         editable
