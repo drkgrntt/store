@@ -1,7 +1,9 @@
 import { useRouter } from "next/router";
 import { FC, MouseEvent } from "react";
+import { FaTimes } from "react-icons/fa";
 import { useModal } from "../../hooks/useModal";
 import { combineClasses } from "../../utils";
+import Selectable from "../Selectable";
 import styles from "./Modal.module.scss";
 
 interface Props {
@@ -31,6 +33,9 @@ const Modal: FC<Props> = ({ name, children, wide }) => {
         className={combineClasses(styles.container, wide ? styles.wide : "")}
         onClick={handleInsideClick}
       >
+        <Selectable onClick={closeModal} className={styles.close}>
+          <FaTimes />
+        </Selectable>
         {children}
       </div>
     </dialog>
