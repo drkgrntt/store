@@ -5,6 +5,7 @@ import Button from "../Button";
 import Input from "../Input";
 import Image from "next/image";
 import styles from "./ProductForm.module.scss";
+import { useUser } from "../../hooks/useUser";
 
 interface Props {
   onSuccess?: () => void;
@@ -102,6 +103,7 @@ const INITIAL_STATE = {
 };
 
 const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
+  const { data: { me: user } = {} } = useUser();
   const formState = useForm(INITIAL_STATE);
   const [urls, setUrls] = useState<string[]>([]);
   const [validation, setValidation] = useState("");
@@ -110,6 +112,8 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
   );
   const [createProduct] = useMutation(CREATE_PRODUCT);
   const [attachImage] = useMutation(ATTACH_IMAGE);
+
+  if (!user?.isAdmin) return null;
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -178,14 +182,12 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
           label="Made to order"
           name="isMadeToOrder"
           type="checkbox"
-          required
         />
         <Input
           formState={formState}
           label="Active"
           name="isActive"
           type="checkbox"
-          required
         />
       </div>
       <ul className={styles.images}>

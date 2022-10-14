@@ -9,7 +9,7 @@ interface Props {}
 
 const PRODUCTS = gql`
   query Products {
-    products {
+    products(active: true) {
       id
       title
       description
@@ -46,7 +46,12 @@ export const ProductList: FC<Props> = () => {
         return (
           <div key={product.id}>
             {primaryImage && (
-              <Image width={200} height={200} src={primaryImage.url} />
+              <Image
+                width={200}
+                height={200}
+                src={primaryImage.url}
+                objectFit="contain"
+              />
             )}
             <h3>{product.title}</h3>
             <p>{product.description}</p>

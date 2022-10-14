@@ -62,7 +62,7 @@ const NavMenu: FC<Props> = () => {
   const { refetch, data: { me: user } = {} } = useUser();
   const [logout] = useMutation(LOGOUT);
   const [open, setOpen] = useState(false);
-  const { modalHref } = useModal("add-product");
+  const { modalHref } = useModal("product-form");
 
   const closeMenu = () => {
     setOpen(false);

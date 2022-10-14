@@ -1,6 +1,7 @@
 import { Product, ProductImage } from "../models";
 import {
   Arg,
+  Ctx,
   FieldResolver,
   Mutation,
   Query,
@@ -9,6 +10,7 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { isAdmin } from "../middleware/isAdmin";
+import { Context } from "../types";
 
 @Resolver(Product)
 export class ProductResolver {
@@ -22,15 +24,37 @@ export class ProductResolver {
   }
 
   @Query(() => [Product])
-  async products(): Promise<Product[]> {
-    const products = await Product.findAll();
-
+  async products(
+    @Ctx() { me }: Context,
+    @Arg("active", { nullable: true }) active?: boolean
+  ): Promise<Product[]> {
+    const where: { isActive?: boolean } = { isActive: true };
+    if (me.isAdmin) {
+      if (active === undefined) {
+        delete where.isActive;
+      } else {
+        where.isActive = active;
+      }
+    }
+    const products = await Product.findAll({ where });
     return products;
   }
 
   @Query(() => Product, { nullable: true })
-  async product(@Arg("id") id: string): Promise<Product> {
-    const product = await Product.findOne({ where: { id } });
+  async product(
+    @Ctx() { me }: Context,
+    @Arg("id") id: string,
+    @Arg("active", { nullable: true }) active?: boolean
+  ): Promise<Product> {
+    const where: { isActive?: boolean; id: string } = { isActive: true, id };
+    if (me.isAdmin) {
+      if (active === undefined) {
+        delete where.isActive;
+      } else {
+        where.isActive = active;
+      }
+    }
+    const product = await Product.findOne({ where });
     if (!product) throw new Error("Invalid id");
     return product;
   }
