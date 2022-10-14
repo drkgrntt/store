@@ -22,7 +22,7 @@ const OrderList: FC<Props> = ({ orders }) => {
               <li>Complete: {order.isComplete.toString()}</li>
               {order.orderedProducts.map((orderedProduct) => {
                 return (
-                  <li>
+                  <li key={orderedProduct.id}>
                     {orderedProduct.count}x - {orderedProduct.product.title} -{" "}
                     {priceToCurrency(orderedProduct.price)}
                   </li>

@@ -4,8 +4,15 @@ import { useRouter } from "next/router";
 import { FC, MouseEvent, useState } from "react";
 import { useUser } from "../../../hooks/useUser";
 import { combineClasses } from "../../../utils";
-import { FaUser, FaStore, FaArrowCircleRight, FaPenNib } from "react-icons/fa";
+import {
+  FaUser,
+  FaStore,
+  FaArrowCircleRight,
+  FaPenNib,
+  FaPlus,
+} from "react-icons/fa";
 import styles from "./NavMenu.module.scss";
+import { UrlObject } from "url";
 
 interface Props {}
 
@@ -15,7 +22,7 @@ const LOGOUT = gql`
   }
 `;
 
-const NavLink: FC<{ href: string; onClick: () => void }> = ({
+const NavLink: FC<{ href: string | UrlObject; onClick: () => void }> = ({
   children,
   href,
   onClick,
@@ -54,6 +61,7 @@ const NavMenu: FC<Props> = () => {
   const { refetch, data: { me: user } = {} } = useUser();
   const [logout] = useMutation(LOGOUT);
   const [open, setOpen] = useState(false);
+  const { query } = useRouter();
 
   const closeMenu = () => {
     setOpen(false);
@@ -90,6 +98,14 @@ const NavMenu: FC<Props> = () => {
             <NavLink onClick={closeMenu} href="/profile">
               <FaUser /> Profile
             </NavLink>
+            {user.isAdmin && (
+              <NavLink
+                onClick={closeMenu}
+                href={{ query: { ...query, modal: "add-product" } }}
+              >
+                <FaPlus /> Add Product
+              </NavLink>
+            )}
             <NavButton onClick={() => handleLogout()}>
               <FaArrowCircleRight /> Logout
             </NavButton>
