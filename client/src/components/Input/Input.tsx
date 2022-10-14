@@ -19,6 +19,9 @@ interface Props {
   label?: string;
   disabled?: boolean;
   value?: InputValueType;
+  step?: number;
+  min?: number | string;
+  max?: number | string;
   required?: boolean;
   options?: { value: any; text: string }[];
   onChange?: (event: ChangeEvent<ElementTypes>) => void;
@@ -37,6 +40,9 @@ const Input: FC<Props> = ({
   id = name,
   label = "",
   value = "",
+  step,
+  min,
+  max,
   options = [],
   disabled,
   required = false,
@@ -98,7 +104,7 @@ const Input: FC<Props> = ({
       );
     } else if (type === "checkbox") {
       return (
-        <>
+        <div className={styles.checkboxField}>
           <input
             ref={ref as MutableRefObject<HTMLInputElement>}
             key={id}
@@ -115,7 +121,7 @@ const Input: FC<Props> = ({
             onFocus={onFocus}
           />
           {renderLabel()}
-        </>
+        </div>
       );
     } else if (type === "select") {
       return (
@@ -152,6 +158,9 @@ const Input: FC<Props> = ({
           type={type}
           placeholder={placeholder}
           name={name}
+          step={step}
+          min={min}
+          max={max}
           id={id}
           disabled={disabled}
           className={`${styles.input} ${validation && styles.invalid}`}

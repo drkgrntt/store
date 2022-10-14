@@ -13,6 +13,7 @@ import {
 } from "react-icons/fa";
 import styles from "./NavMenu.module.scss";
 import { UrlObject } from "url";
+import { useModal } from "../../../hooks/useModal";
 
 interface Props {}
 
@@ -61,7 +62,7 @@ const NavMenu: FC<Props> = () => {
   const { refetch, data: { me: user } = {} } = useUser();
   const [logout] = useMutation(LOGOUT);
   const [open, setOpen] = useState(false);
-  const { query } = useRouter();
+  const { modalHref } = useModal("add-product");
 
   const closeMenu = () => {
     setOpen(false);
@@ -99,10 +100,7 @@ const NavMenu: FC<Props> = () => {
               <FaUser /> Profile
             </NavLink>
             {user.isAdmin && (
-              <NavLink
-                onClick={closeMenu}
-                href={{ query: { ...query, modal: "add-product" } }}
-              >
+              <NavLink onClick={closeMenu} href={modalHref}>
                 <FaPlus /> Add Product
               </NavLink>
             )}

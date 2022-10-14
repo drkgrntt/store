@@ -6,9 +6,12 @@ import NavMenu from "./NavMenu";
 import styles from "./Layout.module.scss";
 import Modal from "../Modal";
 import { useUser } from "../../hooks/useUser";
+import ProductForm from "../ProductForm";
+import { useModal } from "../../hooks/useModal";
 
 const Layout: FC = ({ children }) => {
   const { data: { me: user } = {} } = useUser();
+  const { closeModal } = useModal("add-product");
 
   return (
     <div>
@@ -25,8 +28,8 @@ const Layout: FC = ({ children }) => {
       <main className={styles.container}>{children}</main>
 
       {user?.isAdmin && (
-        <Modal wide name="add-product">
-          nice
+        <Modal name="add-product">
+          <ProductForm onSuccess={closeModal} />
         </Modal>
       )}
 

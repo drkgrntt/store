@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
-import { ParsedUrlQuery } from "querystring";
 import { FC, MouseEvent } from "react";
+import { useModal } from "../../hooks/useModal";
 import { combineClasses } from "../../utils";
 import styles from "./Modal.module.scss";
 
@@ -10,19 +10,11 @@ interface Props {
 }
 
 const Modal: FC<Props> = ({ name, children, wide }) => {
-  const { query, push } = useRouter();
+  const { query } = useRouter();
+  const { closeModal } = useModal(name);
 
   const handleOutsideClick = () => {
-    const queryWithoutModal = Object.entries(query).reduce(
-      (current, [key, value]) => {
-        if (key !== "modal") {
-          current[key] = value;
-        }
-        return current;
-      },
-      {} as ParsedUrlQuery
-    );
-    push({ query: queryWithoutModal });
+    closeModal();
   };
 
   const handleInsideClick = (event: MouseEvent) => {

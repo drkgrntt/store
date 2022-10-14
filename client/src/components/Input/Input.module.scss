@@ -27,8 +27,13 @@
   resize: vertical;
 }
 
+.checkboxField {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 .checkbox {
-  vertical-align: middle;
   height: 1rem;
   width: 1rem;
 }

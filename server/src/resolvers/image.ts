@@ -44,10 +44,14 @@ export class ImageResolver {
       type: "upload",
       max_results: 500,
     });
-    const urls = result.resources.map(
+    const urls: string[] = result.resources.map(
       (resource: { url: string }) => resource.url
     );
-    return urls;
+    const productImages = await ProductImage.findAll({
+      attributes: ["url"],
+      where: { url: urls },
+    });
+    return urls.filter((url) => !productImages.some((pi) => pi.url === url));
   }
 
   @Query(() => ImageUploadSignature)
