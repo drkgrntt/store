@@ -5,6 +5,7 @@ import {
   ChangeEvent,
 } from "react";
 import { InputValueType } from "../../hooks/useForm";
+import { combineClasses } from "../../utils";
 import styles from "./Input.module.scss";
 
 type ElementTypes = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
@@ -93,7 +94,10 @@ const Input: FC<Props> = ({
             name={name}
             id={id}
             disabled={disabled}
-            className={`${styles.textarea} ${validation && styles.invalid}`}
+            className={combineClasses(
+              styles.textarea,
+              validation ? styles.invalid : ""
+            )}
             value={value?.toString() || ""}
             required={!!required}
             onChange={onChange}
@@ -132,7 +136,10 @@ const Input: FC<Props> = ({
             disabled={disabled}
             name={name}
             id={id}
-            className={`${styles.input} ${validation && styles.invalid}`}
+            className={combineClasses(
+              styles.input,
+              validation ? styles.invalid : ""
+            )}
             value={value?.toString() || ""}
             required={!!required}
             onChange={onChange}
@@ -163,7 +170,10 @@ const Input: FC<Props> = ({
           max={max}
           id={id}
           disabled={disabled}
-          className={`${styles.input} ${validation && styles.invalid}`}
+          className={combineClasses(
+            styles.input,
+            validation ? styles.invalid : ""
+          )}
           value={value?.toString() || ""}
           required={!!required}
           onChange={onChange}
@@ -175,7 +185,7 @@ const Input: FC<Props> = ({
   };
 
   return (
-    <div className={`${styles.container} ${className || ""}`}>
+    <div className={combineClasses(styles.container, className)}>
       {renderInput()}
       <p className={styles.validation}>{validation}</p>
       {children}

@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql, useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { ChangeEvent, FC, FormEvent, useState } from "react";
 import { useForm } from "../../hooks/useForm";
 import Button from "../Button";
@@ -93,6 +93,17 @@ const ATTACH_IMAGE = gql`
   }
 `;
 
+const IMAGE_UPLOAD_SIGNATURE = gql`
+  query ImageUploadSignature {
+    imageUploadSignature {
+      timestamp
+      signature
+      cloudname
+      apikey
+    }
+  }
+`;
+
 const INITIAL_STATE = {
   title: "",
   description: "",
@@ -107,16 +118,54 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
   const formState = useForm(INITIAL_STATE);
   const [urls, setUrls] = useState<string[]>([]);
   const [validation, setValidation] = useState("");
-  const { data: { imageUrls } = {} } = useQuery<{ imageUrls: string[] }>(
-    IMAGE_URLS
-  );
+  const { data: { imageUrls } = {}, refetch: refetchImages } = useQuery<{
+    imageUrls: string[];
+  }>(IMAGE_URLS);
   const [createProduct] = useMutation(CREATE_PRODUCT);
   const [attachImage] = useMutation(ATTACH_IMAGE);
+  const [getImageUploadSignature] = useLazyQuery(IMAGE_UPLOAD_SIGNATURE);
 
   if (!user?.isAdmin) return null;
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
+
+    const { data: { imageUploadSignature } = {} } =
+      await getImageUploadSignature();
+
+    const url =
+      "https://api.cloudinary.com/v1_1/" +
+      imageUploadSignature.cloudname +
+      "/auto/upload";
+
+    const files = event.target.files ?? [];
+    const formData = new FormData();
+
+    // Append parameters to the form data. The parameters that are signed using
+    // the signing function (signuploadform) need to match these.
+    for (let i = 0; i < files.length; i++) {
+      let file = files[i];
+      formData.append("file", file);
+      formData.append("api_key", imageUploadSignature.apikey);
+      formData.append("timestamp", imageUploadSignature.timestamp);
+      formData.append("signature", imageUploadSignature.signature);
+      formData.append("eager", "");
+      formData.append("folder", "store");
+
+      fetch(url, {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => response.text())
+        .then((data) => {
+          refetchImages();
+        });
+    }
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     const { title, description, price, quantity, isMadeToOrder, isActive } =
       formState.values;
 
@@ -202,7 +251,7 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
             });
           };
           return (
-            <>
+            <div key={url}>
               <input
                 className={styles.imageCheckbox}
                 type="checkbox"
@@ -220,10 +269,16 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
                   />
                 </li>
               </label>
-            </>
+            </div>
           );
         })}
       </ul>
+      <Input
+        type="file"
+        onChange={(event) =>
+          handleUpload(event as ChangeEvent<HTMLInputElement>)
+        }
+      />
       <p>{validation}</p>
       <Button className={styles.submit} type="submit">
         Submit

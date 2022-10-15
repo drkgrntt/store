@@ -23,16 +23,19 @@ const LOGOUT = gql`
   }
 `;
 
-const NavLink: FC<{ href: string | UrlObject; onClick: () => void }> = ({
-  children,
-  href,
-  onClick,
-}) => {
+const NavLink: FC<{
+  href: string | UrlObject;
+  onClick: () => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
+}> = ({ children, href, onClick, onFocus = () => {}, onBlur = () => {} }) => {
   const { pathname } = useRouter();
 
   return (
     <Link href={href}>
       <a
+        onFocus={onFocus}
+        onBlur={onBlur}
         onClick={onClick}
         href="#"
         className={combineClasses(
@@ -46,13 +49,23 @@ const NavLink: FC<{ href: string | UrlObject; onClick: () => void }> = ({
   );
 };
 
-const NavButton: FC<{ onClick: () => void }> = ({ onClick, children }) => {
+const NavButton: FC<{
+  onClick: () => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
+}> = ({ onClick, children, onFocus = () => {}, onBlur = () => {} }) => {
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     onClick();
   };
   return (
-    <a href="#" onClick={handleClick} className={styles.link}>
+    <a
+      onBlur={onBlur}
+      onFocus={onFocus}
+      href="#"
+      onClick={handleClick}
+      className={styles.link}
+    >
       {children}
     </a>
   );
@@ -66,6 +79,10 @@ const NavMenu: FC<Props> = () => {
 
   const closeMenu = () => {
     setOpen(false);
+  };
+
+  const openMenu = () => {
+    setOpen(true);
   };
 
   const handleLogout = () => {
@@ -86,30 +103,56 @@ const NavMenu: FC<Props> = () => {
         className={styles.toggle}
         type="checkbox"
       />
-      <label className={styles.toggleButton} htmlFor="nav-toggle">
-        <span></span>
-      </label>
+      <div className={styles.toggleButtonBorder}>
+        <label className={styles.toggleButton} htmlFor="nav-toggle">
+          <span></span>
+        </label>
+      </div>
 
-      <nav className={styles.nav}>
-        <NavLink onClick={closeMenu} href="/">
+      <nav className={styles.nav} onFocus={openMenu}>
+        <NavLink
+          onFocus={openMenu}
+          onBlur={closeMenu}
+          onClick={closeMenu}
+          href="/"
+        >
           <FaStore /> Shop
         </NavLink>
         {user ? (
           <>
-            <NavLink onClick={closeMenu} href="/profile">
+            <NavLink
+              onFocus={openMenu}
+              onBlur={closeMenu}
+              onClick={closeMenu}
+              href="/profile"
+            >
               <FaUser /> Profile
             </NavLink>
             {user.isAdmin && (
-              <NavLink onClick={closeMenu} href={modalHref}>
+              <NavLink
+                onFocus={openMenu}
+                onBlur={closeMenu}
+                onClick={closeMenu}
+                href={modalHref}
+              >
                 <FaPlus /> Add Product
               </NavLink>
             )}
-            <NavButton onClick={() => handleLogout()}>
+            <NavButton
+              onFocus={openMenu}
+              onBlur={closeMenu}
+              onClick={() => handleLogout()}
+            >
               <FaArrowCircleRight /> Logout
             </NavButton>
           </>
         ) : (
-          <NavLink onClick={closeMenu} href="/login">
+          <NavLink
+            onFocus={openMenu}
+            onBlur={closeMenu}
+            onClick={closeMenu}
+            href="/login"
+          >
             <FaPenNib />
             Login / Sign Up
           </NavLink>
