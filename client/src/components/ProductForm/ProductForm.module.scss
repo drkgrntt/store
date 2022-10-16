@@ -38,6 +38,10 @@
 
   &:checked + label > .image {
     border: 0.2rem solid var(--primary-color);
+
+    &.primaryImage {
+      border: 0.2rem solid var(--secondary-color);
+    }
   }
 }
 

@@ -6,6 +6,7 @@ import Input from "../Input";
 import Image from "next/image";
 import styles from "./ProductForm.module.scss";
 import { useUser } from "../../hooks/useUser";
+import { combineClasses } from "../../utils";
 
 interface Props {
   onSuccess?: () => void;
@@ -264,7 +265,13 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
                 onChange={handleChange}
               />
               <label htmlFor={url}>
-                <li className={styles.image} key={url}>
+                <li
+                  className={combineClasses(
+                    styles.image,
+                    urls[0] === url ? styles.primaryImage : ""
+                  )}
+                  key={url}
+                >
                   <Image
                     src={url}
                     height={120}
