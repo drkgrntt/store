@@ -4,7 +4,7 @@ import styles from "./Selectable.module.scss";
 
 interface Props {
   className?: string;
-  onClick?: () => void;
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
 }
 
 const Selectable: FC<Props> = ({
@@ -14,7 +14,7 @@ const Selectable: FC<Props> = ({
 }) => {
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
-    onClick();
+    onClick(event);
   };
 
   return (

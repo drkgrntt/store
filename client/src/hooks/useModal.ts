@@ -1,26 +1,19 @@
 import { useRouter } from "next/router";
-import { ParsedUrlQuery } from "querystring";
+import { UrlObject } from "url";
 
-export const useModal = (name: string) => {
+export const useModal = () => {
   const { push, query } = useRouter();
 
   const closeModal = () => {
-    const queryWithoutModal = Object.entries(query).reduce(
-      (current, [key, value]) => {
-        if (key !== "modal") {
-          current[key] = value;
-        }
-        return current;
-      },
-      {} as ParsedUrlQuery
-    );
-    push({ query: queryWithoutModal });
+    push({ query: { ...query, modal: [] } });
   };
 
-  const modalHref = { query: { ...query, modal: name } };
+  const modalHref = (name: string): UrlObject => ({
+    query: { ...query, modal: name },
+  });
 
-  const openModal = () => {
-    push(modalHref);
+  const openModal = (name: string) => {
+    push(modalHref(name));
   };
 
   return { closeModal, openModal, modalHref };

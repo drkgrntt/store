@@ -21,3 +21,7 @@ export const emptyValue = (value: number | boolean | string | unknown) => {
 export const ucFirst = (text: string) => {
   return text.charAt(0).toUpperCase() + text.slice(1);
 };
+
+export const range = (size: number) => {
+  return [...Array(size).keys()];
+};

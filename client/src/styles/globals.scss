@@ -1,12 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
 :root {
-  // color: rgb(255, 196, 0); // test line to get color picker
+  // color: rgb(120, 120, 120); // test line to get color picker
 
   --green-value: 16, 137, 141;
   --yellow-value: 255, 196, 0;
   --red-value: 170, 0, 0;
   --grey-value: 204, 204, 204;
+  --dark-grey-value: 120, 120, 120;
   --black-value: 51, 51, 51;
   --white-value: 250, 250, 250;
 
@@ -19,6 +20,7 @@
   --yellow: rgb(var(--yellow-value));
   --red: rgb(var(--red-value));
   --grey: rgb(var(--grey-value));
+  --dark-grey: rgb(var(--dark-grey-value));
   --black: rgb(var(--black-value));
   --white: rgb(var(--white-value));
 
@@ -49,6 +51,14 @@ body {
   background-color: var(--white);
 }
 
+// Cursor Selection
+::selection {
+  background: var(--secondary-color); /* WebKit/Blink Browsers */
+}
+::-moz-selection {
+  background: var(--secondary-color); /* Gecko Browsers */
+}
+
 // Scrollbar
 ::-webkit-scrollbar {
   width: 0.5rem;
@@ -58,5 +68,4 @@ body {
 }
 ::-webkit-scrollbar-thumb {
   background: var(--secondary-color);
-  border-radius: 1000rem;
 }

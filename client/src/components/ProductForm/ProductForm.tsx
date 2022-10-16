@@ -158,7 +158,11 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
       })
         .then((response) => response.text())
         .then((data) => {
+          console.log({ data });
           refetchImages();
+        })
+        .catch((err) => {
+          console.log({ err });
         });
     }
   };
@@ -273,7 +277,7 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
           );
         })}
       </ul>
-      <Input
+      <input
         type="file"
         onChange={(event) =>
           handleUpload(event as ChangeEvent<HTMLInputElement>)

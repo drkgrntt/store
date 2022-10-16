@@ -94,7 +94,9 @@ export const ProductList: FC<Props> = () => {
             <p>{product.description}</p>
             <p>{priceToCurrency(product.price)}</p>
             <p>{product.quantity - quantityInCart} available</p>
-            <Selectable onClick={addProductToCart}>Add to cart</Selectable>
+            {product.quantity - quantityInCart > 0 && (
+              <Selectable onClick={addProductToCart}>Add to cart</Selectable>
+            )}
           </div>
         );
       })}

@@ -7,9 +7,10 @@ import styles from "./Layout.module.scss";
 import Modal from "../Modal";
 import ProductForm from "../ProductForm";
 import { useModal } from "../../hooks/useModal";
+import Cart from "../Cart";
 
 const Layout: FC = ({ children }) => {
-  const { closeModal } = useModal("product-form");
+  const { closeModal } = useModal();
 
   return (
     <div>
@@ -27,6 +28,10 @@ const Layout: FC = ({ children }) => {
 
       <Modal name="product-form">
         <ProductForm onSuccess={closeModal} />
+      </Modal>
+
+      <Modal name="cart">
+        <Cart />
       </Modal>
 
       <Footer />

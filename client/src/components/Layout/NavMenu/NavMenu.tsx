@@ -9,6 +9,7 @@ import {
   FaStore,
   FaArrowCircleRight,
   FaPenNib,
+  FaShoppingCart,
   FaPlus,
 } from "react-icons/fa";
 import styles from "./NavMenu.module.scss";
@@ -75,15 +76,11 @@ const NavMenu: FC<Props> = () => {
   const { refetch, data: { me: user } = {} } = useUser();
   const [logout] = useMutation(LOGOUT);
   const [open, setOpen] = useState(false);
-  const { modalHref } = useModal("product-form");
+  const { modalHref } = useModal();
 
-  const closeMenu = () => {
-    setOpen(false);
-  };
-
-  const openMenu = () => {
-    setOpen(true);
-  };
+  const closeMenu = () => setOpen(false);
+  const openMenu = () => setOpen(true);
+  const toggleMenu = () => setOpen((prev) => !prev);
 
   const handleLogout = () => {
     closeMenu();
@@ -98,7 +95,7 @@ const NavMenu: FC<Props> = () => {
     <>
       <input
         checked={open}
-        onChange={() => setOpen((prev) => !prev)}
+        onChange={toggleMenu}
         id="nav-toggle"
         className={styles.toggle}
         type="checkbox"
@@ -128,12 +125,20 @@ const NavMenu: FC<Props> = () => {
             >
               <FaUser /> Profile
             </NavLink>
+            <NavLink
+              onFocus={openMenu}
+              onBlur={closeMenu}
+              onClick={closeMenu}
+              href={modalHref("cart")}
+            >
+              <FaShoppingCart /> Cart
+            </NavLink>
             {user.isAdmin && (
               <NavLink
                 onFocus={openMenu}
                 onBlur={closeMenu}
                 onClick={closeMenu}
-                href={modalHref}
+                href={modalHref("product-form")}
               >
                 <FaPlus /> Add Product
               </NavLink>
