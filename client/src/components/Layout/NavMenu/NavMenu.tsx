@@ -15,6 +15,7 @@ import {
 import styles from "./NavMenu.module.scss";
 import { UrlObject } from "url";
 import { useModal } from "../../../hooks/useModal";
+import Selectable from "../../Selectable";
 
 interface Props {}
 
@@ -143,13 +144,6 @@ const NavMenu: FC<Props> = () => {
                 <FaPlus /> Add Product
               </NavLink>
             )}
-            <NavButton
-              onFocus={openMenu}
-              onBlur={closeMenu}
-              onClick={() => handleLogout()}
-            >
-              <FaArrowCircleRight /> Logout
-            </NavButton>
           </>
         ) : (
           <NavLink
@@ -162,6 +156,17 @@ const NavMenu: FC<Props> = () => {
             Login / Sign Up
           </NavLink>
         )}
+        <footer className={styles.footer}>
+          {user && (
+            <Selectable
+              onFocus={openMenu}
+              onBlur={closeMenu}
+              onClick={() => handleLogout()}
+            >
+              <FaArrowCircleRight /> Logout
+            </Selectable>
+          )}
+        </footer>
       </nav>
     </>
   );

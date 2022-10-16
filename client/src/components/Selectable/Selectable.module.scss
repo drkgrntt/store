@@ -1,4 +1,6 @@
 .selectable {
-  // text-decoration: none;
-  color: var(--dark-grey);
+  &,
+  & * {
+    color: var(--dark-grey);
+  }
 }

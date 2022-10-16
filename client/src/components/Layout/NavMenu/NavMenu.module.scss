@@ -78,14 +78,15 @@
 
 .nav {
   z-index: 10;
-  display: block;
+  display: flex;
+  flex-direction: column;
   position: fixed;
   top: 0;
   right: -100%;
   width: 18rem;
   height: 100%;
   margin: 0;
-  padding: 5rem 0;
+  padding: 5rem 0 1rem;
   list-style: none;
   background-color: var(--primary-color);
   box-shadow: var(--light-shadow);
@@ -123,5 +124,17 @@
     &.active {
       border-left: 0.2rem solid var(--primary-color);
     }
+  }
+}
+
+.footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+
+  &,
+  & * {
+    color: var(--grey);
+    vertical-align: middle;
   }
 }
