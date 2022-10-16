@@ -6,6 +6,7 @@ import Loader from "../Loader";
 import { priceToCurrency } from "../../utils";
 import Selectable from "../Selectable";
 import { useUser } from "../../hooks/useUser";
+import styles from "./ProductList.module.scss";
 
 interface Props {}
 
@@ -61,8 +62,17 @@ export const ProductList: FC<Props> = () => {
 
   if (loading) return <Loader />;
 
+  // [
+  //   ...(data?.products ?? []),
+  //   ...(data?.products ?? []),
+  //   ...(data?.products ?? []),
+  //   ...(data?.products ?? []),
+  //   ...(data?.products ?? []),
+  //   ...(data?.products ?? []),
+  // ]
+
   return (
-    <div>
+    <div className={styles.products}>
       {data?.products.map((product) => {
         const primaryImage =
           product.images.find((i) => i.primary) ?? product.images[0];
