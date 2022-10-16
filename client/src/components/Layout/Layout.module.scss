@@ -2,3 +2,9 @@
   min-height: calc(100vh - var(--header-height) - var(--footer-height));
   padding: 2rem;
 }
+
+.loginContainer {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+}

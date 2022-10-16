@@ -8,6 +8,8 @@ import Modal from "../Modal";
 import ProductForm from "../ProductForm";
 import { useModal } from "../../hooks/useModal";
 import Cart from "../Cart";
+import LoginForm from "../LoginForm";
+import RegisterForm from "../RegisterForm";
 
 const Layout: FC = ({ children }) => {
   const { closeModal } = useModal();
@@ -32,6 +34,11 @@ const Layout: FC = ({ children }) => {
 
       <Modal name="cart">
         <Cart />
+      </Modal>
+
+      <Modal className={styles.loginContainer} name="login">
+        <RegisterForm />
+        <LoginForm />
       </Modal>
 
       <Footer />

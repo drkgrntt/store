@@ -6,6 +6,7 @@ import { useUser } from "../../hooks/useUser";
 import { User } from "../../types/User";
 import Button from "../Button";
 import Input from "../Input";
+import styles from "./LoginForm.module.scss";
 
 const LOGIN = gql`
   mutation Login($email: String!, $password: String!) {
@@ -56,7 +57,8 @@ const LoginForm: FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <h2>Login</h2>
       <Input
         required
         id="login-email"

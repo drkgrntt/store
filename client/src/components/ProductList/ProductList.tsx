@@ -56,7 +56,7 @@ const ADD_TO_CART = gql`
 
 export const ProductList: FC<Props> = () => {
   const { data, loading } = useQuery<{ products: Product[] }>(PRODUCTS);
-  const { data: { me: user } = {} } = useUser();
+  const { user } = useUser();
   const [addToCart] = useMutation(ADD_TO_CART);
 
   if (loading) return <Loader />;

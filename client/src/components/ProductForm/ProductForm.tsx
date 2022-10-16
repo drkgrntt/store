@@ -114,7 +114,7 @@ const INITIAL_STATE = {
 };
 
 const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
-  const { data: { me: user } = {} } = useUser();
+  const { user } = useUser();
   const formState = useForm(INITIAL_STATE);
   const [urls, setUrls] = useState<string[]>([]);
   const [validation, setValidation] = useState("");

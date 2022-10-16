@@ -121,6 +121,11 @@ const ME = gql`
   }
 `;
 
-export const useUser = (options?: OperationVariables) => {
+export const useMeQuery = (options?: OperationVariables) => {
   return useQuery<{ me: User }>(ME, options);
+};
+
+export const useUser = () => {
+  const { data, refetch } = useMeQuery();
+  return { user: data?.me, refetch };
 };

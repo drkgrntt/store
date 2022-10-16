@@ -131,10 +131,12 @@
   margin-top: auto;
   display: flex;
   justify-content: center;
+}
 
+.footerItem {
   &,
   & * {
-    color: var(--grey);
     vertical-align: middle;
+    color: var(--grey);
   }
 }

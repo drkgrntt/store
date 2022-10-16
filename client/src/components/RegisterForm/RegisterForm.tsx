@@ -6,6 +6,7 @@ import { useUser } from "../../hooks/useUser";
 import { User } from "../../types/User";
 import Button from "../Button";
 import Input from "../Input";
+import styles from "./RegisterForm.module.scss";
 
 const REGISTER = gql`
   mutation Register($email: String!, $password: String!) {
@@ -65,7 +66,8 @@ const RegisterForm: FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <h2>Sign Up</h2>
       <Input
         required
         id="register-email"

@@ -28,7 +28,7 @@ const REMOVE_FROM_CART = gql`
 `;
 
 const Cart: FC<Props> = () => {
-  const { data: { me: user } = {} } = useUser();
+  const { user } = useUser();
   const [removeFromCart] = useMutation(REMOVE_FROM_CART);
 
   // TODO: handle logged out

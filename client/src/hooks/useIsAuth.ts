@@ -1,14 +1,17 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { useUser } from "./useUser";
+import { useMeQuery } from "./useUser";
 
 export const useIsAuth = (skip?: boolean) => {
-  const { data, loading } = useUser({ skip });
-  const router = useRouter();
+  const { data, loading } = useMeQuery({ skip });
+  const { replace, pathname, query } = useRouter();
   useEffect(() => {
     if (!skip && !loading && !data?.me) {
-      router.replace(`/login?next=${router.pathname}`);
+      replace({
+        pathname: "/",
+        query: { ...query, modal: "login", next: pathname },
+      });
     }
-  }, [loading, data, router, skip]);
+  }, [loading, data, pathname, query, skip]);
   return { loading };
 };

@@ -9,9 +9,10 @@ import styles from "./Modal.module.scss";
 interface Props {
   name: string;
   wide?: boolean;
+  className?: string;
 }
 
-const Modal: FC<Props> = ({ name, children, wide }) => {
+const Modal: FC<Props> = ({ name, children, wide, className = "" }) => {
   const { query } = useRouter();
   const { closeModal } = useModal();
 
@@ -36,7 +37,7 @@ const Modal: FC<Props> = ({ name, children, wide }) => {
         <Selectable onClick={closeModal} className={styles.close}>
           <FaTimes />
         </Selectable>
-        {children}
+        <div className={className}>{children}</div>
       </div>
     </dialog>
   );

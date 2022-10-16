@@ -74,7 +74,7 @@ const NavButton: FC<{
 };
 
 const NavMenu: FC<Props> = () => {
-  const { refetch, data: { me: user } = {} } = useUser();
+  const { refetch, user } = useUser();
   const [logout] = useMutation(LOGOUT);
   const [open, setOpen] = useState(false);
   const { modalHref } = useModal();
@@ -150,7 +150,7 @@ const NavMenu: FC<Props> = () => {
             onFocus={openMenu}
             onBlur={closeMenu}
             onClick={closeMenu}
-            href="/login"
+            href={modalHref("login")}
           >
             <FaPenNib />
             Login / Sign Up
@@ -162,6 +162,7 @@ const NavMenu: FC<Props> = () => {
               onFocus={openMenu}
               onBlur={closeMenu}
               onClick={() => handleLogout()}
+              className={styles.footerItem}
             >
               <FaArrowCircleRight /> Logout
             </Selectable>

@@ -29,7 +29,7 @@ export class ProductResolver {
     @Arg("active", { nullable: true }) active?: boolean
   ): Promise<Product[]> {
     const where: { isActive?: boolean } = { isActive: true };
-    if (me.isAdmin) {
+    if (me?.isAdmin) {
       if (active === undefined) {
         delete where.isActive;
       } else {
@@ -47,7 +47,7 @@ export class ProductResolver {
     @Arg("active", { nullable: true }) active?: boolean
   ): Promise<Product> {
     const where: { isActive?: boolean; id: string } = { isActive: true, id };
-    if (me.isAdmin) {
+    if (me?.isAdmin) {
       if (active === undefined) {
         delete where.isActive;
       } else {

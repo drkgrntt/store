@@ -26,7 +26,7 @@ const profileReducer = (state: typeof PROFILE_STATE, action: Action) => {
 
 const Profile: FC = () => {
   useIsAuth();
-  const { data: { me: user } = {} } = useUser();
+  const { user } = useUser();
   const [state, dispatch] = useReducer(profileReducer, PROFILE_STATE);
   console.log({ user });
 
