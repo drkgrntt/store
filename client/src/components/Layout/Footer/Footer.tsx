@@ -10,6 +10,7 @@ const Footer: FC<Props> = () => {
         className={styles.link}
         href="https://derekgarnett.com"
         target="_blank"
+        rel="noreferrer"
       >
         Site by Derek Garnett
       </a>
