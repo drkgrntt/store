@@ -8,7 +8,11 @@ const Header: FC<Props> = () => {
     <header
       title="Small-batch colorful and quirky earrings (and a few things in between)"
       className={styles.header}
-    ></header>
+    >
+      <h1 className={styles.title}>
+        Small-batch colorful and quirky earrings (and a few things in between)
+      </h1>
+    </header>
   );
 };
 

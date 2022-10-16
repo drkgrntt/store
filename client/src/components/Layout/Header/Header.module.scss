@@ -1,11 +1,41 @@
 .header {
   height: var(--header-height);
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-image: url("https://res.cloudinary.com/drkgrntt/image/upload/v1665355769/store/isbl_3360x840.52109674_ams88wr0.webp");
+  // background-size: contain;
+  background-image: linear-gradient(
+    to bottom right,
+    var(--primary-color),
+    // var(--secondary-color),
+    var(--secondary-color),
+    // var(--secondary-color),
+    var(--primary-color)
+  );
+  display: flex;
+  align-items: center;
 
   @media (min-width: 1200px) {
+    background-repeat: no-repeat;
+    background-image: url("https://res.cloudinary.com/drkgrntt/image/upload/v1665355769/store/isbl_3360x840.52109674_ams88wr0.webp");
     background-position: center;
     background-size: cover;
+  }
+}
+
+.title {
+  margin: 0 auto;
+  text-align: center;
+  max-width: 90%;
+  color: var(--white);
+  font-size: 2rem;
+  text-shadow: -0.1rem -0.1rem 0 var(--primary-color),
+    0.1rem -0.1rem 0 var(--primary-color), -0.1rem 0.1rem 0 var(--primary-color),
+    0.1rem 0.1rem 0 var(--primary-color);
+
+  @media (min-width: 800px) {
+    font-size: 2.5rem;
+    max-width: 70%;
+  }
+
+  @media (min-width: 1200px) {
+    opacity: 0;
   }
 }
