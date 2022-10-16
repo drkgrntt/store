@@ -13,7 +13,7 @@ interface Props {
 
 const Modal: FC<Props> = ({ name, children, wide }) => {
   const { query } = useRouter();
-  const { closeModal } = useModal(name);
+  const { closeModal } = useModal();
 
   const handleOutsideClick = () => {
     closeModal();
