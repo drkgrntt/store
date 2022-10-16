@@ -120,7 +120,7 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
   const [validation, setValidation] = useState("");
   const { data: { imageUrls } = {}, refetch: refetchImages } = useQuery<{
     imageUrls: string[];
-  }>(IMAGE_URLS);
+  }>(IMAGE_URLS, { skip: !user?.isAdmin });
   const [createProduct] = useMutation(CREATE_PRODUCT);
   const [attachImage] = useMutation(ATTACH_IMAGE);
   const [getImageUploadSignature] = useLazyQuery(IMAGE_UPLOAD_SIGNATURE);
