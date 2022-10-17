@@ -6,3 +6,23 @@
   max-width: 80rem;
   margin: 0 auto;
 }
+
+.imageContainer {
+  position: relative;
+
+  &:hover > .editButton {
+    opacity: 1;
+  }
+}
+
+.editButton {
+  opacity: 0;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10;
+  &,
+  & * {
+    color: var(--green);
+  }
+}

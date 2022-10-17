@@ -1,5 +1,12 @@
 import { gql, useLazyQuery, useMutation, useQuery } from "@apollo/client";
-import { ChangeEvent, FC, FormEvent, useState } from "react";
+import {
+  ChangeEvent,
+  FC,
+  FormEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useForm } from "../../hooks/useForm";
 import Button from "../Button";
 import Input from "../Input";
@@ -7,10 +14,37 @@ import Image from "next/image";
 import styles from "./ProductForm.module.scss";
 import { useUser } from "../../hooks/useUser";
 import { combineClasses } from "../../utils";
+import { useRouter } from "next/router";
+import { Product } from "../../types/Product";
 
 interface Props {
   onSuccess?: () => void;
 }
+
+const PRODUCT = gql`
+  query GetProduct($productId: String!) {
+    product(id: $productId) {
+      id
+      title
+      description
+      price
+      quantity
+      isMadeToOrder
+      isActive
+      createdAt
+      updatedAt
+      images {
+        id
+        url
+        title
+        description
+        primary
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
 
 const CREATE_PRODUCT = gql`
   mutation CreateProduct(
@@ -44,7 +78,7 @@ const CREATE_PRODUCT = gql`
 
 const UPDATE_PRODUCT = gql`
   mutation UpdateProduct(
-    $productId: String!
+    $id: String!
     $isActive: Boolean
     $isMadeToOrder: Boolean
     $quantity: Float
@@ -53,7 +87,7 @@ const UPDATE_PRODUCT = gql`
     $title: String
   ) {
     updateProduct(
-      id: $productId
+      id: $id
       isActive: $isActive
       isMadeToOrder: $isMadeToOrder
       quantity: $quantity
@@ -94,6 +128,12 @@ const ATTACH_IMAGE = gql`
   }
 `;
 
+const DETACH_IMAGE = gql`
+  mutation DetachImage($imageId: String!) {
+    detachImage(id: $imageId)
+  }
+`;
+
 const IMAGE_UPLOAD_SIGNATURE = gql`
   query ImageUploadSignature {
     imageUploadSignature {
@@ -116,15 +156,39 @@ const INITIAL_STATE = {
 
 const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
   const { user } = useUser();
-  const formState = useForm(INITIAL_STATE);
-  const [urls, setUrls] = useState<string[]>([]);
-  const [validation, setValidation] = useState("");
+  const { query } = useRouter();
+
   const { data: { imageUrls } = {}, refetch: refetchImages } = useQuery<{
     imageUrls: string[];
   }>(IMAGE_URLS, { skip: !user?.isAdmin });
+  const { data: { product } = {} } = useQuery<{ product: Product }>(PRODUCT, {
+    variables: { productId: query.id },
+    skip: !query.id || !user?.isAdmin,
+  });
+  const formProduct = useMemo(() => {
+    if (product) {
+      return {
+        ...product,
+        price: product.price / 100,
+      };
+    }
+  }, [product]);
+
   const [createProduct] = useMutation(CREATE_PRODUCT);
+  const [updateProduct] = useMutation(UPDATE_PRODUCT);
   const [attachImage] = useMutation(ATTACH_IMAGE);
+  const [detachImage] = useMutation(DETACH_IMAGE);
   const [getImageUploadSignature] = useLazyQuery(IMAGE_UPLOAD_SIGNATURE);
+
+  const formState = useForm(
+    (formProduct as typeof INITIAL_STATE) ?? INITIAL_STATE
+  );
+  const [urls, setUrls] = useState<string[]>([]);
+  const [validation, setValidation] = useState("");
+
+  useEffect(() => {
+    setUrls(product?.images.map((image) => image.url) ?? []);
+  }, [product]);
 
   if (!user?.isAdmin) return null;
 
@@ -168,41 +232,76 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
     }
   };
 
+  const saveImages = async (productId: string) => {
+    await Promise.all([
+      ...urls.map((url, i) => {
+        if (!product?.images.some((image) => image.url === url)) {
+          attachImage({
+            variables: { url, productId, primary: !i },
+          });
+        }
+      }),
+      ...(product?.images ?? []).map((image) => {
+        if (!urls.some((url) => image.url === url)) {
+          detachImage({ variables: { imageId: image.id } });
+        }
+      }),
+    ]);
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const { title, description, price, quantity, isMadeToOrder, isActive } =
       formState.values;
 
-    createProduct({
-      variables: {
-        title,
-        description,
-        price: price * 100,
-        quantity,
-        isMadeToOrder,
-        isActive,
-      },
-      async onCompleted({ createProduct }) {
-        await Promise.all(
-          urls.map((url, i) =>
-            attachImage({
-              variables: { url, productId: createProduct.id, primary: !i },
-            })
-          )
-        );
-        formState.clear();
-        onSuccess();
-      },
-      onError(error) {
-        setValidation(error.message);
-      },
-    });
+    if (product) {
+      updateProduct({
+        variables: {
+          id: product.id,
+          title,
+          description,
+          price: price * 100,
+          quantity,
+          isMadeToOrder,
+          isActive,
+        },
+        async onCompleted({ updateProduct }) {
+          saveImages(updateProduct.id);
+          formState.clear();
+          onSuccess();
+        },
+        onError(error) {
+          setValidation(error.message);
+        },
+      });
+    } else {
+      createProduct({
+        variables: {
+          title,
+          description,
+          price: price * 100,
+          quantity,
+          isMadeToOrder,
+          isActive,
+        },
+        async onCompleted({ createProduct }) {
+          saveImages(createProduct.id);
+          formState.clear();
+          onSuccess();
+        },
+        onError(error) {
+          setValidation(error.message);
+        },
+      });
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
-      <h2 className={styles.header}>Create a new product</h2>
+      <h2 className={styles.header}>
+        {product ? "Update a product" : "Create a new product"}
+      </h2>
       <Input formState={formState} label="Title" name="title" required />
       <Input
         formState={formState}
@@ -245,7 +344,10 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
         />
       </div>
       <ul className={styles.images}>
-        {imageUrls?.map((url) => {
+        {[
+          ...(product?.images.map((image) => image.url) ?? []),
+          ...(imageUrls ?? []),
+        ].map((url) => {
           const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
             setUrls((prev) => {
               if (event.target.checked) {
