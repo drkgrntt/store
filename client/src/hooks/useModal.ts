@@ -9,10 +9,10 @@ export const useModal = () => {
     const modalQueryParams: ParsedUrlQuery = {
       ...query,
       modal: [],
-      modalParams: [],
+      ["modal-params"]: [],
     };
-    if (query.modalParams) {
-      let params = query.modalParams;
+    if (query["modal-params"]) {
+      let params = query["modal-params"];
       if (!Array.isArray(params)) params = [params];
       params.forEach((param) => (modalQueryParams[param] = []));
     }
@@ -25,7 +25,7 @@ export const useModal = () => {
   ): UrlObject => {
     const modalQueryParams: ParsedUrlQuery = { ...query, modal: name };
     if (additionalParams) {
-      modalQueryParams.modalParams = Object.keys(additionalParams);
+      modalQueryParams["modal-params"] = Object.keys(additionalParams);
       Object.entries(additionalParams).forEach(
         ([key, value]) => (modalQueryParams[key] = value)
       );

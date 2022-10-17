@@ -9,6 +9,7 @@
 
 .imageContainer {
   position: relative;
+  cursor: pointer;
 
   &:hover > .editButton {
     opacity: 1;

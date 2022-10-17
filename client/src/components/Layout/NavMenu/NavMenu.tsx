@@ -39,7 +39,6 @@ const NavLink: FC<{
         onFocus={onFocus}
         onBlur={onBlur}
         onClick={onClick}
-        href="#"
         className={combineClasses(
           styles.link,
           pathname === href ? styles.active : ""
