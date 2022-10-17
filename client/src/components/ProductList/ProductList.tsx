@@ -77,7 +77,7 @@ export const ProductList: FC<Props> = () => {
   return (
     <div className={styles.products}>
       {data?.products.map((product) => (
-        <ProductListItem product={product} />
+        <ProductListItem key={product.id} product={product} />
       ))}
     </div>
   );
@@ -108,7 +108,7 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
   };
 
   return (
-    <div key={product.id}>
+    <div>
       <div className={styles.imageContainer}>
         {product.images.length > 1 && (
           <Selectable
