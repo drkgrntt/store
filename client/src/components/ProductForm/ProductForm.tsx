@@ -160,10 +160,11 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
 
   const { data: { imageUrls } = {}, refetch: refetchImages } = useQuery<{
     imageUrls: string[];
-  }>(IMAGE_URLS, { skip: !user?.isAdmin });
+  }>(IMAGE_URLS, { skip: !user?.isAdmin, fetchPolicy: "cache-and-network" });
   const { data: { product } = {} } = useQuery<{ product: Product }>(PRODUCT, {
     variables: { productId: query.id },
     skip: !query.id || !user?.isAdmin,
+    fetchPolicy: "cache-and-network",
   });
   const formProduct = useMemo(() => {
     if (product) {
@@ -187,7 +188,14 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
   const [validation, setValidation] = useState("");
 
   useEffect(() => {
-    setUrls(product?.images.map((image) => image.url) ?? []);
+    const primary = product?.images.find((image) => image.primary);
+    const productUrls = [
+      ...new Set([
+        primary?.url,
+        ...(product?.images.map((image) => image.url) ?? []),
+      ]),
+    ].filter(Boolean);
+    setUrls(productUrls as string[]);
   }, [product]);
 
   if (!user?.isAdmin) return null;
