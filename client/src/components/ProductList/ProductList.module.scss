@@ -9,10 +9,36 @@
 
 .imageContainer {
   position: relative;
-  cursor: pointer;
 
-  &:hover > .editButton {
-    opacity: 1;
+  &:hover {
+    & > .editButton {
+      opacity: 1;
+    }
+    & > .imageNav {
+      opacity: 1;
+    }
+  }
+}
+
+.imageNav {
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  font-size: 2rem;
+
+  &,
+  & * {
+    color: var(--yellow);
+  }
+
+  &.left {
+    left: 0.3rem;
+  }
+
+  &.right {
+    right: 0.3rem;
   }
 }
 
