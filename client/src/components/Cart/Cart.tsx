@@ -76,11 +76,9 @@ const Cart: FC<Props> = () => {
                   );
                 })}
                 <ul>
-                  {range(item.count).map((i) => {
-                    return (
-                      <li key={i}>+ {priceToCurrency(item.product.price)}</li>
-                    );
-                  })}
+                  {range(item.count).map((i) => (
+                    <li key={i}>+ {priceToCurrency(item.product.price)}</li>
+                  ))}
                 </ul>
               </details>
             </li>

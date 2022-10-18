@@ -146,6 +146,49 @@ export class UserResolver {
 
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
+  async resetPassword(
+    @Ctx() { me }: Context,
+    @Arg("old") oldPassword: string,
+    @Arg("new") newPassword: string
+  ): Promise<boolean> {
+    const correctPassword = await bcrypt.compare(oldPassword, me.password);
+    if (!correctPassword) {
+      throw new Error("Invalid old password");
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 13);
+    me.password = passwordHash;
+    await me.save();
+
+    return true;
+  }
+
+  // @Mutation(() => Boolean)
+  // async forgotPassword(@Arg("email") email: string): Promise<boolean> {
+  //   const user = await User.findOne({ where: { email } });
+  //   if (!user) return true;
+
+  //   const token = await Token.generate(user.id, undefined, 1);
+  //   const subject = "Password Reset";
+  //   const link = `${process.env.APP_BASE_URL}/profile?token=${token.value}`;
+  //   const template = templates.passwordReset;
+  //   const variables = {
+  //     name: user.penName,
+  //     link,
+  //   };
+
+  //   const result = await this.mailer.sendEmail(
+  //     user.email,
+  //     subject,
+  //     template,
+  //     variables
+  //   );
+
+  //   return result;
+  // }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
   async logout(@Ctx() { token, res }: Context): Promise<boolean> {
     const value = Token.unsign(token);
     const result = await Token.destroy({ where: { value } });
