@@ -4,6 +4,7 @@ import AddressList from "../../AddressList";
 import OrderList from "../../OrderList";
 import { useIsAuth } from "../../../hooks/useIsAuth";
 import { useUser } from "../../../hooks/useUser";
+import PasswordReset from "../../PasswordReset";
 
 const PROFILE_STATE = {
   addressId: "",
@@ -34,6 +35,7 @@ const Profile: FC = () => {
 
   return (
     <div>
+      <PasswordReset />
       <OrderList orders={user.orders} />
       <AddressList
         addresses={user.addresses}
