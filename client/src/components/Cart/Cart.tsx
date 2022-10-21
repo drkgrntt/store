@@ -1,17 +1,22 @@
 import Image from "next/image";
 import { FC, MouseEvent } from "react";
 import { useCart } from "../../hooks/useCart";
+import { useModal } from "../../hooks/useModal";
 import { priceToCurrency, range } from "../../utils";
+import Button from "../Button";
 import Selectable from "../Selectable";
 
-interface Props {}
+interface Props {
+  isCheckout?: boolean;
+}
 
-const Cart: FC<Props> = () => {
+const Cart: FC<Props> = ({ isCheckout }) => {
   const { cart, removeFromCart, totalCost } = useCart();
+  const { openModal } = useModal();
 
   return (
     <div>
-      <h2>Cart</h2>
+      {!isCheckout && <h2>Cart</h2>}
       <ul>
         {cart.map((item) => {
           const handleItemClick = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -51,6 +56,9 @@ const Cart: FC<Props> = () => {
         })}
         Total: {priceToCurrency(totalCost)}
       </ul>
+      {!isCheckout && (
+        <Button onClick={() => openModal("checkout")}>Checkout</Button>
+      )}
     </div>
   );
 };

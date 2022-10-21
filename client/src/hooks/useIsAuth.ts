@@ -4,14 +4,20 @@ import { useMeQuery } from "./useUser";
 
 export const useIsAuth = (skip?: boolean) => {
   const { data, loading } = useMeQuery({ skip });
-  const { replace, pathname, query } = useRouter();
+  const { replace, asPath, query } = useRouter();
+
   useEffect(() => {
     if (!skip && !loading && !data?.me) {
       replace({
         pathname: "/",
-        query: { ...query, modal: "login", next: pathname },
+        query: {
+          ...query,
+          modal: "login",
+          next: asPath,
+          ["modal-params"]: ["next"],
+        },
       });
     }
-  }, [loading, data, pathname, query, skip]);
+  }, [loading, data, asPath, query, skip]);
   return { loading };
 };

@@ -10,6 +10,7 @@ import { useModal } from "../../hooks/useModal";
 import Cart from "../Cart";
 import LoginForm from "../LoginForm";
 import RegisterForm from "../RegisterForm";
+import Checkout from "../Checkout";
 
 const Layout: FC = ({ children }) => {
   const { closeModal } = useModal();
@@ -34,6 +35,10 @@ const Layout: FC = ({ children }) => {
 
       <Modal name="cart">
         <Cart />
+      </Modal>
+
+      <Modal name="checkout">
+        <Checkout />
       </Modal>
 
       <Modal className={styles.loginContainer} name="login">

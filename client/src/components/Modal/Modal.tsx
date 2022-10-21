@@ -37,7 +37,7 @@ const Modal: FC<Props> = ({ name, children, wide, className = "" }) => {
         <Selectable onClick={closeModal} className={styles.close}>
           <FaTimes />
         </Selectable>
-        <div className={className}>{children}</div>
+        <div className={className}>{query.modal === name && children}</div>
       </div>
     </dialog>
   );

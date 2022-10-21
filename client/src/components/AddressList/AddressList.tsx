@@ -1,6 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import { FC } from "react";
 import { FaPen, FaTrash } from "react-icons/fa";
+import { useAddresses } from "../../hooks/useAddresses";
 import { Address } from "../../types/Address";
 import { ucFirst } from "../../utils";
 import Selectable from "../Selectable";
@@ -24,18 +25,15 @@ const AddressList: FC<Props> = ({
   onEditClick = () => null,
 }) => {
   const [deleteAddress] = useMutation(DELETE_ADDRESS);
+  const { addressToString } = useAddresses();
 
   const handleDeleteClick = (id: string) => {
     const address = addresses.find((a) => a.id === id);
-    const addressString = `${address?.lineOne}${
-      address?.lineTwo ? " " + address.lineTwo : ""
-    }, ${address?.city}, ${address?.state} ${address?.zipCode}, ${
-      address?.country
-    }`;
-    const confirm = window.confirm(
-      `Are you sure you want to delete ${addressString}?`
-    );
+    if (!address) return;
 
+    const confirm = window.confirm(
+      `Are you sure you want to delete ${addressToString(address)}?`
+    );
     if (!confirm) return;
 
     deleteAddress({ variables: { id } });
