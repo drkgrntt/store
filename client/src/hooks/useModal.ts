@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
+import { useEffect } from "react";
 import { UrlObject } from "url";
 
 export const useModal = () => {
@@ -38,6 +39,14 @@ export const useModal = () => {
   const openModal = (name: string, additionalParams?: ParsedUrlQuery) => {
     push(modalHref(name, additionalParams));
   };
+
+  useEffect(() => {
+    const cb = (event: KeyboardEvent) => {
+      if (query.modal && event.key === "Escape") closeModal();
+    };
+    window.addEventListener("keydown", cb);
+    return () => window.removeEventListener("keydown", cb);
+  }, []);
 
   return { closeModal, openModal, modalHref };
 };

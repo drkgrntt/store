@@ -11,6 +11,8 @@ import { FaChevronLeft, FaChevronRight, FaPen } from "react-icons/fa";
 import Link from "next/link";
 import { useModal } from "../../hooks/useModal";
 import { useCart } from "../../hooks/useCart";
+import Modal from "../Modal";
+import { useRouter } from "next/router";
 
 interface Props {}
 
@@ -43,6 +45,7 @@ export const ProductList: FC<Props> = () => {
   const { data, loading } = useQuery<{ products: Product[] }>(PRODUCTS, {
     fetchPolicy: "cache-and-network",
   });
+  const { query } = useRouter();
 
   if (loading) return <Loader />;
 
@@ -56,11 +59,22 @@ export const ProductList: FC<Props> = () => {
   // ]
 
   return (
-    <div className={styles.products}>
-      {data?.products.map((product) => (
-        <ProductListItem key={product.id} product={product} />
-      ))}
-    </div>
+    <>
+      <div className={styles.products}>
+        {data?.products.map((product) => (
+          <ProductListItem key={product.id} product={product} />
+        ))}
+      </div>
+      <Modal name="image" wide>
+        <Image
+          src={query.src as string}
+          alt={query.alt as string}
+          height={600}
+          width={1200}
+          objectFit="scale-down"
+        />
+      </Modal>
+    </>
   );
 };
 
@@ -106,16 +120,27 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
           </Link>
         )}
         {product.images[selectedImageIndex] && (
-          <Image
-            alt={
-              product.images[selectedImageIndex].title ??
-              `The selected image of ${product.title}`
-            }
-            width={200}
-            height={200}
-            src={product.images[selectedImageIndex].url}
-            objectFit="contain"
-          />
+          <Link
+            href={modalHref("image", {
+              alt:
+                product.images[selectedImageIndex].title ??
+                `The selected image of ${product.title}`,
+              src: product.images[selectedImageIndex].url,
+            })}
+          >
+            <a>
+              <Image
+                alt={
+                  product.images[selectedImageIndex].title ??
+                  `The selected image of ${product.title}`
+                }
+                width={200}
+                height={200}
+                src={product.images[selectedImageIndex].url}
+                objectFit="contain"
+              />
+            </a>
+          </Link>
         )}
         {product.images.length > 1 && (
           <Selectable

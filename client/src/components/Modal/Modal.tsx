@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { FC, MouseEvent } from "react";
 import { FaTimes } from "react-icons/fa";
 import { useModal } from "../../hooks/useModal";
