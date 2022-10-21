@@ -11,7 +11,7 @@ declare namespace NodeJS {
     CLOUDINARY_API_SECRET: string;
     // APP_BASE_URL: string;
     // API_BASE_URL: string;
-    // STRIPE_SECRET_KEY: string;
+    STRIPE_SECRET_KEY: string;
   }
 }
 

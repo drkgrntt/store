@@ -19,6 +19,7 @@ import {
 import { isAuth } from "../middleware/isAuth";
 import { Context } from "../types";
 import { isAdmin } from "../middleware/isAdmin";
+import Stripe from "stripe";
 
 @Resolver(OrderProduct)
 export class OrderedProductResolver {
@@ -112,11 +113,54 @@ export class OrderResolver {
     return order;
   }
 
+  @Query(() => String, { nullable: true })
+  @UseMiddleware(isAuth)
+  async clientSecret(
+    @Arg("totalCost") amount: number,
+    @Arg("clientSecret", { nullable: true }) clientSecret?: string
+  ) {
+    const config: Stripe.StripeConfig = { apiVersion: "2022-08-01" };
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, config);
+
+    let paymentIntent;
+
+    if (clientSecret) {
+      const [paymentIntentId] = clientSecret.split("_secret");
+      paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      if (paymentIntent?.status !== "succeeded") {
+        paymentIntent = await stripe.paymentIntents.update(paymentIntentId, {
+          amount,
+        });
+      }
+    } else {
+      paymentIntent = await stripe.paymentIntents.create({
+        amount,
+        currency: "usd",
+        automatic_payment_methods: { enabled: true },
+      });
+    }
+
+    return paymentIntent.client_secret;
+  }
+
+  @Query(() => Boolean)
+  @UseMiddleware(isAuth)
+  async paymentSucceeded(@Arg("clientSecret") clientSecret: string) {
+    const config: Stripe.StripeConfig = { apiVersion: "2022-08-01" };
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, config);
+
+    const [paymentIntentId] = clientSecret.split("_secret");
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+    return paymentIntent?.status === "succeeded";
+  }
+
   @Mutation(() => Order)
   @UseMiddleware(isAuth)
   async placeOrder(
     @Ctx() { me, sequelize }: Context,
-    @Arg("addressId") addressId: string
+    @Arg("addressId") addressId: string,
+    @Arg("dryRun", { nullable: true }) dryRun?: boolean
   ): Promise<Order> {
     const transaction = await sequelize.transaction();
 
@@ -162,7 +206,11 @@ export class OrderResolver {
       );
       order.orderedProducts = orderedProducts;
 
-      await transaction.commit();
+      if (dryRun) {
+        await transaction.rollback();
+      } else {
+        await transaction.commit();
+      }
 
       return order;
     } catch (err) {
