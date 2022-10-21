@@ -10,6 +10,7 @@ import styles from "./ProductList.module.scss";
 import { FaChevronLeft, FaChevronRight, FaPen } from "react-icons/fa";
 import Link from "next/link";
 import { useModal } from "../../hooks/useModal";
+import { useCart } from "../../hooks/useCart";
 
 interface Props {}
 
@@ -31,26 +32,6 @@ const PRODUCTS = gql`
         title
         description
         primary
-        createdAt
-        updatedAt
-      }
-    }
-  }
-`;
-
-const ADD_TO_CART = gql`
-  mutation AddToCart($productId: String!) {
-    addToCart(productId: $productId) {
-      id
-      count
-      product {
-        id
-        title
-        description
-        price
-        quantity
-        isMadeToOrder
-        isActive
         createdAt
         updatedAt
       }
@@ -85,8 +66,8 @@ export const ProductList: FC<Props> = () => {
 
 const ProductListItem: FC<{ product: Product }> = ({ product }) => {
   const { user } = useUser();
-  const [addToCart] = useMutation(ADD_TO_CART);
   const { modalHref } = useModal();
+  const { addToCart } = useCart();
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(
     product.images.findIndex((i) => i.primary) > -1
@@ -98,13 +79,9 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
     user?.cart.find((item) => item.product.id === product.id)?.count ?? 0;
 
   const addProductToCart = () => {
-    if (user) {
-      addToCart({
-        variables: { productId: product.id },
-      });
-    } else {
-      // TODO: handle logged out
-    }
+    addToCart({
+      variables: { productId: product.id },
+    });
   };
 
   return (

@@ -1,38 +1,15 @@
 import { gql, useMutation } from "@apollo/client";
 import Image from "next/image";
 import { FC, MouseEvent } from "react";
+import { useCart } from "../../hooks/useCart";
 import { useUser } from "../../hooks/useUser";
 import { priceToCurrency, range } from "../../utils";
 import Selectable from "../Selectable";
 
 interface Props {}
 
-const REMOVE_FROM_CART = gql`
-  mutation RemoveFromCart($productId: String!) {
-    removeFromCart(productId: $productId) {
-      id
-      count
-      product {
-        id
-        title
-        description
-        price
-        quantity
-        isMadeToOrder
-        isActive
-        createdAt
-        updatedAt
-      }
-    }
-  }
-`;
-
 const Cart: FC<Props> = () => {
-  const { user } = useUser();
-  const [removeFromCart] = useMutation(REMOVE_FROM_CART);
-
-  // TODO: handle logged out
-  const cart = user?.cart ?? [];
+  const { cart, removeFromCart } = useCart();
 
   const total = cart.reduce(
     (total, item) => total + item.product.price * item.count,
@@ -46,12 +23,7 @@ const Cart: FC<Props> = () => {
         {cart.map((item) => {
           const handleItemClick = (event: MouseEvent<HTMLAnchorElement>) => {
             event.stopPropagation();
-
-            if (user) {
-              removeFromCart({ variables: { productId: item.product.id } });
-            } else {
-              // TODO: handle logged out
-            }
+            removeFromCart({ variables: { productId: item.product.id } });
           };
 
           return (
