@@ -76,6 +76,24 @@
   }
 }
 
+.cartWrapper {
+  position: fixed;
+  top: 1.2rem;
+  right: 4rem;
+}
+
+.cartLink {
+  font-size: 1.3rem;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+
+  &,
+  & * {
+    color: var(--primary-color);
+  }
+}
+
 .nav {
   z-index: 10;
   display: flex;

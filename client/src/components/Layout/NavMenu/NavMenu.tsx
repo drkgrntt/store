@@ -16,6 +16,7 @@ import styles from "./NavMenu.module.scss";
 import { UrlObject } from "url";
 import { useModal } from "../../../hooks/useModal";
 import Selectable from "../../Selectable";
+import { useCart } from "../../../hooks/useCart";
 
 interface Props {}
 
@@ -77,6 +78,7 @@ const NavMenu: FC<Props> = () => {
   const [logout] = useMutation(LOGOUT);
   const [open, setOpen] = useState(false);
   const { modalHref } = useModal();
+  const { totalQuantity } = useCart();
 
   const closeMenu = () => setOpen(false);
   const openMenu = () => setOpen(true);
@@ -93,6 +95,14 @@ const NavMenu: FC<Props> = () => {
 
   return (
     <>
+      <div className={styles.cartWrapper}>
+        <Link href={modalHref("cart")}>
+          <a className={styles.cartLink}>
+            <FaShoppingCart /> ({totalQuantity})
+          </a>
+        </Link>
+      </div>
+
       <input
         checked={open}
         onChange={toggleMenu}

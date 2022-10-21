@@ -130,6 +130,8 @@ export const useCart = () => {
     0
   );
 
+  const totalQuantity = cart.reduce((total, item) => total + item.count, 0);
+
   const clearLsCart = () => {
     localStorage.setItem("cart", "[]");
     rerender();
@@ -159,6 +161,7 @@ export const useCart = () => {
     removeFromCart,
     quantityInCart,
     totalCost,
+    totalQuantity,
     uCart,
     lsCart,
     addLsCartToUCart,
