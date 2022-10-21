@@ -92,9 +92,7 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
   const availableQuantity = product.quantity - quantityInCart(product.id);
 
   const addProductToCart = () => {
-    addToCart({
-      variables: { productId: product.id },
-    });
+    addToCart(product);
   };
 
   return (

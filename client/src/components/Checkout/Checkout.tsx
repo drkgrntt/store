@@ -142,8 +142,6 @@ const Checkout: FC<Props> = () => {
             clientSecret,
             appearance: {
               variables: {
-                colorPrimary: "var(--primary-color)",
-                colorText: "var(--black)",
                 fontFamily: "Montserrat, sans-serif",
               },
             },
@@ -183,6 +181,8 @@ const CheckoutFormWithStripe: FC<{
   });
 
   useEffect(() => {
+    if (!query.payment_intent_client_secret) return;
+
     if (!paymentSucceeded && called && !loading) {
       push({ query: { ...query, payment_intent_client_secret: [] } });
       return;

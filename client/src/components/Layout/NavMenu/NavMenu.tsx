@@ -115,6 +115,14 @@ const NavMenu: FC<Props> = () => {
         >
           <FaStore /> Shop
         </NavLink>
+        <NavLink
+          onFocus={openMenu}
+          onBlur={closeMenu}
+          onClick={closeMenu}
+          href={modalHref("cart")}
+        >
+          <FaShoppingCart /> Cart
+        </NavLink>
         {user ? (
           <>
             <NavLink
@@ -124,14 +132,6 @@ const NavMenu: FC<Props> = () => {
               href="/profile"
             >
               <FaUser /> Profile
-            </NavLink>
-            <NavLink
-              onFocus={openMenu}
-              onBlur={closeMenu}
-              onClick={closeMenu}
-              href={modalHref("cart")}
-            >
-              <FaShoppingCart /> Cart
             </NavLink>
             {user.isAdmin && (
               <NavLink
