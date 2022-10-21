@@ -102,7 +102,7 @@ const NavMenu: FC<Props> = () => {
       />
       <div className={styles.toggleButtonBorder}>
         <label className={styles.toggleButton} htmlFor="nav-toggle">
-          <span></span>
+          <span />
         </label>
       </div>
 

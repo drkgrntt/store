@@ -27,8 +27,16 @@ const INITIAL_STATE = {
 };
 
 const PLACE_ORDER = gql`
-  mutation PlaceOrder($addressId: String!, $dryRun: Boolean) {
-    placeOrder(addressId: $addressId, dryRun: $dryRun) {
+  mutation PlaceOrder(
+    $addressId: String!
+    $clientSecret: String!
+    $dryRun: Boolean
+  ) {
+    placeOrder(
+      addressId: $addressId
+      clientSecret: $clientSecret
+      dryRun: $dryRun
+    ) {
       id
       userId
       addressId
@@ -142,6 +150,7 @@ const Checkout: FC<Props> = () => {
           }}
         >
           <CheckoutFormWithStripe
+            clientSecret={clientSecretRef.current as string}
             showAddressForm={() => setShowAddressForm(true)}
           />
         </Elements>
@@ -152,9 +161,10 @@ const Checkout: FC<Props> = () => {
   );
 };
 
-const CheckoutFormWithStripe: FC<{ showAddressForm: () => void }> = ({
-  showAddressForm,
-}) => {
+const CheckoutFormWithStripe: FC<{
+  showAddressForm: () => void;
+  clientSecret: string;
+}> = ({ showAddressForm, clientSecret }) => {
   const stripe = useStripe();
   const elements = useElements();
   const formState = useForm(INITIAL_STATE);
@@ -163,16 +173,26 @@ const CheckoutFormWithStripe: FC<{ showAddressForm: () => void }> = ({
   const { shippingAddresses, addressToString } = useAddresses();
   const [validation, setValidation] = useState("");
 
-  const { data: { paymentSucceeded } = {} } = useQuery(PAYMENT_SUCCEEDED, {
+  const {
+    data: { paymentSucceeded } = {},
+    called,
+    loading,
+  } = useQuery(PAYMENT_SUCCEEDED, {
     variables: { clientSecret: query.payment_intent_client_secret },
     skip: !query.payment_intent_client_secret,
   });
 
   useEffect(() => {
-    if (!paymentSucceeded) return;
+    if (!paymentSucceeded && called && !loading) {
+      push({ query: { ...query, payment_intent_client_secret: [] } });
+      return;
+    }
 
     placeOrder({
-      variables: { addressId: query["address-id"] },
+      variables: {
+        addressId: query["address-id"],
+        clientSecret,
+      },
       onCompleted() {
         window.alert("Thank you! Your order has been placed.");
         setValidation("");
@@ -193,7 +213,11 @@ const CheckoutFormWithStripe: FC<{ showAddressForm: () => void }> = ({
     }
 
     placeOrder({
-      variables: { addressId: formState.values.addressId, dryRun: true },
+      variables: {
+        addressId: formState.values.addressId,
+        clientSecret,
+        dryRun: true,
+      },
       async onCompleted() {
         setValidation("");
         const result = await stripe.confirmPayment({
