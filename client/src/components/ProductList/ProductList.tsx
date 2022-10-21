@@ -107,6 +107,10 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
         )}
         {product.images[selectedImageIndex] && (
           <Image
+            alt={
+              product.images[selectedImageIndex].title ??
+              `The selected image of ${product.title}`
+            }
             width={200}
             height={200}
             src={product.images[selectedImageIndex].url}

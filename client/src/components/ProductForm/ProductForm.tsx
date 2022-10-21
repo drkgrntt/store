@@ -383,6 +383,7 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
                   key={url}
                 >
                   <Image
+                    alt="An image from the store folder of your Cloudinary account."
                     src={url}
                     height={120}
                     width={120}
