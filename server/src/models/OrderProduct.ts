@@ -88,7 +88,7 @@ export class OrderProduct extends Model {
       throw new Error("This product is inactive.");
     }
 
-    if (product?.isMadeToOrder && product.quantity < instance.count) {
+    if (!product?.isMadeToOrder && product.quantity < instance.count) {
       throw new Error(
         "You cannot order more than what is available unless it can be made to order."
       );
