@@ -42,9 +42,11 @@ const REMOVE_FROM_CART = gql`
 `;
 
 export const useCart = () => {
-  const [addToCart] = useMutation(ADD_TO_CART);
-  const [removeFromCart] = useMutation(REMOVE_FROM_CART);
-  const { user } = useUser();
+  const { user, refetch } = useUser();
+  const [addToCart] = useMutation(ADD_TO_CART, { onCompleted: refetch });
+  const [removeFromCart] = useMutation(REMOVE_FROM_CART, {
+    onCompleted: refetch,
+  });
   const cart = user?.cart ?? [];
 
   // TODO: handle logged out here
@@ -52,5 +54,10 @@ export const useCart = () => {
   const quantityInCart = (productId: string) =>
     cart.find((item) => item.product.id === productId)?.count ?? 0;
 
-  return { cart, addToCart, removeFromCart, quantityInCart };
+  const totalCost = cart.reduce(
+    (total, item) => total + item.product.price * item.count,
+    0
+  );
+
+  return { cart, addToCart, removeFromCart, quantityInCart, totalCost };
 };

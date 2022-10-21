@@ -1,20 +1,13 @@
-import { gql, useMutation } from "@apollo/client";
 import Image from "next/image";
 import { FC, MouseEvent } from "react";
 import { useCart } from "../../hooks/useCart";
-import { useUser } from "../../hooks/useUser";
 import { priceToCurrency, range } from "../../utils";
 import Selectable from "../Selectable";
 
 interface Props {}
 
 const Cart: FC<Props> = () => {
-  const { cart, removeFromCart } = useCart();
-
-  const total = cart.reduce(
-    (total, item) => total + item.product.price * item.count,
-    0
-  );
+  const { cart, removeFromCart, totalCost } = useCart();
 
   return (
     <div>
@@ -56,7 +49,7 @@ const Cart: FC<Props> = () => {
             </li>
           );
         })}
-        Total: {priceToCurrency(total)}
+        Total: {priceToCurrency(totalCost)}
       </ul>
     </div>
   );

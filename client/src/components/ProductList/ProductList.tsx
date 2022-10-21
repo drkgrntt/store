@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import Image from "next/image";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { Product } from "../../types/Product";
 import Loader from "../Loader";
 import { combineClasses, priceToCurrency } from "../../utils";
@@ -67,7 +67,7 @@ export const ProductList: FC<Props> = () => {
 const ProductListItem: FC<{ product: Product }> = ({ product }) => {
   const { user } = useUser();
   const { modalHref } = useModal();
-  const { addToCart } = useCart();
+  const { addToCart, quantityInCart } = useCart();
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(
     product.images.findIndex((i) => i.primary) > -1
@@ -75,8 +75,7 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
       : 0
   );
 
-  const quantityInCart =
-    user?.cart.find((item) => item.product.id === product.id)?.count ?? 0;
+  const availableQuantity = product.quantity - quantityInCart(product.id);
 
   const addProductToCart = () => {
     addToCart({
@@ -130,14 +129,9 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
       <h3>{product.title}</h3>
       <p>{product.description}</p>
       <p>{priceToCurrency(product.price)}</p>
-      <p>
-        {product.quantity - quantityInCart < 0
-          ? 0
-          : product.quantity - quantityInCart}{" "}
-        available
-      </p>
+      <p>{availableQuantity < 0 ? 0 : availableQuantity} available</p>
       {product.isMadeToOrder && <p>Made to order</p>}
-      {(product.quantity - quantityInCart > 0 || product.isMadeToOrder) && (
+      {(availableQuantity > 0 || product.isMadeToOrder) && (
         <Selectable onClick={addProductToCart}>Add to cart</Selectable>
       )}
     </div>
