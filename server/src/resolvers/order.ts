@@ -150,8 +150,11 @@ export class OrderResolver {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, config);
 
     const [paymentIntentId] = clientSecret.split("_secret");
-    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
+    const existingOrder = await Order.findOne({ where: { paymentIntentId } });
+    if (existingOrder) false;
+
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
     return paymentIntent?.status === "succeeded";
   }
 
@@ -160,13 +163,16 @@ export class OrderResolver {
   async placeOrder(
     @Ctx() { me, sequelize }: Context,
     @Arg("addressId") addressId: string,
+    @Arg("clientSecret") clientSecret: string,
     @Arg("dryRun", { nullable: true }) dryRun?: boolean
   ): Promise<Order> {
     const transaction = await sequelize.transaction();
 
     try {
+      const [paymentIntentId] = clientSecret.split("_secret");
+
       const order = await Order.create(
-        { addressId, userId: me.id },
+        { addressId, userId: me.id, paymentIntentId },
         { transaction }
       );
 
@@ -224,13 +230,15 @@ export class OrderResolver {
   async updateOrder(
     @Arg("id") id: string,
     @Arg("isShipped", { nullable: true }) isShipped?: boolean,
-    @Arg("isComplete", { nullable: true }) isComplete?: boolean
+    @Arg("isComplete", { nullable: true }) isComplete?: boolean,
+    @Arg("trackingNumber", { nullable: true }) trackingNumber?: string
   ): Promise<Order> {
     const order = await Order.findOne({ where: { id } });
     if (!order) throw new Error("Invalid id");
 
     if (isShipped !== undefined) order.isShipped = isShipped;
     if (isComplete !== undefined) order.isComplete = isComplete;
+    if (trackingNumber !== undefined) order.trackingNumber = trackingNumber;
 
     await order.save();
 

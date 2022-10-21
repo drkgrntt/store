@@ -71,6 +71,14 @@ export class Order extends Model {
   isComplete: boolean;
 
   @Field()
+  @Column
+  trackingNumber: string;
+
+  @Field()
+  @Column
+  paymentIntentId: string;
+
+  @Field()
   createdAt: Date;
 
   @Field()
