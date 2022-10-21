@@ -202,7 +202,7 @@ const CheckoutFormWithStripe: FC<{
         setValidation(error.message);
       },
     });
-  }, [paymentSucceeded]);
+  }, [paymentSucceeded, query, called, loading, clientSecret]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
