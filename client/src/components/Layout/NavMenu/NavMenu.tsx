@@ -157,14 +157,17 @@ const NavMenu: FC<Props> = () => {
         )}
         <footer className={styles.footer}>
           {user && (
-            <Selectable
-              onFocus={openMenu}
-              onBlur={closeMenu}
-              onClick={() => handleLogout()}
-              className={styles.footerItem}
-            >
-              <FaArrowCircleRight /> Logout
-            </Selectable>
+            <>
+              <p className={styles.userInfo}>Logged in as {user.email}</p>
+              <Selectable
+                onFocus={openMenu}
+                onBlur={closeMenu}
+                onClick={() => handleLogout()}
+                className={styles.footerItem}
+              >
+                <FaArrowCircleRight /> Logout
+              </Selectable>
+            </>
           )}
         </footer>
       </nav>
