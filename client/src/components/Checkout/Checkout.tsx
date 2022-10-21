@@ -1,6 +1,6 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
-import { FC, FormEvent, useState } from "react";
+import { FC, FormEvent, useEffect, useRef, useState } from "react";
 import { useAddresses } from "../../hooks/useAddresses";
 import { useForm } from "../../hooks/useForm";
 import { useIsAuth } from "../../hooks/useIsAuth";
@@ -10,6 +10,15 @@ import Button from "../Button";
 import Cart from "../Cart";
 import Input from "../Input";
 import Selectable from "../Selectable";
+import {
+  Elements,
+  PaymentElement,
+  useElements,
+  useStripe,
+} from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { useCart } from "../../hooks/useCart";
+import Loader from "../Loader";
 
 interface Props {}
 
@@ -18,8 +27,8 @@ const INITIAL_STATE = {
 };
 
 const PLACE_ORDER = gql`
-  mutation PlaceOrder($addressId: String!) {
-    placeOrder(addressId: $addressId) {
+  mutation PlaceOrder($addressId: String!, $dryRun: Boolean) {
+    placeOrder(addressId: $addressId, dryRun: $dryRun) {
       id
       userId
       addressId
@@ -73,30 +82,36 @@ const PLACE_ORDER = gql`
   }
 `;
 
+const CLIENT_SECRET = gql`
+  query ClientSecret($totalCost: Float!, $clientSecret: String) {
+    clientSecret(totalCost: $totalCost, clientSecret: $clientSecret)
+  }
+`;
+
+const PAYMENT_SUCCEEDED = gql`
+  query PaymentSucceeded($clientSecret: String!) {
+    paymentSucceeded(clientSecret: $clientSecret)
+  }
+`;
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY as string);
+
 const Checkout: FC<Props> = () => {
   useIsAuth();
-  const { refetch } = useUser();
-  const [validation, setValidation] = useState("");
+  const { refetch, user } = useUser();
   const [showAddressForm, setShowAddressForm] = useState(false);
-  const { shippingAddresses, addressToString } = useAddresses();
-  const formState = useForm(INITIAL_STATE);
-  const [placeOrder] = useMutation(PLACE_ORDER);
-  const { push } = useRouter();
+  const { totalCost } = useCart();
+  const { query } = useRouter();
+  const clientSecretRef = useRef(query.payment_intent_client_secret);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    placeOrder({
-      variables: { addressId: formState.values.addressId },
-      onCompleted() {
-        window.alert("Thank you! Your order has been placed.");
-        setValidation("");
-        push("/");
-      },
-      onError(error) {
-        setValidation(error.message);
-      },
-    });
-  };
+  const { data: { clientSecret } = {} } = useQuery(CLIENT_SECRET, {
+    variables: { totalCost, clientSecret: clientSecretRef.current },
+    skip: !user || !totalCost,
+  });
+
+  useEffect(() => {
+    if (clientSecret) clientSecretRef.current = clientSecret;
+  }, [clientSecret]);
 
   return (
     <div>
@@ -112,6 +127,113 @@ const Checkout: FC<Props> = () => {
         />
       )}
 
+      {clientSecret ? (
+        <Elements
+          stripe={stripePromise}
+          options={{
+            clientSecret,
+            appearance: {
+              variables: {
+                colorPrimary: "var(--primary-color)",
+                colorText: "var(--black)",
+                fontFamily: "Montserrat, sans-serif",
+              },
+            },
+          }}
+        >
+          <CheckoutFormWithStripe
+            showAddressForm={() => setShowAddressForm(true)}
+          />
+        </Elements>
+      ) : (
+        <Loader />
+      )}
+    </div>
+  );
+};
+
+const CheckoutFormWithStripe: FC<{ showAddressForm: () => void }> = ({
+  showAddressForm,
+}) => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const formState = useForm(INITIAL_STATE);
+  const [placeOrder] = useMutation(PLACE_ORDER);
+  const { asPath, push, query } = useRouter();
+  const { shippingAddresses, addressToString } = useAddresses();
+  const [validation, setValidation] = useState("");
+
+  const { data: { paymentSucceeded } = {} } = useQuery(PAYMENT_SUCCEEDED, {
+    variables: { clientSecret: query.payment_intent_client_secret },
+    skip: !query.payment_intent_client_secret,
+  });
+
+  useEffect(() => {
+    if (!paymentSucceeded) return;
+
+    placeOrder({
+      variables: { addressId: query["address-id"] },
+      onCompleted() {
+        window.alert("Thank you! Your order has been placed.");
+        setValidation("");
+        push("/");
+      },
+      onError(error) {
+        setValidation(error.message);
+      },
+    });
+  }, [paymentSucceeded]);
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!stripe || !elements) {
+      setValidation("We are having issues. Please try again later.");
+      return;
+    }
+
+    placeOrder({
+      variables: { addressId: formState.values.addressId, dryRun: true },
+      async onCompleted() {
+        setValidation("");
+        const result = await stripe.confirmPayment({
+          elements,
+          confirmParams: {
+            return_url:
+              process.env.NEXT_PUBLIC_APP_URL +
+              asPath +
+              `&address-id=${formState.values.addressId}`,
+          },
+        });
+
+        if (result.error) {
+          // Show error to your customer (for example, payment details incomplete)
+          setValidation(
+            result.error.message ??
+              "We are having issues. Please try again later."
+          );
+        } else {
+          // placeOrder({
+          //   variables: { addressId: formState.values.addressId },
+          //   onCompleted() {
+          //     window.alert("Thank you! Your order has been placed.");
+          //     setValidation("");
+          //     push("/");
+          //   },
+          //   onError(error) {
+          //     setValidation(error.message);
+          //   },
+          // });
+        }
+      },
+      onError(error) {
+        setValidation(error.message);
+      },
+    });
+  };
+
+  return (
+    <>
       <form onSubmit={handleSubmit}>
         <Input
           type="select"
@@ -124,19 +246,17 @@ const Checkout: FC<Props> = () => {
           required
           formState={formState}
         />
-        <Selectable onClick={() => setShowAddressForm(true)}>
-          New address
-        </Selectable>
-
-        <p>TODO: card form</p>
-
+        <Selectable onClick={showAddressForm}>New address</Selectable>
+        <PaymentElement />
         <p>{validation}</p>
-
-        <Button disabled={!formState.isValid} type="submit">
+        <Button
+          disabled={!formState.isValid || !stripe || !elements}
+          type="submit"
+        >
           Place order!
-        </Button>
+        </Button>{" "}
       </form>
-    </div>
+    </>
   );
 };
 
