@@ -42,7 +42,7 @@ export const notificationContext = createContext<NotificationContext>({
 const NotificationProvider: FC = ({ children }) => {
   const notificationPermissionRef = useRef<NotificationPermission>();
   const [notifications, setNotifications] = useState<
-    (ToastNotification | null)[]
+    (ToastNotification | undefined)[]
   >([]);
 
   useEffect(() => {
@@ -92,7 +92,7 @@ const NotificationProvider: FC = ({ children }) => {
       icon,
       type: "toast",
     };
-    setNotifications((prev) => [...prev, null, notification]);
+    setNotifications((prev) => [...prev, undefined, notification]);
   };
 
   const createErrorNotification = ({
@@ -106,7 +106,7 @@ const NotificationProvider: FC = ({ children }) => {
       icon,
       type: "error",
     };
-    setNotifications((prev) => [...prev, null, notification]);
+    setNotifications((prev) => [...prev, undefined, notification]);
   };
 
   return (
