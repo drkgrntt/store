@@ -11,8 +11,10 @@ import {
   BelongsToMany,
 } from "sequelize-typescript";
 import { Field, ObjectType } from "type-graphql";
+import { Category } from "./Category";
 import { Order } from "./Order";
 import { OrderProduct } from "./OrderProduct";
+import { ProductCategory } from "./ProductCategory";
 import { ProductImage } from "./ProductImage";
 import { User } from "./User";
 import { UserProduct } from "./UserProduct";
@@ -73,6 +75,16 @@ export class Product extends Model {
     through: { model: () => UserProduct, unique: false },
   })
   users: User[];
+
+  @HasMany(() => ProductCategory, {
+    onDelete: "CASCADE",
+  })
+  productCategories: ProductCategory[];
+
+  @BelongsToMany(() => Category, {
+    through: { model: () => ProductCategory, unique: false },
+  })
+  categories: Category[];
 
   @HasMany(() => OrderProduct, {
     onDelete: "CASCADE",

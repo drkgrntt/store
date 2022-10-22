@@ -12,6 +12,7 @@ import {
   AddressResolver,
   CartResolver,
   OrderResolver,
+  CategoryResolver,
   OrderedProductResolver,
 } from "./resolvers";
 import { Sequelize } from "sequelize-typescript";
@@ -25,6 +26,8 @@ import {
   Order,
   OrderProduct,
   Address,
+  ProductCategory,
+  Category,
 } from "./models";
 import { handleTokens } from "./middleware/handleTokens";
 
@@ -41,6 +44,8 @@ const main = async () => {
       ProductImage,
       Order,
       OrderProduct,
+      Category,
+      ProductCategory,
     ],
   });
   await sequelize.sync();
@@ -66,6 +71,7 @@ const main = async () => {
         AddressResolver,
         OrderResolver,
         OrderedProductResolver,
+        CategoryResolver,
       ],
       validate: false,
     }),
