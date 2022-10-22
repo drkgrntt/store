@@ -11,6 +11,7 @@ import {
   ForeignKey,
   BelongsTo,
   AllowNull,
+  Unique,
 } from "sequelize-typescript";
 import { Field, ObjectType } from "type-graphql";
 import { Address } from "./Address";
@@ -75,6 +76,7 @@ export class Order extends Model {
   trackingNumber: string;
 
   @Field()
+  @Unique
   @Column
   paymentIntentId: string;
 

@@ -111,16 +111,21 @@ const Checkout: FC<Props> = () => {
   const [showAddressForm, setShowAddressForm] = useState(false);
   const { totalCost } = useCart();
   const { query } = useRouter();
-  const clientSecretRef = useRef(query.payment_intent_client_secret);
+  const [clientSecret, setClientSecret] = useState(
+    query.payment_intent_client_secret
+  );
 
-  const { data: { clientSecret } = {} } = useQuery(CLIENT_SECRET, {
-    variables: { totalCost, clientSecret: clientSecretRef.current },
-    skip: !user || !totalCost,
-  });
+  const { data: { clientSecret: retrievedClientSecret } = {} } = useQuery(
+    CLIENT_SECRET,
+    {
+      variables: { totalCost, clientSecret },
+      skip: !user || !totalCost,
+    }
+  );
 
   useEffect(() => {
-    if (clientSecret) clientSecretRef.current = clientSecret;
-  }, [clientSecret]);
+    if (retrievedClientSecret) setClientSecret(retrievedClientSecret);
+  }, [retrievedClientSecret]);
 
   return (
     <div>
@@ -140,7 +145,7 @@ const Checkout: FC<Props> = () => {
         <Elements
           stripe={stripePromise}
           options={{
-            clientSecret,
+            clientSecret: clientSecret as string,
             appearance: {
               variables: {
                 fontFamily: "Montserrat, sans-serif",
@@ -149,7 +154,7 @@ const Checkout: FC<Props> = () => {
           }}
         >
           <CheckoutFormWithStripe
-            clientSecret={clientSecretRef.current as string}
+            clientSecret={clientSecret as string}
             showAddressForm={() => setShowAddressForm(true)}
           />
         </Elements>
@@ -173,27 +178,13 @@ const CheckoutFormWithStripe: FC<{
   const [validation, setValidation] = useState("");
   const { createToastNotification } = useNotification();
 
-  const {
-    data: { paymentSucceeded } = {},
-    called,
-    loading,
-  } = useQuery(PAYMENT_SUCCEEDED, {
-    variables: { clientSecret: query.payment_intent_client_secret },
-    skip: !query.payment_intent_client_secret,
-  });
-
   useEffect(() => {
     if (!query.payment_intent_client_secret) return;
-
-    if (!paymentSucceeded && called && !loading) {
-      push({ query: { ...query, payment_intent_client_secret: [] } });
-      return;
-    }
 
     placeOrder({
       variables: {
         addressId: query["address-id"],
-        clientSecret,
+        clientSecret: query.payment_intent_client_secret,
       },
       onCompleted() {
         createToastNotification({
@@ -205,9 +196,10 @@ const CheckoutFormWithStripe: FC<{
       },
       onError(error) {
         setValidation(error.message);
+        push({ query: { ...query, payment_intent_client_secret: [] } });
       },
     });
-  }, [paymentSucceeded, query, called, loading, clientSecret]);
+  }, [query]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
