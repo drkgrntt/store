@@ -1,6 +1,7 @@
 import "../styles/globals.scss";
 import { AppPropsWithApollo, withApollo } from "../utils/withApollo";
 import Layout from "../components/Layout";
+import CartProvider from "../providers/cart";
 
 const App = ({
   Component,
@@ -9,13 +10,15 @@ const App = ({
   apolloState,
 }: AppPropsWithApollo) => {
   return (
-    <Layout>
-      <Component
-        {...pageProps}
-        apolloClient={apolloClient}
-        apolloState={apolloState}
-      />
-    </Layout>
+    <CartProvider>
+      <Layout>
+        <Component
+          {...pageProps}
+          apolloClient={apolloClient}
+          apolloState={apolloState}
+        />
+      </Layout>
+    </CartProvider>
   );
 };
 

@@ -1,9 +1,10 @@
+import { createContext, FC, useContext } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { Product } from "../types/Product";
 import { UserProduct } from "../types/User";
 import { range } from "../utils";
-import { useRerender } from "./useRerender";
-import { useUser } from "./useUser";
+import { useUser } from "../hooks/useUser";
+import { useRerender } from "../hooks/useRerender";
 
 const ADD_TO_CART = gql`
   mutation AddToCart($productId: String!) {
@@ -45,7 +46,35 @@ const REMOVE_FROM_CART = gql`
   }
 `;
 
-export const useCart = () => {
+type CartContext = {
+  cart: UserProduct[];
+  addToCart: (product: Product) => Promise<void> | void;
+  removeFromCart: (product: Product) => Promise<void> | void;
+  quantityInCart: (productId: string) => number;
+  totalCost: number;
+  totalQuantity: number;
+  uCart: UserProduct[];
+  lsCart: UserProduct[];
+  addLsCartToUCart: () => Promise<void>;
+  clearUCart: () => Promise<void>;
+  clearLsCart: () => void;
+};
+
+export const cartContext = createContext<CartContext>({
+  cart: [],
+  addToCart: async () => {},
+  removeFromCart: async () => {},
+  quantityInCart: () => 0,
+  totalCost: 0,
+  totalQuantity: 0,
+  uCart: [],
+  lsCart: [],
+  addLsCartToUCart: async () => {},
+  clearUCart: async () => {},
+  clearLsCart: () => {},
+});
+
+const CartProvider: FC = ({ children }) => {
   // From gql
   const { user, refetch } = useUser();
   const [gqlAddToCart] = useMutation(ADD_TO_CART, { onCompleted: refetch });
@@ -102,7 +131,7 @@ export const useCart = () => {
     const cartProduct = newLsCart.find(
       (item) => item.product.id === product.id
     );
-    if (!cartProduct) return newLsCart;
+    if (!cartProduct) return;
 
     if (cartProduct.count <= 1) {
       newLsCart = newLsCart.filter((item) => item.product.id !== product.id);
@@ -155,17 +184,27 @@ export const useCart = () => {
     refetch();
   };
 
-  return {
-    cart,
-    addToCart,
-    removeFromCart,
-    quantityInCart,
-    totalCost,
-    totalQuantity,
-    uCart,
-    lsCart,
-    addLsCartToUCart,
-    clearUCart,
-    clearLsCart,
-  };
+  return (
+    <cartContext.Provider
+      value={{
+        cart,
+        addToCart,
+        removeFromCart,
+        quantityInCart,
+        totalCost,
+        totalQuantity,
+        uCart,
+        lsCart,
+        addLsCartToUCart,
+        clearUCart,
+        clearLsCart,
+      }}
+    >
+      {children}
+    </cartContext.Provider>
+  );
 };
+
+export const useCart = () => useContext(cartContext);
+
+export default CartProvider;

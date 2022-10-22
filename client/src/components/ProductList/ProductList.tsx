@@ -10,7 +10,7 @@ import styles from "./ProductList.module.scss";
 import { FaChevronLeft, FaChevronRight, FaPen } from "react-icons/fa";
 import Link from "next/link";
 import { useModal } from "../../hooks/useModal";
-import { useCart } from "../../hooks/useCart";
+import { useCart } from "../../providers/cart";
 import Modal from "../Modal";
 import { useRouter } from "next/router";
 

@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { FC, MouseEvent } from "react";
-import { useCart } from "../../hooks/useCart";
 import { useModal } from "../../hooks/useModal";
 import { useUser } from "../../hooks/useUser";
+import { useCart } from "../../providers/cart";
 import { priceToCurrency, range } from "../../utils";
 import Button from "../Button";
 import Selectable from "../Selectable";

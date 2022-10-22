@@ -17,8 +17,8 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { useCart } from "../../hooks/useCart";
 import Loader from "../Loader";
+import { useCart } from "../../providers/cart";
 
 interface Props {}
 

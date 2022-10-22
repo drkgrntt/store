@@ -16,7 +16,7 @@ import styles from "./NavMenu.module.scss";
 import { UrlObject } from "url";
 import { useModal } from "../../../hooks/useModal";
 import Selectable from "../../Selectable";
-import { useCart } from "../../../hooks/useCart";
+import { useCart } from "../../../providers/cart";
 
 interface Props {}
 
