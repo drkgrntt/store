@@ -16,6 +16,7 @@ import { useUser } from "../../hooks/useUser";
 import { combineClasses } from "../../utils";
 import { useRouter } from "next/router";
 import { Product } from "../../types/Product";
+import { useNotification } from "../../providers/notification";
 
 interface Props {
   onSuccess?: () => void;
@@ -185,7 +186,8 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
     (formProduct as typeof INITIAL_STATE) ?? INITIAL_STATE
   );
   const [urls, setUrls] = useState<string[]>([]);
-  const [validation, setValidation] = useState("");
+  const { createToastNotification, createErrorNotification } =
+    useNotification();
 
   useEffect(() => {
     const primary = product?.images.find((image) => image.primary);
@@ -275,12 +277,17 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
           isActive,
         },
         async onCompleted({ updateProduct }) {
-          saveImages(updateProduct.id);
+          await saveImages(updateProduct.id);
           formState.clear();
           onSuccess();
+          createToastNotification({
+            title: "Success!",
+            body: `${updateProduct.title} updated`,
+            icon: urls[0],
+          });
         },
         onError(error) {
-          setValidation(error.message);
+          createErrorNotification({ title: "Error", body: error.message });
         },
       });
     } else {
@@ -294,12 +301,17 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
           isActive,
         },
         async onCompleted({ createProduct }) {
-          saveImages(createProduct.id);
+          await saveImages(createProduct.id);
           formState.clear();
           onSuccess();
+          createToastNotification({
+            title: "Success!",
+            body: `${createProduct.title} created`,
+            icon: urls[0],
+          });
         },
         onError(error) {
-          setValidation(error.message);
+          createErrorNotification({ title: "Error", body: error.message });
         },
       });
     }
@@ -401,7 +413,6 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
           handleUpload(event as ChangeEvent<HTMLInputElement>)
         }
       />
-      <p>{validation}</p>
       <Button className={styles.submit} type="submit">
         Submit
       </Button>
