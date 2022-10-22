@@ -117,6 +117,6 @@ const NotificationProvider: FC = ({ children }) => {
   );
 };
 
-export const useNotofication = () => useContext(notificationContext);
+export const useNotification = () => useContext(notificationContext);
 
 export default NotificationProvider;

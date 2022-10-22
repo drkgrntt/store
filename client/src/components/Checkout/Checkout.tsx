@@ -19,6 +19,7 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import Loader from "../Loader";
 import { useCart } from "../../providers/cart";
+import { useNotification } from "../../providers/notification";
 
 interface Props {}
 
@@ -170,6 +171,7 @@ const CheckoutFormWithStripe: FC<{
   const { asPath, push, query } = useRouter();
   const { shippingAddresses, addressToString } = useAddresses();
   const [validation, setValidation] = useState("");
+  const { createToastNotification } = useNotification();
 
   const {
     data: { paymentSucceeded } = {},
@@ -194,7 +196,10 @@ const CheckoutFormWithStripe: FC<{
         clientSecret,
       },
       onCompleted() {
-        window.alert("Thank you! Your order has been placed.");
+        createToastNotification({
+          title: "Thank you!",
+          body: "Your order has been placed.",
+        });
         setValidation("");
         push("/");
       },
