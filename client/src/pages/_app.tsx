@@ -2,23 +2,17 @@ import "../styles/globals.scss";
 import { AppPropsWithApollo, withApollo } from "../utils/withApollo";
 import Layout from "../components/Layout";
 import CartProvider from "../providers/cart";
+import NotificationProvider from "../providers/notification";
 
-const App = ({
-  Component,
-  pageProps,
-  apolloClient,
-  apolloState,
-}: AppPropsWithApollo) => {
+const App = ({ Component, pageProps }: AppPropsWithApollo) => {
   return (
-    <CartProvider>
-      <Layout>
-        <Component
-          {...pageProps}
-          apolloClient={apolloClient}
-          apolloState={apolloState}
-        />
-      </Layout>
-    </CartProvider>
+    <NotificationProvider>
+      <CartProvider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </CartProvider>
+    </NotificationProvider>
   );
 };
 

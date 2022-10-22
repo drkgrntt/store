@@ -22,6 +22,7 @@ const Cart: FC<Props> = ({ isCheckout }) => {
     clearLsCart,
     clearUCart,
     addLsCartToUCart,
+    totalQuantity,
   } = useCart();
   const { user } = useUser();
   const { openModal } = useModal();
@@ -115,7 +116,7 @@ const Cart: FC<Props> = ({ isCheckout }) => {
         })}
         Total: {priceToCurrency(totalCost)}
       </ul>
-      {!isCheckout && (
+      {!isCheckout && !!totalQuantity && (
         <Button onClick={() => openModal("checkout")}>Checkout</Button>
       )}
     </div>
