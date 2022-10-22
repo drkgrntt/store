@@ -69,7 +69,7 @@ const NotificationProvider: FC = ({ children }) => {
   }: NotificationArguments) => {
     if (notificationPermissionRef.current !== "granted") return;
 
-    new Notification(title, {
+    new window.Notification(title, {
       body,
       icon,
     });
