@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { FC, FormEvent, useState } from "react";
 import { useForm, Validations } from "../../hooks/useForm";
 import { useUser } from "../../hooks/useUser";
+import { useNotification } from "../../providers/notification";
 import { User } from "../../types/User";
 import Button from "../Button";
 import Input from "../Input";
@@ -43,9 +44,10 @@ const VALIDATIONS: Validations<typeof INITIAL_STATE> = {
 const RegisterForm: FC = () => {
   const formState = useForm(INITIAL_STATE, VALIDATIONS);
   const [register] = useMutation<{ register: User }>(REGISTER);
-  const [validation, setValidation] = useState("");
   const { query, push } = useRouter();
-  const { refetch } = useUser();
+  const { user, refetch } = useUser();
+  const { createErrorNotification, createToastNotification } =
+    useNotification();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -55,11 +57,19 @@ const RegisterForm: FC = () => {
       onError(error) {
         if (error.message === "Validation error")
           error.message = "Invalid email or password";
-        setValidation(error.message);
+
+        createErrorNotification({
+          title: "Register error",
+          body: error.message,
+        });
       },
-      async onCompleted() {
+      async onCompleted({ register }) {
         formState.clear();
         await refetch();
+        createToastNotification({
+          title: "Logged in",
+          body: `Logged in as ${register?.email}`,
+        });
         push((query.next as string) ?? "/");
       },
     });
@@ -90,7 +100,6 @@ const RegisterForm: FC = () => {
         type="password"
         formState={formState}
       />
-      <p>{validation}</p>
       <Button type="submit" disabled={!formState.isValid}>
         Sign Up
       </Button>

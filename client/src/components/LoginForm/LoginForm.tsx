@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { FC, FormEvent, useState } from "react";
 import { useForm } from "../../hooks/useForm";
 import { useUser } from "../../hooks/useUser";
+import { useNotification } from "../../providers/notification";
 import { User } from "../../types/User";
 import Button from "../Button";
 import Input from "../Input";
@@ -33,9 +34,10 @@ const INITIAL_STATE = {
 const LoginForm: FC = () => {
   const formState = useForm(INITIAL_STATE);
   const [login] = useMutation<{ login: User }>(LOGIN);
-  const [validation, setValidation] = useState("");
   const { query, push } = useRouter();
-  const { refetch } = useUser();
+  const { user, refetch } = useUser();
+  const { createErrorNotification, createToastNotification } =
+    useNotification();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -46,11 +48,15 @@ const LoginForm: FC = () => {
         if (error.message === "Validation error")
           error.message = "Invalid email or password";
 
-        setValidation(error.message);
+        createErrorNotification({ title: "Login error", body: error.message });
       },
-      async onCompleted() {
+      async onCompleted({ login }) {
         formState.clear();
         await refetch();
+        createToastNotification({
+          title: "Logged in",
+          body: `Logged in as ${login?.email}`,
+        });
         push((query.next as string) ?? "/");
       },
     });
@@ -74,7 +80,6 @@ const LoginForm: FC = () => {
         type="password"
         formState={formState}
       />
-      <p>{validation}</p>
       <Button type="submit" disabled={!formState.isValid}>
         Login
       </Button>

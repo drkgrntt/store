@@ -11,8 +11,8 @@
   gap: 0.5rem;
   box-shadow: var(--heavy-shadow);
 
-  animation: slideIn 0.8s ease-in-out;
-  right: 1rem;
+  animation: slideInOut 4s ease;
+  right: -30rem;
 
   &.toast {
     border-left: 0.5rem solid var(--primary-color);
@@ -42,11 +42,17 @@
   border-radius: 100rem;
 }
 
-@keyframes slideIn {
+@keyframes slideInOut {
   0% {
     right: -30rem;
   }
-  100% {
+  20% {
     right: 1rem;
+  }
+  80% {
+    right: 1rem;
+  }
+  100% {
+    right: -30rem;
   }
 }
