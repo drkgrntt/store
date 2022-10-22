@@ -41,15 +41,21 @@ export const notificationContext = createContext<NotificationContext>({
 
 const NotificationProvider: FC = ({ children }) => {
   const notificationPermissionRef = useRef<NotificationPermission>();
-  const [notifications, setNotifications] = useState<ToastNotification[]>([]);
+  const [notifications, setNotifications] = useState<
+    (ToastNotification | null)[]
+  >([]);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setNotifications((prev) => {
-        const [, ...newState] = prev;
-        return newState;
-      });
-    }, 4000);
+    const timeout = setTimeout(
+      () => {
+        if (!notifications.length) return;
+        setNotifications((prev) => {
+          const [, ...newState] = prev;
+          return newState;
+        });
+      },
+      notifications[0] ? 4000 : 100
+    );
     return () => clearTimeout(timeout);
   }, [notifications]);
 
@@ -86,7 +92,7 @@ const NotificationProvider: FC = ({ children }) => {
       icon,
       type: "toast",
     };
-    setNotifications((prev) => [...prev, notification]);
+    setNotifications((prev) => [...prev, null, notification]);
   };
 
   const createErrorNotification = ({
@@ -100,7 +106,7 @@ const NotificationProvider: FC = ({ children }) => {
       icon,
       type: "error",
     };
-    setNotifications((prev) => [...prev, notification]);
+    setNotifications((prev) => [...prev, null, notification]);
   };
 
   return (
