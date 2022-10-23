@@ -43,7 +43,7 @@ const CategorySearch: FC<Props> = ({ selectedCategories, onClick }) => {
       categories: Category[];
     }>(CATEGORIES);
   const [createCategory] = useMutation(CREATE_CATEGORY);
-  const debouncedSearch = useDebounce(search, 1000);
+  const debouncedSearch = useDebounce(search, 500);
 
   useEffect(() => {
     if (!formState.values.search) return;

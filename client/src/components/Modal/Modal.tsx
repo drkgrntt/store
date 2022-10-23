@@ -29,11 +29,11 @@ const Modal: FC<Props> = ({ name, children, wide, className = "" }) => {
     <dialog
       className={styles.background}
       open={query.modal === name}
-      onClick={handleOutsideClick}
+      onMouseDown={handleOutsideClick}
     >
       <div
         className={combineClasses(styles.container, wide ? styles.wide : "")}
-        onClick={handleInsideClick}
+        onMouseDown={handleInsideClick}
       >
         <Selectable onClick={closeModal} className={styles.close}>
           <FaTimes />
