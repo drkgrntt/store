@@ -83,11 +83,11 @@ const INITIAL_STATE = {
   city: "",
   state: "",
   zipCode: "",
-  type: AddressType.BILLING,
+  type: AddressType.SHIPPING,
 };
 
 const TYPE_OPTIONS = [
-  { value: AddressType.BILLING, text: "Billing" },
+  // { value: AddressType.BILLING, text: "Billing" },
   { value: AddressType.SHIPPING, text: "Shipping" },
 ];
 
