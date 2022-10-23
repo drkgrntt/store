@@ -25,3 +25,20 @@ export const ucFirst = (text: string) => {
 export const range = (size: number) => {
   return [...Array(size).keys()];
 };
+
+export const debounce = <Args extends unknown[]>(
+  func: (...args: Args) => void,
+  wait = 300
+) => {
+  let timeout: ReturnType<typeof setTimeout>;
+
+  return (...args: Args) => {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
