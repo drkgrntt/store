@@ -6,6 +6,7 @@ import {
   HasMany,
   IsUUID,
   Model,
+  AllowNull,
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
@@ -25,6 +26,11 @@ export class Category extends Model {
   @Default(DataType.UUIDV4)
   @Column
   id: string;
+
+  @Field()
+  @AllowNull(false)
+  @Column
+  name: string;
 
   @HasMany(() => ProductCategory, {
     onDelete: "CASCADE",
