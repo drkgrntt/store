@@ -1,0 +1,17 @@
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  list-style-type: none;
+  padding: 0 1rem;
+}
+
+.category {
+  border: 0.1rem solid var(--grey);
+  border-radius: 0.3rem;
+  padding: 0.2rem 0.4rem;
+}
+
+.text {
+  text-decoration: none;
+}

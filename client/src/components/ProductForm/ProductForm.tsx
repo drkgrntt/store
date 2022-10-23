@@ -11,12 +11,15 @@ import { useForm } from "../../hooks/useForm";
 import Button from "../Button";
 import Input from "../Input";
 import Image from "next/image";
-import styles from "./ProductForm.module.scss";
 import { useUser } from "../../hooks/useUser";
 import { combineClasses } from "../../utils";
 import { useRouter } from "next/router";
-import { Product } from "../../types/Product";
+import { Category, Product } from "../../types/Product";
 import { useNotification } from "../../providers/notification";
+import CategorySearch from "../CategorySearch";
+import Selectable from "../Selectable";
+import styles from "./ProductForm.module.scss";
+import categoryStyles from "../CategorySearch/CategorySearch.module.scss";
 
 interface Props {
   onSuccess?: () => void;
@@ -34,6 +37,12 @@ const PRODUCT = gql`
       isActive
       createdAt
       updatedAt
+      categories {
+        id
+        name
+        createdAt
+        updatedAt
+      }
       images {
         id
         url
@@ -135,6 +144,24 @@ const DETACH_IMAGE = gql`
   }
 `;
 
+const ATTACH_CATEGORY = gql`
+  mutation AttachCategory($productId: String!, $categoryId: String!) {
+    attachCategory(productId: $productId, categoryId: $categoryId) {
+      id
+      categoryId
+      productId
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const DETACH_CATEGORY = gql`
+  mutation DetachCategory($productId: String!, $categoryId: String!) {
+    detachCategory(productId: $productId, categoryId: $categoryId)
+  }
+`;
+
 const IMAGE_UPLOAD_SIGNATURE = gql`
   query ImageUploadSignature {
     imageUploadSignature {
@@ -158,7 +185,6 @@ const INITIAL_STATE = {
 const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
   const { user } = useUser();
   const { query } = useRouter();
-
   const { data: { imageUrls } = {}, refetch: refetchImages } = useQuery<{
     imageUrls: string[];
   }>(IMAGE_URLS, { skip: !user?.isAdmin, fetchPolicy: "cache-and-network" });
@@ -181,6 +207,13 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
   const [attachImage] = useMutation(ATTACH_IMAGE);
   const [detachImage] = useMutation(DETACH_IMAGE);
   const [getImageUploadSignature] = useLazyQuery(IMAGE_UPLOAD_SIGNATURE);
+  const [attachCategory] = useMutation(ATTACH_CATEGORY);
+  const [detachCategory] = useMutation(DETACH_CATEGORY);
+
+  const [categories, setCategories] = useState<Category[]>([]);
+  useEffect(() => {
+    if (product?.categories) setCategories(product.categories);
+  }, [product?.categories]);
 
   const formState = useForm(
     (formProduct as typeof INITIAL_STATE) ?? INITIAL_STATE
@@ -201,6 +234,14 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
   }, [product]);
 
   if (!user?.isAdmin) return null;
+
+  const addCategory = (category: Category) => {
+    setCategories((prev) => [...prev, category]);
+  };
+
+  const removeCategory = (category: Category) => {
+    setCategories((prev) => prev.filter((c) => c.id !== category.id));
+  };
 
   const handleUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -259,6 +300,23 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
     ]);
   };
 
+  const saveCategories = async (productId: string) => {
+    await Promise.all([
+      ...categories.map((category) => {
+        if (!product?.categories.some((c) => c.id === category.id)) {
+          attachCategory({
+            variables: { categoryId: category.id, productId },
+          });
+        }
+      }),
+      ...(product?.categories ?? []).map((category) => {
+        if (!categories.some(({ id }) => category.id === id)) {
+          detachCategory({ variables: { categoryId: category.id, productId } });
+        }
+      }),
+    ]);
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -278,6 +336,7 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
         },
         async onCompleted({ updateProduct }) {
           await saveImages(updateProduct.id);
+          await saveCategories(updateProduct.id);
           formState.clear();
           onSuccess();
           createToastNotification({
@@ -302,6 +361,7 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
         },
         async onCompleted({ createProduct }) {
           await saveImages(createProduct.id);
+          await saveCategories(createProduct.id);
           formState.clear();
           onSuccess();
           createToastNotification({
@@ -407,12 +467,30 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
           );
         })}
       </ul>
+      <label htmlFor="file-input">Add new image</label>
       <input
         type="file"
+        id="file-input"
         onChange={(event) =>
           handleUpload(event as ChangeEvent<HTMLInputElement>)
         }
       />
+      <h3 className={styles.categoryTitle}>Categories</h3>
+      {!!categories.length && (
+        <ul className={categoryStyles.categories}>
+          {categories.map((category) => (
+            <li className={categoryStyles.category} key={category.id}>
+              <Selectable
+                className={categoryStyles.text}
+                onClick={() => removeCategory(category)}
+              >
+                {category.name}
+              </Selectable>
+            </li>
+          ))}
+        </ul>
+      )}
+      <CategorySearch selectedCategories={categories} onClick={addCategory} />
       <Button className={styles.submit} type="submit">
         Submit
       </Button>

@@ -9,6 +9,7 @@ export interface Product {
   createdAt: Date;
   updatedAt: Date;
   images: ProductImage[];
+  categories: Category[];
 }
 
 export interface ProductImage {
@@ -17,6 +18,13 @@ export interface ProductImage {
   title?: string;
   description?: string;
   primary: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Category {
+  id: string;
+  name: string;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -180,7 +180,20 @@ const Input: FC<Props> = ({
           onChange={onChange}
           onBlur={onBlur}
           onFocus={onFocus}
+          list={options ? `${id}-options` : undefined}
         />
+
+        {options && (
+          <datalist id={`${id}-options`}>
+            {options.map((option) => (
+              <option
+                key={option.value}
+                value={option.text}
+                onClick={(e) => console.log(e)}
+              />
+            ))}
+          </datalist>
+        )}
       </>
     );
   };

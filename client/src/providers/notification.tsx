@@ -59,14 +59,14 @@ const NotificationProvider: FC = ({ children }) => {
     return () => clearTimeout(timeout);
   }, [notifications]);
 
-  useEffect(() => {
-    if (!("Notification" in window)) return;
-    window.Notification.requestPermission().then(
-      (result: NotificationPermission) => {
-        notificationPermissionRef.current = result;
-      }
-    );
-  }, []);
+  // useEffect(() => {
+  //   if (!("Notification" in window)) return;
+  //   window.Notification.requestPermission().then(
+  //     (result: NotificationPermission) => {
+  //       notificationPermissionRef.current = result;
+  //     }
+  //   );
+  // }, []);
 
   const createBrowserNotification = ({
     title,
