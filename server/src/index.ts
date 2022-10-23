@@ -33,7 +33,7 @@ import { handleTokens } from "./middleware/handleTokens";
 
 const main = async () => {
   const sequelize = new Sequelize(process.env.DATABASE_URL, {
-    logging: console.log,
+    logging: __prod__ ? false : console.log,
     ssl: __prod__,
     models: [
       Address,

@@ -52,8 +52,13 @@ export class CategoryResolver {
 
   @Mutation(() => Boolean)
   @UseMiddleware(isAdmin)
-  async detachImage(@Arg("id") id: string): Promise<boolean> {
-    const quantity = await ProductCategory.destroy({ where: { id } });
+  async detachCategory(
+    @Arg("productId") productId: string,
+    @Arg("categoryId") categoryId: string
+  ): Promise<boolean> {
+    const quantity = await ProductCategory.destroy({
+      where: { productId, categoryId },
+    });
     return quantity > 0;
   }
 }

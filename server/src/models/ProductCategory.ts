@@ -27,6 +27,7 @@ export class ProductCategory extends Model {
   @Column
   id: string;
 
+  @Field()
   @IsUUID(4)
   @ForeignKey(() => Category)
   @AllowNull(false)
@@ -36,6 +37,7 @@ export class ProductCategory extends Model {
   @BelongsTo(() => Category)
   category: Category;
 
+  @Field()
   @IsUUID(4)
   @ForeignKey(() => Product)
   @AllowNull(false)
