@@ -1,4 +1,4 @@
-import { Product, ProductImage } from "../models";
+import { Category, Product, ProductCategory, ProductImage } from "../models";
 import {
   Arg,
   Ctx,
@@ -14,6 +14,16 @@ import { Context } from "../types";
 
 @Resolver(Product)
 export class ProductResolver {
+  @FieldResolver(() => [Category])
+  async categories(@Root() product: Product): Promise<Category[]> {
+    if (product.categories?.length) return product.categories;
+    const records = await ProductCategory.findAll({
+      where: { productId: product.id },
+      include: Category,
+    });
+    return records.map((pc) => pc.category);
+  }
+
   @FieldResolver(() => [ProductImage])
   async images(@Root() product: Product): Promise<ProductImage[]> {
     if (product.images?.length) return product.images;
