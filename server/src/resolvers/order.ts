@@ -3,6 +3,7 @@ import {
   Order,
   OrderProduct,
   Product,
+  ProductImage,
   User,
   UserProduct,
 } from "../models";
@@ -20,6 +21,8 @@ import { isAuth } from "../middleware/isAuth";
 import { Context } from "../types";
 import { isAdmin } from "../middleware/isAdmin";
 import Stripe from "stripe";
+import { ADMIN_NEW_ORDER, CUSTOMER_NEW_ORDER, sendEmail } from "../utils/email";
+import { addressToString } from "../utils";
 
 @Resolver(OrderProduct)
 export class OrderedProductResolver {
@@ -116,9 +119,23 @@ export class OrderResolver {
   @Query(() => String, { nullable: true })
   @UseMiddleware(isAuth)
   async clientSecret(
+    @Ctx() { me }: Context,
     @Arg("totalCost") amount: number,
     @Arg("clientSecret", { nullable: true }) clientSecret?: string
   ) {
+    const cart = await UserProduct.findAll({
+      where: { userId: me.id },
+      include: Product,
+    });
+    const description = cart.reduce((current, item) => {
+      return (
+        current +
+        `${item.product.title} - $${(item.product.price / 100).toFixed(2)} x${
+          item.count
+        } \n`
+      );
+    }, "");
+
     const config: Stripe.StripeConfig = { apiVersion: "2022-08-01" };
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, config);
 
@@ -130,11 +147,13 @@ export class OrderResolver {
       if (paymentIntent?.status !== "succeeded") {
         paymentIntent = await stripe.paymentIntents.update(paymentIntentId, {
           amount,
+          description,
         });
       }
     } else {
       paymentIntent = await stripe.paymentIntents.create({
         amount,
+        description,
         currency: "usd",
         automatic_payment_methods: { enabled: true },
       });
@@ -166,12 +185,18 @@ export class OrderResolver {
     @Arg("clientSecret") clientSecret: string,
     @Arg("dryRun", { nullable: true }) dryRun?: boolean
   ): Promise<Order> {
+    if (!dryRun) {
+      const paymentSucceeded = await this.paymentSucceeded(clientSecret);
+      if (!paymentSucceeded)
+        throw new Error("The payment for this order did not succeed.");
+    }
+
     const transaction = await sequelize.transaction();
 
     try {
       const [paymentIntentId] = clientSecret.split("_secret");
 
-      const order = await Order.create(
+      let order = await Order.create(
         { addressId, userId: me.id, paymentIntentId },
         { transaction }
       );
@@ -216,11 +241,50 @@ export class OrderResolver {
         await transaction.rollback();
       } else {
         await transaction.commit();
+
+        order = (await Order.findOne({
+          where: { id: order.id },
+          include: [
+            { model: Address },
+            {
+              model: OrderProduct,
+              include: [{ model: Product, include: [ProductImage] }],
+            },
+          ],
+        })) as Order;
+
+        const emailVariables = {
+          email: me.email,
+          orderId: order.id,
+          stripePaymentUrl: `https://dashboard.stripe.com/payments/${order.paymentIntentId}`,
+          address: addressToString(order.address),
+          productList: order.orderedProducts.map((op) => ({
+            imageUrl: (
+              op.product.images.find((image) => image.primary) ??
+              op.product.images[0]
+            ).url,
+            id: op.productId,
+            title: op.product.title,
+            cost: "$" + (op.price / 100).toFixed(2),
+            quantity: op.count.toString(),
+          })),
+          totalCost: (
+            order.orderedProducts.reduce(
+              (total, op) => total + op.price * op.count,
+              0
+            ) / 100
+          ).toFixed(2),
+        };
+
+        await sendEmail(ADMIN_NEW_ORDER, emailVariables);
+        await sendEmail(CUSTOMER_NEW_ORDER, emailVariables);
       }
 
       return order;
     } catch (err) {
-      await transaction.rollback();
+      try {
+        await transaction.rollback();
+      } catch {}
       throw err;
     }
   }

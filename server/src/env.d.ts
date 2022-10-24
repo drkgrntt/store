@@ -9,9 +9,12 @@ declare namespace NodeJS {
     CLOUDINARY_CLOUD_NAME: string;
     CLOUDINARY_API_KEY: string;
     CLOUDINARY_API_SECRET: string;
+    STRIPE_SECRET_KEY: string;
+    MAILGUN_SECRET_KEY: string;
+    MAILGUN_DOMAIN: string;
+    ADMIN_EMAIL: string;
     // APP_BASE_URL: string;
     // API_BASE_URL: string;
-    STRIPE_SECRET_KEY: string;
   }
 }
 
