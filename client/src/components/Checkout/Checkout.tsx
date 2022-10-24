@@ -223,7 +223,7 @@ const CheckoutFormWithStripe: FC<{
             return_url:
               process.env.NEXT_PUBLIC_APP_URL +
               asPath +
-              `&address-id=${formState.values.addressId}`,
+              `&modal-params=address-id&address-id=${formState.values.addressId}`,
           },
         });
 
