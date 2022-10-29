@@ -7,15 +7,33 @@
   margin: 0 auto;
 }
 
+.product {
+  width: 90vw;
+
+  @media (min-width: 600px) {
+    width: 15rem;
+  }
+}
+
 .imageContainer {
   position: relative;
 
-  &:hover {
-    & > .editButton {
-      opacity: 1;
-    }
+  & > .editButton,
+  & > .imageNav {
+    opacity: 1;
+  }
+
+  @media (min-width: 900px) {
+    & > .editButton,
     & > .imageNav {
-      opacity: 1;
+      opacity: 0;
+    }
+
+    &:hover {
+      & > .editButton,
+      & > .imageNav {
+        opacity: 1;
+      }
     }
   }
 }

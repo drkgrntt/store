@@ -56,7 +56,7 @@ export const ProductList: FC<Props> = () => {
   //   ...(data?.products ?? []),
   //   ...(data?.products ?? []),
   //   ...(data?.products ?? []),
-  // ]
+  // ];
 
   return (
     <>
@@ -90,13 +90,12 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
   );
 
   const availableQuantity = product.quantity - quantityInCart(product.id);
+  const selectedImage = product.images[selectedImageIndex];
 
-  const addProductToCart = () => {
-    addToCart(product);
-  };
+  const addProductToCart = () => addToCart(product);
 
   return (
-    <div>
+    <div className={styles.product}>
       <div className={styles.imageContainer}>
         {product.images.length > 1 && (
           <Selectable
@@ -117,24 +116,23 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
             </a>
           </Link>
         )}
-        {product.images[selectedImageIndex] && (
+        {selectedImage && (
           <Link
             href={modalHref("image", {
               alt:
-                product.images[selectedImageIndex].title ??
-                `The selected image of ${product.title}`,
-              src: product.images[selectedImageIndex].url,
+                selectedImage.title ?? `The selected image of ${product.title}`,
+              src: selectedImage.url,
             })}
           >
             <a>
               <Image
                 alt={
-                  product.images[selectedImageIndex].title ??
+                  selectedImage.title ??
                   `The selected image of ${product.title}`
                 }
-                width={200}
-                height={200}
-                src={product.images[selectedImageIndex].url}
+                width={600}
+                height={600}
+                src={selectedImage.url}
                 objectFit="contain"
               />
             </a>
