@@ -9,6 +9,8 @@ import {
 import { setContext } from "@apollo/client/link/context";
 import { createWithApollo } from "./createWithApollo";
 import { AppProps } from "next/app";
+import { Paginated } from "../types/util";
+import { Product } from "../types/Product";
 
 const createClient = (ctx: NextPageContext) => {
   const httpLink = createHttpLink({
@@ -62,7 +64,26 @@ const createClient = (ctx: NextPageContext) => {
     });
   });
 
-  const inMemoryCache = new InMemoryCache({});
+  const inMemoryCache = new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          products: {
+            keyArgs: [],
+            merge(
+              existing: Paginated<Product> | undefined,
+              incoming: Paginated<Product>
+            ): Paginated<Product> {
+              return {
+                ...incoming,
+                edges: [...(existing?.edges || []), ...incoming.edges],
+              };
+            },
+          },
+        },
+      },
+    },
+  });
 
   if (typeof window !== "undefined") {
     inMemoryCache.restore(__NEXT_DATA__.props.pageProps.apolloState || {});

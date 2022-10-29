@@ -13,41 +13,57 @@ import { useModal } from "../../hooks/useModal";
 import { useCart } from "../../providers/cart";
 import Modal from "../Modal";
 import { useRouter } from "next/router";
+import { Paginated } from "../../types/util";
+import Button from "../Button";
 
 interface Props {}
 
 const PRODUCTS = gql`
-  query Products {
-    products(active: true) {
-      id
-      title
-      description
-      price
-      quantity
-      isMadeToOrder
-      isActive
-      createdAt
-      updatedAt
-      images {
+  query Products($page: Float, $perPage: Float) {
+    products(active: true, page: $page, perPage: $perPage) {
+      hasMore
+      nextPage
+      edges {
         id
-        url
         title
         description
-        primary
+        price
+        quantity
+        isMadeToOrder
+        isActive
         createdAt
         updatedAt
+        images {
+          id
+          url
+          title
+          description
+          primary
+          createdAt
+          updatedAt
+        }
       }
     }
   }
 `;
 
 export const ProductList: FC<Props> = () => {
-  const { data, loading } = useQuery<{ products: Product[] }>(PRODUCTS, {
+  const { data, loading, fetchMore, variables } = useQuery<{
+    products: Paginated<Product>;
+  }>(PRODUCTS, {
     fetchPolicy: "cache-and-network",
+    // variables: { perPage: 1 },
   });
   const { query } = useRouter();
 
-  if (loading) return <Loader />;
+  const loadMore = async () => {
+    await fetchMore({
+      variables: {
+        page: data?.products.nextPage,
+        perPage: variables?.perPage,
+      },
+    });
+  };
 
   // [
   //   ...(data?.products ?? []),
@@ -61,9 +77,13 @@ export const ProductList: FC<Props> = () => {
   return (
     <>
       <div className={styles.products}>
-        {data?.products.map((product) => (
+        {data?.products.edges.map((product) => (
           <ProductListItem key={product.id} product={product} />
         ))}
+      </div>
+      <div className={styles.load}>
+        {loading && <Loader />}
+        {data?.products.hasMore && <Button onClick={loadMore}>More</Button>}
       </div>
       <Modal name="image" wide>
         <Image
