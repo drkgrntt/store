@@ -51,7 +51,6 @@ export const ProductList: FC<Props> = () => {
   const { data, loading, fetchMore, variables } = useQuery<{
     products: Paginated<Product>;
   }>(PRODUCTS, {
-    fetchPolicy: "cache-and-network",
     // variables: { perPage: 1 },
   });
   const { query } = useRouter();
