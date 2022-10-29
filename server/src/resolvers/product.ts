@@ -2,8 +2,10 @@ import { Category, Product, ProductCategory, ProductImage } from "../models";
 import {
   Arg,
   Ctx,
+  Field,
   FieldResolver,
   Mutation,
+  ObjectType,
   Query,
   Resolver,
   Root,
@@ -11,6 +13,18 @@ import {
 } from "type-graphql";
 import { isAdmin } from "../middleware/isAdmin";
 import { Context } from "../types";
+
+@ObjectType()
+class ProductPage {
+  @Field()
+  hasMore: boolean;
+
+  @Field({ nullable: true })
+  nextPage?: number;
+
+  @Field(() => [Product])
+  edges: Product[];
+}
 
 @Resolver(Product)
 export class ProductResolver {
@@ -33,11 +47,13 @@ export class ProductResolver {
     return images;
   }
 
-  @Query(() => [Product])
+  @Query(() => ProductPage)
   async products(
     @Ctx() { me }: Context,
-    @Arg("active", { nullable: true }) active?: boolean
-  ): Promise<Product[]> {
+    @Arg("active", { nullable: true }) active?: boolean,
+    @Arg("page", { nullable: true }) page: number = 0,
+    @Arg("perPage", { nullable: true }) perPage: number = 30
+  ): Promise<ProductPage> {
     const where: { isActive?: boolean } = { isActive: true };
     if (me?.isAdmin) {
       if (active === undefined) {
@@ -46,8 +62,21 @@ export class ProductResolver {
         where.isActive = active;
       }
     }
-    const products = await Product.findAll({ where });
-    return products;
+
+    const found = await Product.findAll({
+      where,
+      limit: perPage + 1,
+      offset: page * perPage,
+    });
+
+    const products = found.slice(0, perPage);
+    const hasMore = found.length > perPage;
+
+    return {
+      edges: products,
+      hasMore,
+      nextPage: hasMore ? page + 1 : undefined,
+    };
   }
 
   @Query(() => Product, { nullable: true })
