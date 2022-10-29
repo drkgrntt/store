@@ -11,9 +11,13 @@ import Cart from "../Cart";
 import LoginForm from "../LoginForm";
 import RegisterForm from "../RegisterForm";
 import Checkout from "../Checkout";
+import { useApolloClient } from "@apollo/client";
+import { useUser } from "../../hooks/useUser";
 
 const Layout: FC = ({ children }) => {
   const { closeModal } = useModal();
+  const { reFetchObservableQueries } = useApolloClient();
+  const { user } = useUser();
 
   return (
     <div>
@@ -29,9 +33,16 @@ const Layout: FC = ({ children }) => {
 
       <main className={styles.container}>{children}</main>
 
-      <Modal name="product-form">
-        <ProductForm onSuccess={closeModal} />
-      </Modal>
+      {user && (
+        <Modal name="product-form">
+          <ProductForm
+            onSuccess={() => {
+              closeModal();
+              reFetchObservableQueries();
+            }}
+          />
+        </Modal>
+      )}
 
       <Modal name="cart">
         <Cart />
