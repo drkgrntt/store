@@ -12,10 +12,10 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { isAdmin } from "../middleware/isAdmin";
-import { Context } from "../types";
+import { Context, Paginated } from "../types";
 
 @ObjectType()
-class ProductPage {
+class ProductPage implements Paginated<Product> {
   @Field()
   hasMore: boolean;
 

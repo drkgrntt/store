@@ -9,3 +9,9 @@ export interface Context {
   token: string;
   sequelize: Sequelize;
 }
+
+export interface Paginated<T> {
+  hasMore: boolean;
+  nextPage?: number;
+  edges: T[];
+}
