@@ -2,6 +2,7 @@ import Error from "next/error";
 import { FC } from "react";
 import { useIsAuth } from "../../hooks/useIsAuth";
 import { useUser } from "../../hooks/useUser";
+import styles from "./AdminFrame.module.scss";
 
 interface Props {
   className?: string;
@@ -16,7 +17,7 @@ const AdminFrame: FC<Props> = ({ children, className }) => {
 
   return (
     <div>
-      <h2>Admin Dashboard</h2>
+      <h2 className={styles.heading}>Admin Dashboard</h2>
       <div className={className}>{children}</div>
     </div>
   );

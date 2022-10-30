@@ -29,7 +29,6 @@ const Profile: FC = () => {
   useIsAuth();
   const { user } = useUser();
   const [state, dispatch] = useReducer(profileReducer, PROFILE_STATE);
-  console.log({ user });
 
   if (!user) return null;
 
