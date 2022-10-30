@@ -54,7 +54,7 @@ const INITIAL_STATE = { search: "" };
 
 export const ProductList: FC<Props> = () => {
   const formState = useForm(INITIAL_STATE);
-  console.log(formState);
+
   const { data, loading, fetchMore, variables, refetch } = useQuery<{
     products: Paginated<Product>;
   }>(PRODUCTS, {
