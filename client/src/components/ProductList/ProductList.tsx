@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import Image from "next/image";
 import { gql, useQuery } from "@apollo/client";
 import { Product } from "../../types/Product";
@@ -15,12 +15,15 @@ import Modal from "../Modal";
 import { useRouter } from "next/router";
 import { Paginated } from "../../types/util";
 import Button from "../Button";
+import { useForm } from "../../hooks/useForm";
+import Input from "../Input";
+import { useDebounce } from "../../hooks/useDebounce";
 
 interface Props {}
 
 const PRODUCTS = gql`
-  query Products($page: Float, $perPage: Float) {
-    products(active: true, page: $page, perPage: $perPage) {
+  query Products($page: Float, $perPage: Float, $search: String) {
+    products(active: true, page: $page, perPage: $perPage, search: $search) {
       hasMore
       nextPage
       edges {
@@ -47,17 +50,28 @@ const PRODUCTS = gql`
   }
 `;
 
+const INITIAL_STATE = { search: "" };
+
 export const ProductList: FC<Props> = () => {
-  const { data, loading, fetchMore, variables } = useQuery<{
+  const formState = useForm(INITIAL_STATE);
+  console.log(formState);
+  const { data, loading, fetchMore, variables, refetch } = useQuery<{
     products: Paginated<Product>;
   }>(PRODUCTS, {
-    // variables: { perPage: 1 },
+    variables: {
+      // perPage: 1,
+      search: formState.values.search,
+    },
   });
   const { query } = useRouter();
+
+  const debouncedSearch = useDebounce(refetch);
+  useEffect(debouncedSearch, [formState.values.search]);
 
   const loadMore = async () => {
     await fetchMore({
       variables: {
+        search: formState.values.search,
         page: data?.products.nextPage,
         perPage: variables?.perPage,
       },
@@ -75,6 +89,12 @@ export const ProductList: FC<Props> = () => {
 
   return (
     <>
+      <Input
+        className={styles.search}
+        formState={formState}
+        name="search"
+        label="Search"
+      />
       <div className={styles.products}>
         {data?.products.edges.map((product) => (
           <ProductListItem key={product.id} product={product} />

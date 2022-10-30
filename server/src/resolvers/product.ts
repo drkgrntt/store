@@ -13,6 +13,7 @@ import {
 } from "type-graphql";
 import { isAdmin } from "../middleware/isAdmin";
 import { Context, Paginated } from "../types";
+import { Op } from "sequelize";
 
 @ObjectType()
 class ProductPage implements Paginated<Product> {
@@ -52,15 +53,39 @@ export class ProductResolver {
     @Ctx() { me }: Context,
     @Arg("active", { nullable: true }) active?: boolean,
     @Arg("page", { nullable: true }) page: number = 0,
-    @Arg("perPage", { nullable: true }) perPage: number = 30
+    @Arg("perPage", { nullable: true }) perPage: number = 30,
+    @Arg("search", { nullable: true }) search?: string
   ): Promise<ProductPage> {
-    const where: { isActive?: boolean } = { isActive: true };
+    const where: { isActive?: boolean; [Op.or]?: Record<string, any>[] } = {
+      isActive: true,
+    };
     if (me?.isAdmin) {
       if (active === undefined) {
         delete where.isActive;
       } else {
         where.isActive = active;
       }
+    }
+
+    if (search) {
+      const categories = await Category.findAll({
+        attributes: ["id"],
+        where: { name: { [Op.iLike]: `%${search}%` } },
+        include: { model: Product, attributes: ["id"] },
+      });
+
+      const ids = categories.reduce<string[]>(
+        (ids, category) => [
+          ...new Set([...ids, ...category.products.map(({ id }) => id)]),
+        ],
+        []
+      );
+
+      where[Op.or] = [
+        { title: { [Op.iLike]: `%${search}%` } },
+        { id: ids },
+        { description: { [Op.iLike]: `%${search}%` } },
+      ];
     }
 
     const found = await Product.findAll({
