@@ -19,11 +19,18 @@ import { useForm } from "../../hooks/useForm";
 import Input from "../Input";
 import { useDebounce } from "../../hooks/useDebounce";
 
-interface Props {}
+interface Props {
+  adminView?: boolean;
+}
 
 const PRODUCTS = gql`
-  query Products($page: Float, $perPage: Float, $search: String) {
-    products(active: true, page: $page, perPage: $perPage, search: $search) {
+  query Products(
+    $active: Boolean
+    $page: Float
+    $perPage: Float
+    $search: String
+  ) {
+    products(active: $active, page: $page, perPage: $perPage, search: $search) {
       hasMore
       nextPage
       edges {
@@ -52,7 +59,7 @@ const PRODUCTS = gql`
 
 const INITIAL_STATE = { search: "" };
 
-export const ProductList: FC<Props> = () => {
+export const ProductList: FC<Props> = ({ adminView }) => {
   const formState = useForm(INITIAL_STATE);
 
   const { data, loading, fetchMore, variables, refetch } = useQuery<{
@@ -61,6 +68,7 @@ export const ProductList: FC<Props> = () => {
     variables: {
       // perPage: 1,
       search: formState.values.search,
+      active: !adminView ? true : undefined,
     },
   });
   const { query } = useRouter();
@@ -74,6 +82,7 @@ export const ProductList: FC<Props> = () => {
         search: formState.values.search,
         page: data?.products.nextPage,
         perPage: variables?.perPage,
+        active: variables?.active,
       },
     });
   };
@@ -134,7 +143,12 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
   const addProductToCart = () => addToCart(product);
 
   return (
-    <div className={styles.product}>
+    <div
+      className={combineClasses(
+        styles.product,
+        !product.isActive ? styles.inactive : ""
+      )}
+    >
       <div className={styles.imageContainer}>
         {product.images.length > 1 && (
           <Selectable

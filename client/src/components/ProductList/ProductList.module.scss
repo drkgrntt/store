@@ -19,6 +19,10 @@
   @media (min-width: 600px) {
     width: 15rem;
   }
+
+  &.inactive {
+    opacity: 0.5;
+  }
 }
 
 .imageContainer {

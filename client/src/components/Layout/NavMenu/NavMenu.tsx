@@ -11,6 +11,7 @@ import {
   FaPenNib,
   FaShoppingCart,
   FaPlus,
+  FaCogs,
 } from "react-icons/fa";
 import styles from "./NavMenu.module.scss";
 import { UrlObject } from "url";
@@ -144,14 +145,25 @@ const NavMenu: FC<Props> = () => {
               <FaUser /> Profile
             </NavLink>
             {user.isAdmin && (
-              <NavLink
-                onFocus={openMenu}
-                onBlur={closeMenu}
-                onClick={closeMenu}
-                href={modalHref("product-form")}
-              >
-                <FaPlus /> Add Product
-              </NavLink>
+              <>
+                <hr className={styles.line} />
+                <NavLink
+                  onFocus={openMenu}
+                  onBlur={closeMenu}
+                  onClick={closeMenu}
+                  href={modalHref("product-form")}
+                >
+                  <FaPlus /> Add Product
+                </NavLink>{" "}
+                <NavLink
+                  onFocus={openMenu}
+                  onBlur={closeMenu}
+                  onClick={closeMenu}
+                  href="/admin"
+                >
+                  <FaCogs /> Admin
+                </NavLink>
+              </>
             )}
           </>
         ) : (
