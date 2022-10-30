@@ -10,9 +10,11 @@ import { useModal } from "../../hooks/useModal";
 import Cart from "../Cart";
 import LoginForm from "../LoginForm";
 import RegisterForm from "../RegisterForm";
+import ForgotPasswordForm from "../ForgotPasswordForm";
 import Checkout from "../Checkout";
 import { useApolloClient } from "@apollo/client";
 import { useUser } from "../../hooks/useUser";
+import ResetForgottenPasswordForm from "../ResetForgottenPasswordForm";
 
 const Layout: FC = ({ children }) => {
   const { closeModal } = useModal();
@@ -55,6 +57,14 @@ const Layout: FC = ({ children }) => {
       <Modal className={styles.loginContainer} name="login">
         <RegisterForm />
         <LoginForm />
+      </Modal>
+
+      <Modal name="forgot-password">
+        <ForgotPasswordForm />
+      </Modal>
+
+      <Modal name="reset-forgotten-password">
+        <ResetForgottenPasswordForm />
       </Modal>
 
       <Footer />

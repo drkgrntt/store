@@ -5,6 +5,7 @@ import fs from "fs";
 
 export const ADMIN_NEW_ORDER = "admin-new-order";
 export const CUSTOMER_NEW_ORDER = "customer-new-order";
+export const FORGOT_PASSWORD = "forgot-password";
 
 type EmailTemplateVariables = Record<string, string | Record<string, string>[]>;
 interface EmailTemplate {
@@ -15,6 +16,18 @@ interface EmailTemplate {
 }
 
 const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
+  [FORGOT_PASSWORD]: {
+    subject: "Forgot Password",
+    template: FORGOT_PASSWORD,
+    partials: {
+      actionButton: "action-button",
+    },
+    variables: {
+      actionText: "",
+      actionLink: "",
+      email: "",
+    },
+  },
   [ADMIN_NEW_ORDER]: {
     subject: "A new order has been placed!",
     template: ADMIN_NEW_ORDER,
@@ -99,14 +112,15 @@ export const parseEmail = <Variables extends EmailTemplateVariables>(
 
 export const sendEmail = async <Variables extends EmailTemplateVariables>(
   template: keyof typeof EMAIL_TEMPLATES,
-  variables: Variables
+  variables: Variables,
+  recipient = process.env.ADMIN_EMAIL
 ) => {
   const mailer = new Mailgun(formData).client({
     username: "api",
     key: process.env.MAILGUN_SECRET_KEY as string,
   });
   const from = "Midwest Daisy <info@midwestdaisy.com>";
-  const to = process.env.ADMIN_EMAIL;
+  const to = recipient;
   const subject = EMAIL_TEMPLATES[template].subject;
   const html = parseEmail(EMAIL_TEMPLATES[template].template, variables);
 

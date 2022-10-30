@@ -13,6 +13,8 @@ import {
 import { isAuth } from "../middleware/isAuth";
 import { Context } from "../types";
 import { AddressType } from "../models/Address";
+import { FORGOT_PASSWORD, sendEmail } from "../utils/email";
+import { Op } from "sequelize";
 
 @Resolver(User)
 export class UserResolver {
@@ -163,29 +165,54 @@ export class UserResolver {
     return true;
   }
 
-  // @Mutation(() => Boolean)
-  // async forgotPassword(@Arg("email") email: string): Promise<boolean> {
-  //   const user = await User.findOne({ where: { email } });
-  //   if (!user) return true;
+  @Mutation(() => Boolean)
+  async forgotPassword(@Arg("email") email: string): Promise<boolean> {
+    const user = await User.findOne({
+      where: { email: { [Op.iLike]: email } },
+    });
+    if (!user) return true;
 
-  //   const token = await Token.generate(user.id, undefined, 1);
-  //   const subject = "Password Reset";
-  //   const link = `${process.env.APP_BASE_URL}/profile?token=${token.value}`;
-  //   const template = templates.passwordReset;
-  //   const variables = {
-  //     name: user.penName,
-  //     link,
-  //   };
+    const token = await Token.generate(user.id, undefined, 1);
+    const link = `${process.env.APP_BASE_URL}/?modal=reset-forgotten-password&modal-params=token&token=${token.value}`;
+    const variables = {
+      email,
+      actionButton: [
+        {
+          actionText: "Reset my password",
+          actionLink: link,
+        },
+      ],
+    };
 
-  //   const result = await this.mailer.sendEmail(
-  //     user.email,
-  //     subject,
-  //     template,
-  //     variables
-  //   );
+    const result = await sendEmail(FORGOT_PASSWORD, variables, user.email);
 
-  //   return result;
-  // }
+    return !!result;
+  }
+
+  @Mutation(() => Boolean)
+  async resetForgottenPassword(
+    @Arg("email") email: string,
+    @Arg("password") password: string,
+    @Arg("token") token: string
+  ): Promise<boolean> {
+    const user = await Token.verifyAndFindUser(token);
+    if (!user)
+      throw new Error(
+        "There is a problem with this link. Please try getting another link."
+      );
+
+    if (user.email.toLowerCase() !== email.toLowerCase()) {
+      throw new Error(
+        "This email does not match any in our system. Please try again."
+      );
+    }
+
+    const passwordHash = await bcrypt.hash(password, 13);
+    user.password = passwordHash;
+    await user.save();
+
+    return true;
+  }
 
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)

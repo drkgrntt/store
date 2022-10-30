@@ -45,7 +45,7 @@ const RegisterForm: FC = () => {
   const formState = useForm(INITIAL_STATE, VALIDATIONS);
   const [register] = useMutation<{ register: User }>(REGISTER);
   const { query, push } = useRouter();
-  const { user, refetch } = useUser();
+  const { refetch } = useUser();
   const { createErrorNotification, createToastNotification } =
     useNotification();
 

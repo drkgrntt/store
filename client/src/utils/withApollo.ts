@@ -45,10 +45,6 @@ const createClient = (ctx: NextPageContext) => {
           }
           break;
         case "object":
-          if (Array.isArray(data[key])) {
-            data[key].forEach((item: any) => convertDates(item));
-            break;
-          }
           convertDates(data[key]);
           break;
       }

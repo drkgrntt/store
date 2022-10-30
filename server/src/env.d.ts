@@ -13,7 +13,7 @@ declare namespace NodeJS {
     MAILGUN_SECRET_KEY: string;
     MAILGUN_DOMAIN: string;
     ADMIN_EMAIL: string;
-    // APP_BASE_URL: string;
+    APP_BASE_URL: string;
     // API_BASE_URL: string;
   }
 }
