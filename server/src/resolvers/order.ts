@@ -23,6 +23,7 @@ import { isAdmin } from "../middleware/isAdmin";
 import Stripe from "stripe";
 import { ADMIN_NEW_ORDER, CUSTOMER_NEW_ORDER, sendEmail } from "../utils/email";
 import { addressToString } from "../utils";
+import { Op, WhereOptions } from "sequelize";
 
 @Resolver(OrderProduct)
 export class OrderedProductResolver {
@@ -40,6 +41,16 @@ export class OrderedProductResolver {
 
 @Resolver(Order)
 export class OrderResolver {
+  @FieldResolver(() => Boolean)
+  isShipped(@Root() order: Order): boolean {
+    return !!order.shippedOn;
+  }
+
+  @FieldResolver(() => Boolean)
+  isComplete(@Root() order: Order): boolean {
+    return !!order.completedOn;
+  }
+
   @FieldResolver(() => User)
   async user(@Root() order: Order): Promise<User> {
     if (order.user) return order.user;
@@ -85,10 +96,22 @@ export class OrderResolver {
 
   @Query(() => [Order])
   @UseMiddleware(isAdmin)
-  async allOrders(): Promise<Order[]> {
+  async allOrders(
+    @Arg("isShipped", { nullable: true }) isShipped: boolean,
+    @Arg("isComplete", { nullable: true }) isComplete: boolean
+  ): Promise<Order[]> {
+    let where: WhereOptions = {};
+
+    if (typeof isShipped !== "undefined")
+      where.shippedOn = isShipped ? { [Op.not]: null } : null;
+    if (typeof isComplete !== "undefined")
+      where.completedOn = isComplete ? { [Op.not]: null } : null;
+
     const orders = await Order.findAll({
+      where,
       order: [["createdAt", "asc"]],
     });
+
     return orders;
   }
 
@@ -293,15 +316,15 @@ export class OrderResolver {
   @UseMiddleware(isAdmin)
   async updateOrder(
     @Arg("id") id: string,
-    @Arg("isShipped", { nullable: true }) isShipped?: boolean,
-    @Arg("isComplete", { nullable: true }) isComplete?: boolean,
+    @Arg("shippedOn", { nullable: true }) shippedOn?: Date,
+    @Arg("completedOn", { nullable: true }) completedOn?: Date,
     @Arg("trackingNumber", { nullable: true }) trackingNumber?: string
   ): Promise<Order> {
     const order = await Order.findOne({ where: { id } });
     if (!order) throw new Error("Invalid id");
 
-    if (isShipped !== undefined) order.isShipped = isShipped;
-    if (isComplete !== undefined) order.isComplete = isComplete;
+    if (shippedOn !== undefined) order.shippedOn = shippedOn;
+    if (completedOn !== undefined) order.completedOn = completedOn;
     if (trackingNumber !== undefined) order.trackingNumber = trackingNumber;
 
     await order.save();

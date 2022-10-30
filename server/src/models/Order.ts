@@ -59,19 +59,15 @@ export class Order extends Model {
   @BelongsTo(() => Address)
   address: Address;
 
-  @Field()
-  @AllowNull(false)
-  @Default(false)
+  @Field({ nullable: true })
   @Column
-  isShipped: boolean;
+  shippedOn: Date;
 
-  @Field()
-  @AllowNull(false)
-  @Default(false)
+  @Field({ nullable: true })
   @Column
-  isComplete: boolean;
+  completedOn: Date;
 
-  @Field()
+  @Field({ nullable: true })
   @Column
   trackingNumber: string;
 
