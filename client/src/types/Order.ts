@@ -6,6 +6,9 @@ export interface Order {
   id: string;
   isShipped: boolean;
   isComplete: boolean;
+  shippedOn?: Date;
+  completedOn?: Date;
+  trackingNumber?: string;
   totalCost: number;
   userId: string;
   user: User;

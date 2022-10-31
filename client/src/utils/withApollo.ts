@@ -12,6 +12,13 @@ import { AppProps } from "next/app";
 import { Paginated } from "../types/util";
 import { Product } from "../types/Product";
 
+const POSSIBLE_DATE_FIELDS = [
+  "createdAt",
+  "updatedAt",
+  "completedOn",
+  "shippedOn",
+];
+
 const createClient = (ctx: NextPageContext) => {
   const httpLink = createHttpLink({
     uri: process.env.NEXT_PUBLIC_API_URL,
@@ -39,7 +46,7 @@ const createClient = (ctx: NextPageContext) => {
     Object.keys(data).forEach((key) => {
       switch (typeof data[key]) {
         case "string":
-          if (key === "createdAt" || key === "updatedAt") {
+          if (POSSIBLE_DATE_FIELDS.includes(key)) {
             // This is what we came here to do
             data[key] = new Date(data[key]);
           }

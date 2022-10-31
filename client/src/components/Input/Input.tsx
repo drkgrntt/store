@@ -175,7 +175,11 @@ const Input: FC<Props> = ({
             styles.input,
             validation ? styles.invalid : ""
           )}
-          value={value?.toString() || ""}
+          value={
+            type === "date"
+              ? (value as Date)?.toISOString().split("T")[0]
+              : value?.toString() || ""
+          }
           required={!!required}
           onChange={onChange}
           onBlur={onBlur}

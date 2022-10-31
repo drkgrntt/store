@@ -35,6 +35,7 @@ const Profile: FC = () => {
   return (
     <div>
       <PasswordReset />
+      <h3>Orders</h3>
       <OrderList orders={user.orders} />
       <AddressList
         addresses={user.addresses}

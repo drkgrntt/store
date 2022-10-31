@@ -62,6 +62,9 @@ const ME = gql`
         totalCost
         isShipped
         isComplete
+        shippedOn
+        completedOn
+        trackingNumber
         createdAt
         orderedProducts {
           id

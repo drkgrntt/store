@@ -1,7 +1,13 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { emptyValue } from "../utils";
 
-export type InputValueType = string | number | Date | boolean | null;
+export type InputValueType =
+  | string
+  | number
+  | Date
+  | boolean
+  | null
+  | undefined;
 
 export type Validation<FormValues> = {
   message: string;

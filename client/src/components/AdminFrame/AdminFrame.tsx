@@ -2,6 +2,8 @@ import Error from "next/error";
 import { FC } from "react";
 import { useIsAuth } from "../../hooks/useIsAuth";
 import { useUser } from "../../hooks/useUser";
+import Modal from "../Modal";
+import OrderEditForm from "../OrderEditForm";
 import styles from "./AdminFrame.module.scss";
 
 interface Props {
@@ -19,6 +21,10 @@ const AdminFrame: FC<Props> = ({ children, className }) => {
     <div>
       <h2 className={styles.heading}>Admin Dashboard</h2>
       <div className={className}>{children}</div>
+
+      <Modal name="order-edit-form">
+        <OrderEditForm />
+      </Modal>
     </div>
   );
 };

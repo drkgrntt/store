@@ -28,6 +28,9 @@ const ALL_ORDERS = gql`
       totalCost
       isShipped
       isComplete
+      trackingNumber
+      shippedOn
+      completedOn
       createdAt
       orderedProducts {
         id
@@ -70,7 +73,8 @@ const Admin: FC<Props> = () => {
         <ProductList adminView />
       </div>
       <div className={styles.orders}>
-        <OrderList orders={allOrders ?? []} />
+        <h3>Orders</h3>
+        <OrderList orders={allOrders ?? []} isEditable />
       </div>
     </AdminFrame>
   );

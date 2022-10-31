@@ -1,0 +1,13 @@
+.item {
+  position: relative;
+}
+
+.edit {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  & > * {
+    color: var(--primary-color);
+  }
+}
