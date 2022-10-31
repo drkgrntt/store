@@ -18,6 +18,7 @@ const ME = gql`
       }
       addresses {
         id
+        recipient
         lineOne
         lineTwo
         city
@@ -31,6 +32,7 @@ const ME = gql`
       }
       billingAddress {
         id
+        recipient
         lineOne
         lineTwo
         city
@@ -44,6 +46,7 @@ const ME = gql`
       }
       shippingAddresses {
         id
+        recipient
         lineOne
         lineTwo
         city
@@ -60,6 +63,7 @@ const ME = gql`
         userId
         address {
           id
+          recipient
           lineOne
           lineTwo
           city

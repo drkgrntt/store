@@ -30,6 +30,7 @@ const ALL_ORDERS = gql`
         userId
         address {
           id
+          recipient
           lineOne
           lineTwo
           city

@@ -5,6 +5,7 @@ import { Address, AddressType } from "../../types/Address";
 import Button from "../Button";
 import Input from "../Input";
 import Selectable from "../Selectable";
+import { State, City } from "country-state-city";
 
 interface Props {
   address?: Address;
@@ -18,6 +19,7 @@ const CREATE_ADDRESS = gql`
     $state: String!
     $city: String!
     $lineOne: String!
+    $recipient: String!
     $lineTwo: String
   ) {
     createAddress(
@@ -26,9 +28,11 @@ const CREATE_ADDRESS = gql`
       state: $state
       city: $city
       lineOne: $lineOne
+      recipient: $recipient
       lineTwo: $lineTwo
     ) {
       id
+      recipient
       lineOne
       lineTwo
       city
@@ -52,6 +56,7 @@ const UPDATE_ADDRESS = gql`
     $city: String
     $lineOne: String
     $lineTwo: String
+    $recipient: String
   ) {
     updateAddress(
       id: $id
@@ -61,8 +66,10 @@ const UPDATE_ADDRESS = gql`
       city: $city
       lineOne: $lineOne
       lineTwo: $lineTwo
+      recipient: $recipient
     ) {
       id
+      recipient
       lineOne
       lineTwo
       city
@@ -78,6 +85,7 @@ const UPDATE_ADDRESS = gql`
 `;
 
 const INITIAL_STATE = {
+  recipient: "",
   lineOne: "",
   lineTwo: "",
   city: "",
@@ -101,10 +109,12 @@ const AddressForm: FC<Props> = ({ address, onCancel = () => null }) => {
     event.preventDefault();
 
     const mutateAddress = address ? updateAddress : createAddress;
-    const { lineOne, lineTwo, city, state, zipCode, type } = formState.values;
+    const { recipient, lineOne, lineTwo, city, state, zipCode, type } =
+      formState.values;
 
     mutateAddress({
       variables: {
+        recipient,
         lineOne,
         lineTwo,
         city,
@@ -124,6 +134,18 @@ const AddressForm: FC<Props> = ({ address, onCancel = () => null }) => {
     });
   };
 
+  const states = State.getStatesOfCountry("US").map((state) => {
+    return {
+      value: state.isoCode,
+      text: state.name,
+    };
+  });
+  const cities = City.getCitiesOfState("US", formState.values.state).map(
+    (city) => {
+      return { value: city.name, text: city.name };
+    }
+  );
+
   return (
     <form onSubmit={handleSubmit}>
       <Input
@@ -134,10 +156,31 @@ const AddressForm: FC<Props> = ({ address, onCancel = () => null }) => {
         options={TYPE_OPTIONS}
         required
       />
+      <Input
+        formState={formState}
+        name="recipient"
+        label="Recipient"
+        required
+      />
       <Input formState={formState} name="lineOne" label="Line One" required />
       <Input formState={formState} name="lineTwo" label="Line Two" />
-      <Input formState={formState} name="city" label="City" required />
-      <Input formState={formState} name="state" label="State" required />
+      {/* <Input formState={formState} name="city" label="City" required /> */}
+      <Input
+        formState={formState}
+        name="state"
+        label="State"
+        required
+        type="select"
+        options={states}
+      />
+      <Input
+        formState={formState}
+        name="city"
+        label="City"
+        required
+        type="select"
+        options={cities}
+      />
       <Input formState={formState} name="zipCode" label="Zip Code" required />
       <p>{validation}</p>
       <Button type="submit">Save Address</Button>

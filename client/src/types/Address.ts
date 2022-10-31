@@ -1,5 +1,6 @@
 export interface Address {
   id: string;
+  recipient: string;
   lineOne: string;
   lineTwo?: string;
   city: string;

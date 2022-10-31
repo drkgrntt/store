@@ -48,6 +48,7 @@ const AddressList: FC<Props> = ({
             <li key={address.id} className={styles.listItem}>
               <div className={styles.address}>
                 <span>{ucFirst(address.type)}:</span>
+                <span>{address.recipient}</span>
                 <span>{address.lineOne}</span>
                 {address.lineTwo && <span>{address.lineTwo}</span>}
                 <span>

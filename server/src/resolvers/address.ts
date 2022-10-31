@@ -36,6 +36,7 @@ export class AddressResolver {
   @UseMiddleware(isAuth)
   async createAddress(
     @Ctx() { me }: Context,
+    @Arg("recipient") recipient: string,
     @Arg("lineOne") lineOne: string,
     @Arg("lineTwo", { nullable: true }) lineTwo: string,
     @Arg("city") city: string,
@@ -44,6 +45,7 @@ export class AddressResolver {
     @Arg("type") type: AddressType
   ): Promise<Address> {
     const address = await Address.create({
+      recipient,
       lineOne,
       lineTwo,
       city,
@@ -61,6 +63,7 @@ export class AddressResolver {
   async updateAddress(
     @Ctx() { me }: Context,
     @Arg("id") id: string,
+    @Arg("recipient", { nullable: true }) recipient?: string,
     @Arg("lineOne", { nullable: true }) lineOne?: string,
     @Arg("lineTwo", { nullable: true }) lineTwo?: string,
     @Arg("city", { nullable: true }) city?: string,
@@ -71,6 +74,7 @@ export class AddressResolver {
     const address = await Address.findOne({ where: { id, userId: me.id } });
     if (!address) throw new Error("Invalid id");
 
+    if (recipient !== undefined) address.recipient = recipient;
     if (lineOne !== undefined) address.lineOne = lineOne;
     if (lineTwo !== undefined) address.lineTwo = lineTwo;
     if (city !== undefined) address.city = city;

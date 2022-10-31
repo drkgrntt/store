@@ -37,6 +37,11 @@ export class Address extends Model {
   @Field()
   @AllowNull(false)
   @Column
+  recipient: string;
+
+  @Field()
+  @AllowNull(false)
+  @Column
   lineOne: string;
 
   @Field({ nullable: true })
