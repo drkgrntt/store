@@ -11,6 +11,7 @@ import { createWithApollo } from "./createWithApollo";
 import { AppProps } from "next/app";
 import { Paginated } from "../types/util";
 import { Product } from "../types/Product";
+import { Order } from "../types/Order";
 
 const POSSIBLE_DATE_FIELDS = [
   "createdAt",
@@ -77,6 +78,18 @@ const createClient = (ctx: NextPageContext) => {
               existing: Paginated<Product> | undefined,
               incoming: Paginated<Product>
             ): Paginated<Product> {
+              return {
+                ...incoming,
+                edges: [...(existing?.edges || []), ...incoming.edges],
+              };
+            },
+          },
+          allOrders: {
+            keyArgs: [],
+            merge(
+              existing: Paginated<Order> | undefined,
+              incoming: Paginated<Order>
+            ): Paginated<Order> {
               return {
                 ...incoming,
                 edges: [...(existing?.edges || []), ...incoming.edges],

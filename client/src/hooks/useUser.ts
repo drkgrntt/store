@@ -58,7 +58,19 @@ const ME = gql`
       orders {
         id
         userId
-        addressId
+        address {
+          id
+          lineOne
+          lineTwo
+          city
+          state
+          zipCode
+          country
+          type
+          userId
+          createdAt
+          updatedAt
+        }
         totalCost
         isShipped
         isComplete

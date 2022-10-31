@@ -10,15 +10,17 @@ import {
 import {
   Arg,
   Ctx,
+  Field,
   FieldResolver,
   Mutation,
+  ObjectType,
   Query,
   Resolver,
   Root,
   UseMiddleware,
 } from "type-graphql";
 import { isAuth } from "../middleware/isAuth";
-import { Context } from "../types";
+import { Context, Paginated } from "../types";
 import { isAdmin } from "../middleware/isAdmin";
 import Stripe from "stripe";
 import { ADMIN_NEW_ORDER, CUSTOMER_NEW_ORDER, sendEmail } from "../utils/email";
@@ -37,6 +39,18 @@ export class OrderedProductResolver {
       throw new Error("Ordered product needs a product associated.");
     return product;
   }
+}
+
+@ObjectType()
+class OrderPage implements Paginated<Order> {
+  @Field()
+  hasMore: boolean;
+
+  @Field({ nullable: true })
+  nextPage?: number;
+
+  @Field(() => [Order])
+  edges: Order[];
 }
 
 @Resolver(Order)
@@ -94,12 +108,14 @@ export class OrderResolver {
     }, 0);
   }
 
-  @Query(() => [Order])
+  @Query(() => OrderPage)
   @UseMiddleware(isAdmin)
   async allOrders(
+    @Arg("page", { nullable: true }) page: number = 0,
+    @Arg("perPage", { nullable: true }) perPage: number = 30,
     @Arg("isShipped", { nullable: true }) isShipped: boolean,
     @Arg("isComplete", { nullable: true }) isComplete: boolean
-  ): Promise<Order[]> {
+  ): Promise<OrderPage> {
     let where: WhereOptions = {};
 
     if (typeof isShipped !== "undefined")
@@ -107,12 +123,21 @@ export class OrderResolver {
     if (typeof isComplete !== "undefined")
       where.completedOn = isComplete ? { [Op.not]: null } : null;
 
-    const orders = await Order.findAll({
+    const found = await Order.findAll({
       where,
-      order: [["createdAt", "asc"]],
+      limit: perPage + 1,
+      offset: page * perPage,
+      order: [["createdAt", "desc"]],
     });
 
-    return orders;
+    const orders = found.slice(0, perPage);
+    const hasMore = found.length > perPage;
+
+    return {
+      edges: orders,
+      hasMore,
+      nextPage: hasMore ? page + 1 : undefined,
+    };
   }
 
   @Query(() => [Order])
@@ -120,7 +145,7 @@ export class OrderResolver {
   async orders(@Ctx() { me }: Context): Promise<Order[]> {
     const orders = await Order.findAll({
       where: { userId: me.id },
-      order: [["createdAt", "asc"]],
+      order: [["createdAt", "desc"]],
     });
     return orders;
   }

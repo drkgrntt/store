@@ -1,6 +1,9 @@
 import { gql, useQuery } from "@apollo/client";
 import { FC } from "react";
+import { Order } from "../../../types/Order";
+import { Paginated } from "../../../types/util";
 import AdminFrame from "../../AdminFrame";
+import Button from "../../Button";
 import OrderList from "../../OrderList";
 import ProductList from "../../ProductList";
 import styles from "./Admin.module.scss";
@@ -8,54 +11,68 @@ import styles from "./Admin.module.scss";
 interface Props {}
 
 const ALL_ORDERS = gql`
-  query AllOrders {
-    allOrders {
-      id
-      userId
-      address {
+  query AllOrders(
+    $isShipped: Boolean
+    $isComplete: Boolean
+    $page: Float
+    $perPage: Float
+  ) {
+    allOrders(
+      isShipped: $isShipped
+      isComplete: $isComplete
+      page: $page
+      perPage: $perPage
+    ) {
+      hasMore
+      nextPage
+      edges {
         id
-        lineOne
-        lineTwo
-        city
-        state
-        zipCode
-        country
-        type
         userId
-        createdAt
-        updatedAt
-      }
-      totalCost
-      isShipped
-      isComplete
-      trackingNumber
-      shippedOn
-      completedOn
-      createdAt
-      orderedProducts {
-        id
-        count
-        price
-        createdAt
-        updatedAt
-        product {
+        address {
           id
-          title
-          description
-          price
-          quantity
-          isMadeToOrder
-          isActive
+          lineOne
+          lineTwo
+          city
+          state
+          zipCode
+          country
+          type
+          userId
           createdAt
           updatedAt
-          images {
+        }
+        totalCost
+        isShipped
+        isComplete
+        trackingNumber
+        shippedOn
+        completedOn
+        createdAt
+        orderedProducts {
+          id
+          count
+          price
+          createdAt
+          updatedAt
+          product {
             id
-            url
             title
             description
-            primary
+            price
+            quantity
+            isMadeToOrder
+            isActive
             createdAt
             updatedAt
+            images {
+              id
+              url
+              title
+              description
+              primary
+              createdAt
+              updatedAt
+            }
           }
         }
       }
@@ -64,7 +81,26 @@ const ALL_ORDERS = gql`
 `;
 
 const Admin: FC<Props> = () => {
-  const { data: { allOrders } = {} } = useQuery(ALL_ORDERS);
+  const {
+    data: { allOrders } = {},
+    fetchMore,
+    variables,
+  } = useQuery<{
+    allOrders: Paginated<Order>;
+  }>(ALL_ORDERS, {
+    variables: {
+      perPage: 10,
+    },
+  });
+
+  const loadMore = async () => {
+    await fetchMore({
+      variables: {
+        page: allOrders?.nextPage,
+        perPage: variables?.perPage,
+      },
+    });
+  };
 
   return (
     <AdminFrame className={styles.container}>
@@ -74,7 +110,8 @@ const Admin: FC<Props> = () => {
       </div>
       <div className={styles.orders}>
         <h3>Orders</h3>
-        <OrderList orders={allOrders ?? []} isEditable />
+        <OrderList orders={allOrders?.edges ?? []} isEditable />
+        {allOrders?.hasMore && <Button onClick={loadMore}>More</Button>}
       </div>
     </AdminFrame>
   );

@@ -92,6 +92,7 @@ export class ProductResolver {
       where,
       limit: perPage + 1,
       offset: page * perPage,
+      order: [["createdAt", "desc"]],
     });
 
     const products = found.slice(0, perPage);
