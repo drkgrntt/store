@@ -76,6 +76,10 @@ export class Order extends Model {
   @Column
   paymentIntentId: string;
 
+  @Field({ nullable: true })
+  @Column(DataType.STRING(1000))
+  notes: string;
+
   @Field()
   createdAt: Date;
 

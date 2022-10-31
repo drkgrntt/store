@@ -53,7 +53,10 @@ export class UserResolver {
   @FieldResolver(() => [Order])
   async orders(@Root() user: User): Promise<Order[]> {
     if (user.orders?.length) return user.orders;
-    const orders = await Order.findAll({ where: { userId: user.id } });
+    const orders = await Order.findAll({
+      where: { userId: user.id },
+      order: [["createdAt", "desc"]],
+    });
     return orders;
   }
 

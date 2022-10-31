@@ -61,6 +61,7 @@ const ME = gql`
       orders {
         id
         userId
+        notes
         address {
           id
           recipient

@@ -17,6 +17,7 @@ const ORDER = gql`
   query Order($id: String!) {
     order(id: $id) {
       id
+      notes
       totalCost
       isShipped
       isComplete
@@ -32,17 +33,20 @@ const UPDATE_ORDER = gql`
   mutation UpdateOrder(
     $id: String!
     $trackingNumber: String
+    $notes: String
     $completedOn: DateTime
     $shippedOn: DateTime
   ) {
     updateOrder(
       id: $id
       trackingNumber: $trackingNumber
+      notes: $notes
       completedOn: $completedOn
       shippedOn: $shippedOn
     ) {
       id
       shippedOn
+      notes
       completedOn
       trackingNumber
       isShipped
@@ -52,6 +56,7 @@ const UPDATE_ORDER = gql`
 `;
 
 const INITIAL_STATE = {
+  notes: undefined,
   shippedOn: undefined,
   completedOn: undefined,
   trackingNumber: undefined,
@@ -76,10 +81,16 @@ const OrderEditForm: FC<Props> = () => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const { shippedOn, completedOn, trackingNumber } = formState.values;
+    const { shippedOn, completedOn, trackingNumber, notes } = formState.values;
 
     updateOrder({
-      variables: { id: order.id, shippedOn, completedOn, trackingNumber },
+      variables: {
+        id: order.id,
+        shippedOn,
+        completedOn,
+        trackingNumber,
+        notes,
+      },
       onCompleted() {
         createToastNotification({ title: "Order updated" });
         closeModal();
@@ -113,6 +124,7 @@ const OrderEditForm: FC<Props> = () => {
         label="Tracking Number"
         formState={formState}
       />
+      <Input name="notes" label="Notes" formState={formState} type="textarea" />
       <Button type="submit" className={styles.submit}>
         Update
       </Button>

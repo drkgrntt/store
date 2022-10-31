@@ -25,6 +25,7 @@ interface Props {}
 
 const INITIAL_STATE = {
   addressId: "",
+  notes: "",
 };
 
 const PLACE_ORDER = gql`
@@ -32,17 +33,22 @@ const PLACE_ORDER = gql`
     $addressId: String!
     $clientSecret: String!
     $dryRun: Boolean
+    $notes: String
   ) {
     placeOrder(
       addressId: $addressId
       clientSecret: $clientSecret
       dryRun: $dryRun
+      notes: $notes
     ) {
       id
       userId
       addressId
       isShipped
       isComplete
+      shippedOn
+      completedOn
+      notes
       user {
         id
         email
@@ -94,12 +100,6 @@ const PLACE_ORDER = gql`
 const CLIENT_SECRET = gql`
   query ClientSecret($totalCost: Float!, $clientSecret: String) {
     clientSecret(totalCost: $totalCost, clientSecret: $clientSecret)
-  }
-`;
-
-const PAYMENT_SUCCEEDED = gql`
-  query PaymentSucceeded($clientSecret: String!) {
-    paymentSucceeded(clientSecret: $clientSecret)
   }
 `;
 
@@ -268,6 +268,12 @@ const CheckoutFormWithStripe: FC<{
           formState={formState}
         />
         <Selectable onClick={showAddressForm}>New address</Selectable>
+        <Input
+          type="textarea"
+          name="notes"
+          label="Notes"
+          formState={formState}
+        />
         <PaymentElement />
         <p>{validation}</p>
         <Button

@@ -231,6 +231,7 @@ export class OrderResolver {
     @Ctx() { me, sequelize }: Context,
     @Arg("addressId") addressId: string,
     @Arg("clientSecret") clientSecret: string,
+    @Arg("notes", { nullable: true }) notes?: string,
     @Arg("dryRun", { nullable: true }) dryRun?: boolean
   ): Promise<Order> {
     if (!dryRun) {
@@ -245,7 +246,7 @@ export class OrderResolver {
       const [paymentIntentId] = clientSecret.split("_secret");
 
       let order = await Order.create(
-        { addressId, userId: me.id, paymentIntentId },
+        { addressId, userId: me.id, paymentIntentId, notes },
         { transaction }
       );
 
@@ -343,7 +344,8 @@ export class OrderResolver {
     @Arg("id") id: string,
     @Arg("shippedOn", { nullable: true }) shippedOn?: Date,
     @Arg("completedOn", { nullable: true }) completedOn?: Date,
-    @Arg("trackingNumber", { nullable: true }) trackingNumber?: string
+    @Arg("trackingNumber", { nullable: true }) trackingNumber?: string,
+    @Arg("notes", { nullable: true }) notes?: string
   ): Promise<Order> {
     const order = await Order.findOne({ where: { id } });
     if (!order) throw new Error("Invalid id");
@@ -351,6 +353,7 @@ export class OrderResolver {
     if (shippedOn !== undefined) order.shippedOn = shippedOn;
     if (completedOn !== undefined) order.completedOn = completedOn;
     if (trackingNumber !== undefined) order.trackingNumber = trackingNumber;
+    if (notes !== undefined) order.notes = notes;
 
     await order.save();
 

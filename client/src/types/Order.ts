@@ -9,6 +9,8 @@ export interface Order {
   shippedOn?: Date;
   completedOn?: Date;
   trackingNumber?: string;
+  paymentIntentId: string;
+  notes?: string;
   totalCost: number;
   userId: string;
   user: User;

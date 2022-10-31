@@ -37,7 +37,7 @@ export class Product extends Model {
   title: string;
 
   @Field()
-  @Column
+  @Column(DataType.STRING(1000))
   description: string;
 
   @Field()

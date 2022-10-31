@@ -43,6 +43,8 @@ const ALL_ORDERS = gql`
           updatedAt
         }
         totalCost
+        paymentIntentId
+        notes
         isShipped
         isComplete
         trackingNumber
