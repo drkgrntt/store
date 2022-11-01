@@ -20,6 +20,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import Loader from "../Loader";
 import { useCart } from "../../providers/cart";
 import { useNotification } from "../../providers/notification";
+import styles from "./Checkout.module.scss";
 
 interface Props {}
 
@@ -175,8 +176,8 @@ const CheckoutFormWithStripe: FC<{
   const [placeOrder] = useMutation(PLACE_ORDER);
   const { asPath, push, query } = useRouter();
   const { shippingAddresses, addressToString } = useAddresses();
-  const [validation, setValidation] = useState("");
-  const { createToastNotification } = useNotification();
+  const { createToastNotification, createErrorNotification } =
+    useNotification();
 
   useEffect(() => {
     if (!query.payment_intent_client_secret) return;
@@ -191,11 +192,13 @@ const CheckoutFormWithStripe: FC<{
           title: "Thank you!",
           body: "Your order has been placed.",
         });
-        setValidation("");
         push("/");
       },
       onError(error) {
-        setValidation(error.message);
+        createErrorNotification({
+          title: "Problem with checkout",
+          body: error.message,
+        });
         push({ query: { ...query, payment_intent_client_secret: [] } });
       },
     });
@@ -205,7 +208,10 @@ const CheckoutFormWithStripe: FC<{
     event.preventDefault();
 
     if (!stripe || !elements) {
-      setValidation("We are having issues. Please try again later.");
+      createErrorNotification({
+        title: "Problem with checkout",
+        body: "We are having issues. Please try again later.",
+      });
       return;
     }
 
@@ -216,7 +222,6 @@ const CheckoutFormWithStripe: FC<{
         dryRun: true,
       },
       async onCompleted() {
-        setValidation("");
         const result = await stripe.confirmPayment({
           elements,
           confirmParams: {
@@ -229,10 +234,12 @@ const CheckoutFormWithStripe: FC<{
 
         if (result.error) {
           // Show error to your customer (for example, payment details incomplete)
-          setValidation(
-            result.error.message ??
-              "We are having issues. Please try again later."
-          );
+          createErrorNotification({
+            title: "Problem with checkout",
+            body:
+              result.error.message ??
+              "We are having issues. Please try again later.",
+          });
         } else {
           // placeOrder({
           //   variables: { addressId: formState.values.addressId },
@@ -248,14 +255,17 @@ const CheckoutFormWithStripe: FC<{
         }
       },
       onError(error) {
-        setValidation(error.message);
+        createErrorNotification({
+          title: "Problem with checkout",
+          body: error.message,
+        });
       },
     });
   };
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className={styles.form}>
         <Input
           type="select"
           label="Where are we shipping to?"
@@ -275,7 +285,6 @@ const CheckoutFormWithStripe: FC<{
           formState={formState}
         />
         <PaymentElement />
-        <p>{validation}</p>
         <Button
           disabled={!formState.isValid || !stripe || !elements}
           type="submit"

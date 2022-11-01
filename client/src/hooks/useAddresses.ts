@@ -7,7 +7,7 @@ export const useAddresses = () => {
   const { shippingAddresses = [], billingAddress, addresses = [] } = user ?? {};
 
   const addressToString = (address: Address) =>
-    `${address?.recipient} ${address?.lineOne}${
+    `${address?.recipient}, ${address?.lineOne}${
       address?.lineTwo ? " " + address.lineTwo : ""
     }, ${address?.city}, ${address?.state} ${address?.zipCode}, ${
       address?.country
