@@ -5,6 +5,7 @@ import OrderList from "../../OrderList";
 import { useIsAuth } from "../../../hooks/useIsAuth";
 import { useUser } from "../../../hooks/useUser";
 import PasswordReset from "../../PasswordReset";
+import styles from "./Profile.module.scss";
 
 const PROFILE_STATE = {
   addressId: "",
@@ -33,19 +34,23 @@ const Profile: FC = () => {
   if (!user) return null;
 
   return (
-    <div>
-      <PasswordReset />
-      <h3>Orders</h3>
-      <OrderList orders={user.orders} />
-      <AddressList
-        addresses={user.addresses}
-        editable
-        onEditClick={(id) => dispatch({ type: "editAddress", payload: id })}
-      />
-      <AddressForm
-        onCancel={() => dispatch({ type: "clearAddress" })}
-        address={user.addresses.find((a) => a.id === state.addressId)}
-      />
+    <div className={styles.container}>
+      <div>
+        <h3>Orders</h3>
+        <OrderList orders={user.orders} />
+        <PasswordReset />
+      </div>
+      <div>
+        <AddressList
+          addresses={user.addresses}
+          editable
+          onEditClick={(id) => dispatch({ type: "editAddress", payload: id })}
+        />
+        <AddressForm
+          onCancel={() => dispatch({ type: "clearAddress" })}
+          address={user.addresses.find((a) => a.id === state.addressId)}
+        />
+      </div>
     </div>
   );
 };

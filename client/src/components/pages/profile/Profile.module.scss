@@ -1,0 +1,16 @@
+.container {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+
+  @media (min-width: 800px) {
+    flex-direction: row;
+  }
+
+  & > * {
+    flex: 1;
+  }
+}
+
+.section {
+}

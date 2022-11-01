@@ -1,11 +1,14 @@
 import { gql, useMutation } from "@apollo/client";
-import { FC, FormEvent, useEffect, useState } from "react";
+import { FC, FormEvent, useState } from "react";
 import { useForm } from "../../hooks/useForm";
 import { Address, AddressType } from "../../types/Address";
 import Button from "../Button";
 import Input from "../Input";
 import Selectable from "../Selectable";
 import { State, City } from "country-state-city";
+import styles from "./AddressForm.module.scss";
+import { useNotification } from "../../providers/notification";
+import { useAddresses } from "../../hooks/useAddresses";
 
 interface Props {
   address?: Address;
@@ -101,7 +104,9 @@ const TYPE_OPTIONS = [
 
 const AddressForm: FC<Props> = ({ address, onCancel = () => null }) => {
   const formState = useForm((address as typeof INITIAL_STATE) ?? INITIAL_STATE);
-  const [validation, setValidation] = useState("");
+  const { createToastNotification, createErrorNotification } =
+    useNotification();
+  const { addressToString } = useAddresses();
   const [createAddress] = useMutation(CREATE_ADDRESS);
   const [updateAddress] = useMutation(UPDATE_ADDRESS);
 
@@ -124,12 +129,18 @@ const AddressForm: FC<Props> = ({ address, onCancel = () => null }) => {
         id: address?.id,
       },
       onCompleted() {
-        setValidation("");
+        createToastNotification({
+          title: "Address created!",
+          body: addressToString(formState.values as Address),
+        });
         formState.clear();
         onCancel();
       },
       onError(error) {
-        setValidation(error.message);
+        createErrorNotification({
+          title: "Problem saving address",
+          body: error.message,
+        });
       },
     });
   };
@@ -147,7 +158,7 @@ const AddressForm: FC<Props> = ({ address, onCancel = () => null }) => {
   );
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className={styles.form}>
       <Input
         formState={formState}
         name="type"
@@ -164,7 +175,6 @@ const AddressForm: FC<Props> = ({ address, onCancel = () => null }) => {
       />
       <Input formState={formState} name="lineOne" label="Line One" required />
       <Input formState={formState} name="lineTwo" label="Line Two" />
-      {/* <Input formState={formState} name="city" label="City" required /> */}
       <Input
         formState={formState}
         name="state"
@@ -182,9 +192,12 @@ const AddressForm: FC<Props> = ({ address, onCancel = () => null }) => {
         options={cities}
       />
       <Input formState={formState} name="zipCode" label="Zip Code" required />
-      <p>{validation}</p>
-      <Button type="submit">Save Address</Button>
-      <Selectable onClick={onCancel}>Cancel</Selectable>
+      <div className={styles.buttons}>
+        <Button type="submit" className={styles.submit}>
+          Save Address
+        </Button>
+        <Selectable onClick={onCancel}>Cancel</Selectable>
+      </div>
     </form>
   );
 };
