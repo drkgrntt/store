@@ -92,7 +92,7 @@ export class UserResolver {
     try {
       const user = await User.create(
         {
-          email: email.toLowerCase(),
+          email,
           password: passwordHash,
         },
         { transaction }
@@ -123,7 +123,7 @@ export class UserResolver {
 
     try {
       const user = await User.findOne({
-        where: { email: email.toLowerCase() },
+        where: { email: { [Op.iLike]: email } },
         transaction,
       });
       if (!user) {
