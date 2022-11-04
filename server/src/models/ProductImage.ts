@@ -14,7 +14,7 @@ import {
 } from "sequelize-typescript";
 import { Transaction } from "sequelize/types";
 import { Field, ObjectType } from "type-graphql";
-import { Product } from "./Product";
+import { Product } from ".";
 
 @ObjectType()
 @Table({

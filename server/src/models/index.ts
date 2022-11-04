@@ -7,4 +7,6 @@ export { OrderProduct } from "./OrderProduct";
 export { ProductImage } from "./ProductImage";
 export { Address } from "./Address";
 export { Category } from "./Category";
+export { Content } from "./Content";
 export { ProductCategory } from "./ProductCategory";
+export { ContentCategory } from "./ContentCategory";

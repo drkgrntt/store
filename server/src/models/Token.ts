@@ -16,7 +16,7 @@ import {
 } from "sequelize-typescript";
 import { ObjectType, Field } from "type-graphql";
 import jwt from "jsonwebtoken";
-import { User } from "./User";
+import { User } from ".";
 import { Transaction } from "sequelize/types";
 
 @ObjectType()

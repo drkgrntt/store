@@ -14,6 +14,7 @@ import {
   OrderResolver,
   CategoryResolver,
   OrderedProductResolver,
+  ContentResolver,
 } from "./resolvers";
 import { Sequelize } from "sequelize-typescript";
 import cookieParser from "cookie-parser";
@@ -28,6 +29,8 @@ import {
   Address,
   ProductCategory,
   Category,
+  Content,
+  ContentCategory,
 } from "./models";
 import { handleTokens } from "./middleware/handleTokens";
 
@@ -46,6 +49,8 @@ const main = async () => {
       OrderProduct,
       Category,
       ProductCategory,
+      Content,
+      ContentCategory,
     ],
   });
   await sequelize.sync();
@@ -72,6 +77,7 @@ const main = async () => {
         OrderResolver,
         OrderedProductResolver,
         CategoryResolver,
+        ContentResolver,
       ],
       validate: false,
     }),

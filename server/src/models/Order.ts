@@ -14,10 +14,7 @@ import {
   Unique,
 } from "sequelize-typescript";
 import { Field, ObjectType } from "type-graphql";
-import { Address } from "./Address";
-import { OrderProduct } from "./OrderProduct";
-import { Product } from "./Product";
-import { User } from "./User";
+import { Address, OrderProduct, Product, User } from ".";
 
 @ObjectType()
 @Table({

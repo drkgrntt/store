@@ -1,4 +1,4 @@
-import { Category, Product, ProductCategory } from "../models";
+import { Category, ContentCategory, Product, ProductCategory } from "../models";
 import {
   Arg,
   FieldResolver,
@@ -40,25 +40,39 @@ export class CategoryResolver {
     return category;
   }
 
-  @Mutation(() => ProductCategory)
+  @Mutation(() => Boolean)
   @UseMiddleware(isAdmin)
   async attachCategory(
-    @Arg("productId") productId: string,
-    @Arg("categoryId") categoryId: string
-  ): Promise<ProductCategory> {
-    const record = await ProductCategory.create({ productId, categoryId });
-    return record;
+    @Arg("categoryId") categoryId: string,
+    @Arg("productId", { nullable: true }) productId?: string,
+    @Arg("contentId", { nullable: true }) contentId?: string
+  ): Promise<boolean> {
+    if (productId)
+      return !!(await ProductCategory.create({ productId, categoryId }));
+
+    if (contentId)
+      return !!(await ContentCategory.create({ contentId, categoryId }));
+
+    return false;
   }
 
   @Mutation(() => Boolean)
   @UseMiddleware(isAdmin)
   async detachCategory(
-    @Arg("productId") productId: string,
-    @Arg("categoryId") categoryId: string
+    @Arg("categoryId") categoryId: string,
+    @Arg("productId", { nullable: true }) productId?: string,
+    @Arg("contentId", { nullable: true }) contentId?: string
   ): Promise<boolean> {
-    const quantity = await ProductCategory.destroy({
-      where: { productId, categoryId },
-    });
+    let quantity = 0;
+    if (productId) {
+      quantity = await ProductCategory.destroy({
+        where: { productId, categoryId },
+      });
+    } else if (contentId) {
+      quantity = await ContentCategory.destroy({
+        where: { contentId: categoryId },
+      });
+    }
     return quantity > 0;
   }
 }

@@ -14,11 +14,7 @@ import {
   HasOne,
 } from "sequelize-typescript";
 import { Field, ObjectType } from "type-graphql";
-import { Address } from "./Address";
-import { Order } from "./Order";
-import { Product } from "./Product";
-import { Token } from "./Token";
-import { UserProduct } from "./UserProduct";
+import { Address, Order, Product, Token, UserProduct } from ".";
 
 const EMAIL_REGEX =
   /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

@@ -11,14 +11,14 @@ import {
   AllowNull,
 } from "sequelize-typescript";
 import { Field, ObjectType } from "type-graphql";
-import { Category, Product } from ".";
+import { Content, Category } from ".";
 
 @ObjectType()
 @Table({
   timestamps: true,
   underscored: true,
 })
-export class ProductCategory extends Model {
+export class ContentCategory extends Model {
   @Field()
   @IsUUID(4)
   @PrimaryKey
@@ -38,13 +38,13 @@ export class ProductCategory extends Model {
 
   @Field()
   @IsUUID(4)
-  @ForeignKey(() => Product)
+  @ForeignKey(() => Content)
   @AllowNull(false)
   @Column
-  productId: string;
+  contentId: string;
 
-  @BelongsTo(() => Product)
-  product: Product;
+  @BelongsTo(() => Content)
+  content: Content;
 
   @Field()
   createdAt: Date;

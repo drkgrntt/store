@@ -12,8 +12,7 @@ import {
   Is,
 } from "sequelize-typescript";
 import { Field, ObjectType } from "type-graphql";
-import { Product } from "./Product";
-import { User } from "./User";
+import { Product, User } from ".";
 
 @ObjectType()
 @Table({

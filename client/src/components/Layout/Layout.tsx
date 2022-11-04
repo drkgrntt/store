@@ -35,7 +35,7 @@ const Layout: FC = ({ children }) => {
 
       <main className={styles.container}>{children}</main>
 
-      {user && (
+      {user?.isAdmin && (
         <Modal name="product-form">
           <ProductForm
             onSuccess={() => {

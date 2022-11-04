@@ -11,13 +11,15 @@ import {
   BelongsToMany,
 } from "sequelize-typescript";
 import { Field, ObjectType } from "type-graphql";
-import { Category } from "./Category";
-import { Order } from "./Order";
-import { OrderProduct } from "./OrderProduct";
-import { ProductCategory } from "./ProductCategory";
-import { ProductImage } from "./ProductImage";
-import { User } from "./User";
-import { UserProduct } from "./UserProduct";
+import {
+  UserProduct,
+  User,
+  ProductCategory,
+  Category,
+  OrderProduct,
+  Order,
+  ProductImage,
+} from ".";
 
 @ObjectType()
 @Table({

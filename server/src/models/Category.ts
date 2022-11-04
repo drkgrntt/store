@@ -11,8 +11,7 @@ import {
   Table,
 } from "sequelize-typescript";
 import { Field, ObjectType } from "type-graphql";
-import { Product } from "./Product";
-import { ProductCategory } from "./ProductCategory";
+import { Content, ContentCategory, Product, ProductCategory } from ".";
 
 @ObjectType()
 @Table({
@@ -41,6 +40,16 @@ export class Category extends Model {
     through: { model: () => ProductCategory, unique: false },
   })
   products: Product[];
+
+  @HasMany(() => ContentCategory, {
+    onDelete: "CASCADE",
+  })
+  contentCategories: ContentCategory[];
+
+  @BelongsToMany(() => Content, {
+    through: { model: () => ContentCategory, unique: false },
+  })
+  contents: Product[];
 
   @Field()
   createdAt: Date;

@@ -146,13 +146,7 @@ const DETACH_IMAGE = gql`
 
 const ATTACH_CATEGORY = gql`
   mutation AttachCategory($productId: String!, $categoryId: String!) {
-    attachCategory(productId: $productId, categoryId: $categoryId) {
-      id
-      categoryId
-      productId
-      createdAt
-      updatedAt
-    }
+    attachCategory(productId: $productId, categoryId: $categoryId)
   }
 `;
 

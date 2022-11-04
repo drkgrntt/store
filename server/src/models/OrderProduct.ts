@@ -13,8 +13,7 @@ import {
   BeforeCreate,
 } from "sequelize-typescript";
 import { Field, ObjectType } from "type-graphql";
-import { Product } from "./Product";
-import { Order } from "./Order";
+import { Product, Order } from ".";
 import { Transaction } from "sequelize/types";
 
 @ObjectType()
