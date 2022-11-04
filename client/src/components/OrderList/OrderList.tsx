@@ -45,7 +45,7 @@ const OrderList: FC<Props> = ({ orders, isEditable }) => {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    https://dashboard.stripe.com/test/payments/
+                    https://dashboard.stripe.com/payments/
                     {order.paymentIntentId}
                   </a>
                 </li>
