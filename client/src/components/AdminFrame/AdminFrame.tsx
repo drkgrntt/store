@@ -2,6 +2,7 @@ import Error from "next/error";
 import { FC } from "react";
 import { useIsAuth } from "../../hooks/useIsAuth";
 import { useUser } from "../../hooks/useUser";
+import ContentForm from "../ContentForm";
 import Modal from "../Modal";
 import OrderEditForm from "../OrderEditForm";
 import styles from "./AdminFrame.module.scss";
@@ -24,6 +25,10 @@ const AdminFrame: FC<Props> = ({ children, className }) => {
 
       <Modal name="order-edit-form">
         <OrderEditForm />
+      </Modal>
+
+      <Modal name="content-form">
+        <ContentForm />
       </Modal>
     </div>
   );

@@ -1,10 +1,28 @@
-import { Category, Content } from "../models";
-import { Arg, Mutation, Query, Resolver, UseMiddleware } from "type-graphql";
+import { Category, Content, ContentCategory } from "../models";
+import {
+  Arg,
+  FieldResolver,
+  Mutation,
+  Query,
+  Resolver,
+  Root,
+  UseMiddleware,
+} from "type-graphql";
 import { isAdmin } from "../middleware/isAdmin";
 import { Op, WhereOptions } from "sequelize";
 
 @Resolver(Content)
 export class ContentResolver {
+  @FieldResolver(() => [Category])
+  async categories(@Root() content: Content): Promise<Category[]> {
+    if (content.categories?.length) return content.categories;
+    const records = await ContentCategory.findAll({
+      where: { contentId: content.id },
+      include: Category,
+    });
+    return records.map((cc) => cc.category);
+  }
+
   @Query(() => [Content])
   async contents(
     @Arg("search", { nullable: true }) search?: string
@@ -43,8 +61,8 @@ export class ContentResolver {
   @Mutation(() => Content)
   @UseMiddleware(isAdmin)
   async createContent(
-    @Arg("title") title: string,
-    @Arg("detail") detail: string
+    @Arg("detail") detail: string,
+    @Arg("title", { nullable: true }) title?: string
   ): Promise<Content> {
     const content = await Content.create({
       title,

@@ -23,3 +23,17 @@
 .orders {
   order: 0;
 }
+
+.content {
+  white-space: pre-line;
+}
+
+.contentTitle {
+  font-weight: bold;
+  display: flex;
+  gap: 1rem;
+}
+
+.categoryTitle {
+  margin: 0;
+}

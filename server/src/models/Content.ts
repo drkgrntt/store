@@ -25,7 +25,7 @@ export class Content extends Model {
   @Column
   id: string;
 
-  @Field()
+  @Field({ nullable: true })
   @Column
   title: string;
 
