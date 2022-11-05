@@ -25,6 +25,7 @@ const Faq: FC<Props> = () => {
     CONTENTS,
     {
       variables: { search: "FAQ" },
+      fetchPolicy: "cache-and-network",
     }
   );
 

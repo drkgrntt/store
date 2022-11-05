@@ -115,7 +115,8 @@ const Admin: FC<Props> = () => {
   });
 
   const { data: { contents } = {} } = useQuery<{ contents: Content[] }>(
-    CONTENTS
+    CONTENTS,
+    { fetchPolicy: "cache-and-network" }
   );
 
   const { modalHref } = useModal();

@@ -25,6 +25,7 @@ const About: FC<Props> = () => {
     CONTENTS,
     {
       variables: { search: "About the Maker" },
+      fetchPolicy: "cache-and-network",
     }
   );
   const [content] = contents;
