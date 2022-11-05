@@ -1,5 +1,11 @@
-import { ChangeEvent, useEffect, useState } from "react";
-import { emptyValue } from "../utils";
+import {
+  ChangeEvent,
+  MutableRefObject,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { emptyValue, range } from "../utils";
 
 export type InputValueType =
   | string
@@ -73,28 +79,34 @@ export const useForm = <FormState extends Record<string, InputValueType>>(
     setValues((prev) => ({ ...prev, [event.target.name]: getValue(event) }));
   };
 
-  const validateField = (event: ChangeEvent<HTMLInputElement>) => {
+  const validateField = (event: ChangeEvent<HTMLInputElement>): boolean => {
     const { type, required, value, name } = event.target;
     const validation = validations?.[name];
 
     if (required && !value) {
       setErrors((prev) => ({ ...prev, [name]: "Please complete this field." }));
+      return false;
     } else if (type === "email" && !emailRegex.test(value.toLowerCase())) {
       setErrors((prev) => ({
         ...prev,
         [name]: "Please use a valid email address.",
       }));
+      return false;
     } else if (type === "password" && value.length < 6) {
       setErrors((prev) => ({
         ...prev,
         [name]: "Please use at least 6 characters in your password.",
       }));
+      return false;
     } else if (validation) {
       const message = validate(getValue(event), validation, values);
       setErrors((prev) => ({ ...prev, [name]: message }));
+      return !!message;
     } else if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
+
+    return true;
   };
 
   const isValid = !Object.values(errors).filter(Boolean).length;
@@ -115,6 +127,28 @@ export const useForm = <FormState extends Record<string, InputValueType>>(
 
   useEffect(reset, [initialState]);
 
+  const formRef =
+    useRef<HTMLFormElement>() as MutableRefObject<HTMLFormElement | null>;
+
+  const validateForm = (): boolean => {
+    const elements = formRef.current?.elements;
+    if (!elements) return false;
+
+    let isValid = true;
+
+    for (const i of range(elements.length)) {
+      const element = elements[i] as HTMLInputElement;
+      if (element.name in values) {
+        const fieldIsValid = validateField({
+          target: element,
+        } as ChangeEvent<HTMLInputElement>);
+        if (!fieldIsValid) isValid = false;
+      }
+    }
+
+    return isValid;
+  };
+
   return {
     values,
     setValues,
@@ -124,5 +158,7 @@ export const useForm = <FormState extends Record<string, InputValueType>>(
     isValid,
     clear,
     reset,
+    formRef,
+    validate: validateForm,
   };
 };

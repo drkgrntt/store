@@ -5,6 +5,7 @@ import {
   FormEvent,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useForm } from "../../hooks/useForm";
@@ -20,6 +21,7 @@ import CategorySearch from "../CategorySearch";
 import Selectable from "../Selectable";
 import styles from "./ProductForm.module.scss";
 import categoryStyles from "../CategorySearch/CategorySearch.module.scss";
+import { ClickStateRef } from "../Button/Button";
 
 interface Props {
   onSuccess?: () => void;
@@ -195,6 +197,7 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
       };
     }
   }, [product]);
+  const enableButtonRef = useRef<ClickStateRef>();
 
   const [createProduct] = useMutation(CREATE_PRODUCT);
   const [updateProduct] = useMutation(UPDATE_PRODUCT);
@@ -313,6 +316,11 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const isValid = formState.validate();
+    if (!isValid) {
+      enableButtonRef.current?.();
+      return;
+    }
 
     const { title, description, price, quantity, isMadeToOrder, isActive } =
       formState.values;
@@ -333,6 +341,7 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
           await saveCategories(updateProduct.id);
           formState.clear();
           onSuccess();
+          enableButtonRef.current?.();
           createToastNotification({
             title: "Success!",
             body: `${updateProduct.title} updated`,
@@ -357,6 +366,7 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
           await saveImages(createProduct.id);
           await saveCategories(createProduct.id);
           formState.clear();
+          enableButtonRef.current?.();
           onSuccess();
           createToastNotification({
             title: "Success!",
@@ -366,13 +376,19 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
         },
         onError(error) {
           createErrorNotification({ title: "Error", body: error.message });
+          enableButtonRef.current?.();
         },
       });
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
+    <form
+      onSubmit={handleSubmit}
+      className={styles.form}
+      noValidate
+      ref={formState.formRef}
+    >
       <h2 className={styles.header}>
         {product ? "Update a product" : "Create a new product"}
       </h2>
@@ -486,6 +502,7 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
       )}
       <CategorySearch selectedCategories={categories} onClick={addCategory} />
       <Button
+        // enableButtonRef={enableButtonRef}
         className={styles.submit}
         type="submit"
         disabled={!formState.isValid}
