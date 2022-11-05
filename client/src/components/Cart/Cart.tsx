@@ -99,9 +99,9 @@ const Cart: FC<Props> = ({ isCheckout }) => {
                       key={image.url}
                       height={120}
                       width={120}
-                      objectFit="contain"
                       src={image.url}
-                      alt={image.title}
+                      alt={image.title ?? item.product.title}
+                      className={styles.image}
                     />
                   );
                 })}

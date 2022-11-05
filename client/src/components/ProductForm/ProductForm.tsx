@@ -453,7 +453,7 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
                     src={url}
                     height={120}
                     width={120}
-                    objectFit="contain"
+                    className={styles.image}
                   />
                 </li>
               </label>

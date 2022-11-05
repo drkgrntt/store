@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import PageHead from "../PageHead";
 import Footer from "./Footer";
 import Header from "./Header";
@@ -19,7 +19,11 @@ import About from "../About";
 import Faq from "../Faq";
 import ContactForm from "../ContactForm";
 
-const Layout: FC = ({ children }) => {
+interface Props {
+  children?: ReactNode;
+}
+
+const Layout: FC<Props> = ({ children }) => {
   const { closeModal } = useModal();
   const { reFetchObservableQueries } = useApolloClient();
   const { user } = useUser();

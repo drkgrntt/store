@@ -119,7 +119,7 @@ export const ProductList: FC<Props> = ({ adminView }) => {
           alt={query.alt as string}
           height={600}
           width={1200}
-          objectFit="scale-down"
+          className={styles.modalImage}
         />
       </Modal>
     </>
@@ -163,10 +163,11 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
           </Selectable>
         )}
         {user?.isAdmin && (
-          <Link href={modalHref("product-form", { id: product.id })}>
-            <a className={styles.editButton}>
-              <FaPen />
-            </a>
+          <Link
+            href={modalHref("product-form", { id: product.id })}
+            className={styles.editButton}
+          >
+            <FaPen />
           </Link>
         )}
         {selectedImage && (
@@ -177,18 +178,15 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
               src: selectedImage.url,
             })}
           >
-            <a>
-              <Image
-                alt={
-                  selectedImage.title ??
-                  `The selected image of ${product.title}`
-                }
-                width={600}
-                height={600}
-                src={selectedImage.url}
-                objectFit="contain"
-              />
-            </a>
+            <Image
+              alt={
+                selectedImage.title ?? `The selected image of ${product.title}`
+              }
+              width={600}
+              height={600}
+              src={selectedImage.url}
+              className={styles.selectedImage}
+            />
           </Link>
         )}
         {product.images.length > 1 && (

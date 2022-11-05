@@ -1,4 +1,4 @@
-import { FC, FocusEvent, MouseEvent } from "react";
+import { FC, FocusEvent, MouseEvent, ReactNode } from "react";
 import { combineClasses } from "../../utils";
 import styles from "./Selectable.module.scss";
 
@@ -7,6 +7,7 @@ interface Props {
   onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
   onFocus?: (event: FocusEvent<HTMLAnchorElement>) => void;
   onBlur?: (event: FocusEvent<HTMLAnchorElement>) => void;
+  children?: ReactNode;
 }
 
 const Selectable: FC<Props> = ({

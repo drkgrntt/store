@@ -83,8 +83,11 @@ const LoginForm: FC = () => {
         type="password"
         formState={formState}
       />
-      <Link href={modalHref("forgot-password")}>
-        <a className={styles.forgotPassword}>Forgot Password</a>
+      <Link
+        href={modalHref("forgot-password")}
+        className={styles.forgotPassword}
+      >
+        Forgot Password
       </Link>
       <Button type="submit" disabled={!formState.isValid}>
         Login

@@ -1,6 +1,7 @@
 import {
   createContext,
   FC,
+  ReactNode,
   useContext,
   useEffect,
   useRef,
@@ -39,7 +40,11 @@ export const notificationContext = createContext<NotificationContext>({
   createErrorNotification: () => {},
 });
 
-const NotificationProvider: FC = ({ children }) => {
+interface Props {
+  children?: ReactNode;
+}
+
+const NotificationProvider: FC<Props> = ({ children }) => {
   const notificationPermissionRef = useRef<NotificationPermission>();
   const [notifications, setNotifications] = useState<
     (ToastNotification | undefined)[]

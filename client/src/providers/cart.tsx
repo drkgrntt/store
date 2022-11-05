@@ -1,4 +1,4 @@
-import { createContext, FC, useContext } from "react";
+import { createContext, FC, ReactNode, useContext } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { Product } from "../types/Product";
 import { UserProduct } from "../types/User";
@@ -74,7 +74,11 @@ export const cartContext = createContext<CartContext>({
   clearLsCart: () => {},
 });
 
-const CartProvider: FC = ({ children }) => {
+interface Props {
+  children?: ReactNode;
+}
+
+const CartProvider: FC<Props> = ({ children }) => {
   // From gql
   const { user, refetch } = useUser();
   const [gqlAddToCart] = useMutation(ADD_TO_CART, { onCompleted: refetch });

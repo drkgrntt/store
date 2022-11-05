@@ -30,10 +30,11 @@ const OrderList: FC<Props> = ({ orders, isEditable }) => {
               {addressToString(order.address)}
             </summary>
             {isEditable && user?.isAdmin && (
-              <Link href={modalHref("order-edit-form", { id: order.id })}>
-                <a className={styles.editButton}>
-                  <FaPen className={styles.edit} />
-                </a>
+              <Link
+                href={modalHref("order-edit-form", { id: order.id })}
+                className={styles.editButton}
+              >
+                <FaPen className={styles.edit} />
               </Link>
             )}
             <ul>

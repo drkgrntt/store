@@ -1,7 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FC, MouseEvent, useState } from "react";
+import { FC, MouseEvent, ReactNode, useState } from "react";
 import { useUser } from "../../../hooks/useUser";
 import { combineClasses } from "../../../utils";
 import {
@@ -35,22 +35,22 @@ const NavLink: FC<{
   onClick: () => void;
   onFocus?: () => void;
   onBlur?: () => void;
+  children?: ReactNode;
 }> = ({ children, href, onClick, onFocus = () => {}, onBlur = () => {} }) => {
   const { pathname } = useRouter();
 
   return (
-    <Link href={href}>
-      <a
-        onFocus={onFocus}
-        onBlur={onBlur}
-        onClick={onClick}
-        className={combineClasses(
-          styles.link,
-          pathname === href ? styles.active : ""
-        )}
-      >
-        {children}
-      </a>
+    <Link
+      href={href}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      onClick={onClick}
+      className={combineClasses(
+        styles.link,
+        pathname === href ? styles.active : ""
+      )}
+    >
+      {children}
     </Link>
   );
 };
@@ -59,6 +59,7 @@ const NavButton: FC<{
   onClick: () => void;
   onFocus?: () => void;
   onBlur?: () => void;
+  children?: ReactNode;
 }> = ({ onClick, children, onFocus = () => {}, onBlur = () => {} }) => {
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -100,10 +101,8 @@ const NavMenu: FC<Props> = () => {
   return (
     <>
       <div className={styles.cartWrapper}>
-        <Link href={modalHref("cart")}>
-          <a className={styles.cartLink}>
-            <FaShoppingCart /> ({totalQuantity})
-          </a>
+        <Link href={modalHref("cart")} className={styles.cartLink}>
+          <FaShoppingCart /> ({totalQuantity})
         </Link>
       </div>
 

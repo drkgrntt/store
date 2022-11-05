@@ -3,6 +3,7 @@ import {
   FC,
   HTMLInputTypeAttribute,
   ChangeEvent,
+  ReactNode,
 } from "react";
 import { InputValueType } from "../../hooks/useForm";
 import { combineClasses } from "../../utils";
@@ -30,6 +31,7 @@ interface Props {
   onBlur?: (event: ChangeEvent<ElementTypes>) => void;
   validation?: string;
   ref?: MutableRefObject<ElementTypes>;
+  children?: ReactNode;
   formState?: Record<string, any>; // ReturnType<typeof useForm>; <- Not quite type safe for some reason
 }
 
@@ -50,7 +52,7 @@ const Input: FC<Props> = ({
   onChange,
   onFocus = () => null,
   onBlur,
-  children = null,
+  children,
   validation,
   formState,
   ref,

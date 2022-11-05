@@ -48,6 +48,13 @@
   }
 }
 
+.selectedImage,
+.modalImage {
+  object-fit: contain;
+  max-width: 100%;
+  height: auto;
+}
+
 .imageNav {
   opacity: 0;
   position: absolute;

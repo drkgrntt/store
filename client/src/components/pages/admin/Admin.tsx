@@ -143,9 +143,7 @@ const Admin: FC<Props> = () => {
         <h3>
           Content{" "}
           <Link href={modalHref("content-form")}>
-            <a>
-              <FaPlus />
-            </a>
+            <FaPlus />
           </Link>
         </h3>
         {contents?.map((content) => (
@@ -153,9 +151,7 @@ const Admin: FC<Props> = () => {
             <summary className={styles.contentTitle}>
               {content.title}{" "}
               <Link href={modalHref("content-form", { id: content.id })}>
-                <a>
-                  <FaPen />
-                </a>
+                <FaPen />
               </Link>
             </summary>
             {content.detail}

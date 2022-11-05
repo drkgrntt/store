@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { combineClasses } from "../../utils";
 import styles from "./Button.module.scss";
 
@@ -10,6 +10,7 @@ interface Props {
   style?: Record<string, string>;
   title?: string;
   type?: "button" | "submit" | "reset";
+  children?: ReactNode;
 }
 
 const Button: FC<Props> = ({

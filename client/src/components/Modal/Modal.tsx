@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { FC, MouseEvent } from "react";
 import { FaTimes } from "react-icons/fa";
 import { useModal } from "../../hooks/useModal";
@@ -11,6 +11,7 @@ interface Props {
   name: string;
   wide?: boolean;
   className?: string;
+  children?: ReactNode;
 }
 
 const Modal: FC<Props> = ({ name, children, wide, className = "" }) => {

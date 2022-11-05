@@ -21,6 +21,7 @@ const Notification: FC<Props> = ({ notification }) => {
         <Image
           className={styles.image}
           src={notification.icon}
+          alt={notification.title}
           height={100}
           width={100}
         />

@@ -8,3 +8,9 @@
   display: flex;
   gap: 0.5rem;
 }
+
+.image {
+  object-fit: contain;
+  max-width: 100%;
+  height: auto;
+}

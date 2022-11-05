@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { FC } from "react";
+import { combineClasses } from "../../utils";
 
 interface Props {
   title?: string;
@@ -24,10 +25,7 @@ const PageHead: FC<Props> = (props) => {
     if (title) {
       return (
         <>
-          <title>
-            {title}
-            {titleContent}
-          </title>
+          <title>{combineClasses(title, titleContent)}</title>
           <meta key="title" name="title" content={`${title}${titleContent}`} />
           <meta
             key="og-title"
