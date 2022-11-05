@@ -57,29 +57,26 @@ const PRODUCTS = gql`
   }
 `;
 
-const INITIAL_STATE = { search: "" };
-
 export const ProductList: FC<Props> = ({ adminView }) => {
-  const formState = useForm(INITIAL_STATE);
+  const { query, replace } = useRouter();
 
   const { data, loading, fetchMore, variables, refetch } = useQuery<{
     products: Paginated<Product>;
   }>(PRODUCTS, {
     variables: {
       // perPage: 1,
-      search: formState.values.search,
+      search: query.search,
       active: !adminView ? true : undefined,
     },
   });
-  const { query } = useRouter();
 
   const debouncedSearch = useDebounce(refetch);
-  useEffect(debouncedSearch, [formState.values.search]);
+  useEffect(debouncedSearch, [query.search]);
 
   const loadMore = async () => {
     await fetchMore({
       variables: {
-        search: formState.values.search,
+        search: query.search,
         page: data?.products.nextPage,
         perPage: variables?.perPage,
         active: variables?.active,
@@ -100,7 +97,10 @@ export const ProductList: FC<Props> = ({ adminView }) => {
     <>
       <Input
         className={styles.search}
-        formState={formState}
+        value={query.search as string}
+        onChange={(event) =>
+          replace({ query: { ...query, search: event.target.value || [] } })
+        }
         name="search"
         label="Search"
       />

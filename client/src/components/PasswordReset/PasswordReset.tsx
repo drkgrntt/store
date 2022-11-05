@@ -1,6 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import { FC, FormEvent, useState } from "react";
 import { useForm, Validations } from "../../hooks/useForm";
+import { useNotification } from "../../providers/notification";
 import Button from "../Button";
 import Input from "../Input";
 
@@ -31,8 +32,9 @@ const RESET_PASSWORD = gql`
 
 const PasswordReset: FC<Props> = () => {
   const formState = useForm(INITIAL_STATE, VALIDATIONS);
-  const [validation, setValidation] = useState("");
   const [resetPassword] = useMutation(RESET_PASSWORD);
+  const { createToastNotification, createErrorNotification } =
+    useNotification();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -42,11 +44,17 @@ const PasswordReset: FC<Props> = () => {
       onError(error) {
         if (error.message === "Validation error")
           error.message = "Invalid email or password";
-        setValidation(error.message);
+        createErrorNotification({
+          title: "Something went wrong",
+          body: error.message,
+        });
       },
       async onCompleted() {
         formState.clear();
-        setValidation("Your password has been reset!");
+        createToastNotification({
+          title: "Success",
+          body: "Your password has been reset!",
+        });
       },
     });
   };
@@ -75,7 +83,6 @@ const PasswordReset: FC<Props> = () => {
         type="password"
         formState={formState}
       />
-      <p>{validation}</p>
       <Button disabled={!formState.isValid} type="submit">
         Reset
       </Button>
