@@ -485,7 +485,11 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
         </ul>
       )}
       <CategorySearch selectedCategories={categories} onClick={addCategory} />
-      <Button className={styles.submit} type="submit">
+      <Button
+        className={styles.submit}
+        type="submit"
+        disabled={!formState.isValid}
+      >
         Submit
       </Button>
     </form>

@@ -67,6 +67,9 @@ export const useForm = <FormState extends Record<string, InputValueType>>(
   const [errors, setErrors] = useState(initialErrors);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (errors[event.target.name]) {
+      validateField(event);
+    }
     setValues((prev) => ({ ...prev, [event.target.name]: getValue(event) }));
   };
 

@@ -73,7 +73,11 @@ const ContactForm: FC<Props> = () => {
         name="message"
         required
       />
-      <Button type="submit" className={styles.submit}>
+      <Button
+        type="submit"
+        className={styles.submit}
+        disabled={!formState.isValid}
+      >
         Submit
       </Button>
     </form>

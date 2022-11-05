@@ -180,7 +180,11 @@ const ContentForm: FC<Props> = () => {
         </ul>
       )}
       <CategorySearch selectedCategories={categories} onClick={addCategory} />{" "}
-      <Button type="submit" className={styles.submit}>
+      <Button
+        type="submit"
+        className={styles.submit}
+        disabled={!formState.isValid}
+      >
         Submit
       </Button>
     </form>

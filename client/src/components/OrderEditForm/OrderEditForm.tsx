@@ -125,7 +125,11 @@ const OrderEditForm: FC<Props> = () => {
         formState={formState}
       />
       <Input name="notes" label="Notes" formState={formState} type="textarea" />
-      <Button type="submit" className={styles.submit}>
+      <Button
+        type="submit"
+        className={styles.submit}
+        disabled={!formState.isValid}
+      >
         Update
       </Button>
     </form>

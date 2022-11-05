@@ -193,7 +193,11 @@ const AddressForm: FC<Props> = ({ address, onCancel = () => null }) => {
       />
       <Input formState={formState} name="zipCode" label="Zip Code" required />
       <div className={styles.buttons}>
-        <Button type="submit" className={styles.submit}>
+        <Button
+          type="submit"
+          className={styles.submit}
+          disabled={!formState.isValid}
+        >
           Save Address
         </Button>
         <Selectable onClick={onCancel}>Cancel</Selectable>
