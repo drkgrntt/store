@@ -27,7 +27,7 @@ const Layout: FC = ({ children }) => {
         title="Midwest Daisy Collective | Small-batch colorful and quirky earrings (and a few things in between)"
         description="Small-batch colorful and quirky earrings (and a few things in between)"
         keywords="Small-batch colorful and quirky earrings (and a few things in between)"
-        image="/android-chrome-512x512.png"
+        image="/pexels-pixabay-45901.jpg"
       >
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="language" content="en-us" />
