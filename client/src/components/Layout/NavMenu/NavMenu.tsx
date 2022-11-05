@@ -14,6 +14,7 @@ import {
   FaCogs,
   FaAddressCard,
   FaQuestion,
+  FaEnvelope,
 } from "react-icons/fa";
 import styles from "./NavMenu.module.scss";
 import { UrlObject } from "url";
@@ -151,6 +152,14 @@ const NavMenu: FC<Props> = () => {
           href={modalHref("faq")}
         >
           <FaQuestion /> FAQ
+        </NavLink>
+        <NavLink
+          onFocus={openMenu}
+          onBlur={closeMenu}
+          onClick={closeMenu}
+          href={modalHref("contact")}
+        >
+          <FaEnvelope /> Contact
         </NavLink>
         {user ? (
           <>

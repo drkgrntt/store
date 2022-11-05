@@ -17,6 +17,7 @@ import { useUser } from "../../hooks/useUser";
 import ResetForgottenPasswordForm from "../ResetForgottenPasswordForm";
 import About from "../About";
 import Faq from "../Faq";
+import ContactForm from "../ContactForm";
 
 const Layout: FC = ({ children }) => {
   const { closeModal } = useModal();
@@ -83,7 +84,9 @@ const Layout: FC = ({ children }) => {
         <Faq />
       </Modal>
 
-      <Modal name="contact">Contact</Modal>
+      <Modal name="contact">
+        <ContactForm />
+      </Modal>
 
       {user?.isAdmin && (
         <Modal name="product-form">

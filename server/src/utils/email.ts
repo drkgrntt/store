@@ -6,6 +6,7 @@ import fs from "fs";
 export const ADMIN_NEW_ORDER = "admin-new-order";
 export const CUSTOMER_NEW_ORDER = "customer-new-order";
 export const FORGOT_PASSWORD = "forgot-password";
+export const CONTACT_MESSAGE = "contact-message";
 
 type EmailTemplateVariables = Record<string, string | Record<string, string>[]>;
 interface EmailTemplate {
@@ -16,6 +17,12 @@ interface EmailTemplate {
 }
 
 const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
+  [CONTACT_MESSAGE]: {
+    subject: "New message from your contact form",
+    template: CONTACT_MESSAGE,
+    partials: {},
+    variables: { email: "", message: "" },
+  },
   [FORGOT_PASSWORD]: {
     subject: "Forgot Password",
     template: FORGOT_PASSWORD,

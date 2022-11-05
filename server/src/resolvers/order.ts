@@ -23,7 +23,12 @@ import { isAuth } from "../middleware/isAuth";
 import { Context, Paginated } from "../types";
 import { isAdmin } from "../middleware/isAdmin";
 import Stripe from "stripe";
-import { ADMIN_NEW_ORDER, CUSTOMER_NEW_ORDER, sendEmail } from "../utils/email";
+import {
+  ADMIN_NEW_ORDER,
+  CUSTOMER_NEW_ORDER,
+  sendEmail,
+  CONTACT_MESSAGE,
+} from "../utils/email";
 import { addressToString } from "../utils";
 import { Op, WhereOptions } from "sequelize";
 
@@ -358,5 +363,14 @@ export class OrderResolver {
     await order.save();
 
     return order;
+  }
+
+  // TODO: Possibly move this
+  @Mutation(() => Boolean)
+  async sendMessage(
+    @Arg("email") email: string,
+    @Arg("message") message: string
+  ): Promise<boolean> {
+    return !!(await sendEmail(CONTACT_MESSAGE, { email, message }));
   }
 }
