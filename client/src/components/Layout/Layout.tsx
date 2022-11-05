@@ -15,6 +15,8 @@ import Checkout from "../Checkout";
 import { useApolloClient } from "@apollo/client";
 import { useUser } from "../../hooks/useUser";
 import ResetForgottenPasswordForm from "../ResetForgottenPasswordForm";
+import About from "../About";
+import Faq from "../Faq";
 
 const Layout: FC = ({ children }) => {
   const { closeModal } = useModal();
@@ -72,6 +74,16 @@ const Layout: FC = ({ children }) => {
       <Header />
 
       <main className={styles.container}>{children}</main>
+
+      <Modal name="about">
+        <About />
+      </Modal>
+
+      <Modal name="faq">
+        <Faq />
+      </Modal>
+
+      <Modal name="contact">Contact</Modal>
 
       {user?.isAdmin && (
         <Modal name="product-form">

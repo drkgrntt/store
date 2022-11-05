@@ -12,6 +12,8 @@ import {
   FaShoppingCart,
   FaPlus,
   FaCogs,
+  FaAddressCard,
+  FaQuestion,
 } from "react-icons/fa";
 import styles from "./NavMenu.module.scss";
 import { UrlObject } from "url";
@@ -133,6 +135,22 @@ const NavMenu: FC<Props> = () => {
           href={modalHref("cart")}
         >
           <FaShoppingCart /> Cart
+        </NavLink>
+        <NavLink
+          onFocus={openMenu}
+          onBlur={closeMenu}
+          onClick={closeMenu}
+          href={modalHref("about")}
+        >
+          <FaAddressCard /> About the Maker
+        </NavLink>
+        <NavLink
+          onFocus={openMenu}
+          onBlur={closeMenu}
+          onClick={closeMenu}
+          href={modalHref("faq")}
+        >
+          <FaQuestion /> FAQ
         </NavLink>
         {user ? (
           <>

@@ -36,7 +36,7 @@ export class ContentResolver {
         include: { model: Content, attributes: ["id"] },
       });
 
-      where.ids = categories.reduce<string[]>(
+      where.id = categories.reduce<string[]>(
         (ids, category) => [
           ...new Set([...ids, ...category.contents.map(({ id }) => id)]),
         ],
