@@ -112,6 +112,10 @@ const AddressForm: FC<Props> = ({ address, onCancel = () => null }) => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const isValid = formState.validate();
+    if (!isValid) {
+      return;
+    }
 
     const mutateAddress = address ? updateAddress : createAddress;
     const { recipient, lineOne, lineTwo, city, state, zipCode, type } =
@@ -158,7 +162,11 @@ const AddressForm: FC<Props> = ({ address, onCancel = () => null }) => {
   );
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
+    <form
+      onSubmit={handleSubmit}
+      className={styles.form}
+      ref={formState.formRef}
+    >
       <Input
         formState={formState}
         name="type"

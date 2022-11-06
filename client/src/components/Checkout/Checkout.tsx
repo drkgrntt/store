@@ -206,6 +206,10 @@ const CheckoutFormWithStripe: FC<{
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const isValid = formState.validate();
+    if (!isValid) {
+      return;
+    }
 
     if (!stripe || !elements) {
       createErrorNotification({
@@ -265,7 +269,11 @@ const CheckoutFormWithStripe: FC<{
 
   return (
     <>
-      <form onSubmit={handleSubmit} className={styles.form}>
+      <form
+        onSubmit={handleSubmit}
+        className={styles.form}
+        ref={formState.formRef}
+      >
         <Input
           type="select"
           label="Where are we shipping to?"

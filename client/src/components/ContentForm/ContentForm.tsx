@@ -118,6 +118,11 @@ const ContentForm: FC<Props> = () => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const isValid = formState.validate();
+    if (!isValid) {
+      return;
+    }
+
     const { title, detail } = formState.values;
     if (content) {
       updateContent({
@@ -155,7 +160,11 @@ const ContentForm: FC<Props> = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
+    <form
+      onSubmit={handleSubmit}
+      className={styles.form}
+      ref={formState.formRef}
+    >
       <h2>Content</h2>
       <Input formState={formState} name="title" label="Title" />
       <Input

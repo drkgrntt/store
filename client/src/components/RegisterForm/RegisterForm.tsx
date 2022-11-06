@@ -49,8 +49,13 @@ const RegisterForm: FC = () => {
   const { createErrorNotification, createToastNotification } =
     useNotification();
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const isValid = formState.validate();
+    if (!isValid) {
+      return;
+    }
+
     const { email, password } = formState.values;
     register({
       variables: { email, password },
@@ -76,7 +81,11 @@ const RegisterForm: FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
+    <form
+      onSubmit={handleSubmit}
+      className={styles.form}
+      ref={formState.formRef}
+    >
       <h2>Sign Up</h2>
       <Input
         required

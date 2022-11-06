@@ -81,6 +81,11 @@ const OrderEditForm: FC<Props> = () => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const isValid = formState.validate();
+    if (!isValid) {
+      return;
+    }
+
     const { shippedOn, completedOn, trackingNumber, notes } = formState.values;
 
     updateOrder({
@@ -105,7 +110,11 @@ const OrderEditForm: FC<Props> = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
+    <form
+      onSubmit={handleSubmit}
+      className={styles.form}
+      ref={formState.formRef}
+    >
       <h2>Order ID: {order.id}</h2>
       <Input
         type="date"

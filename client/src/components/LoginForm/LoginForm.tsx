@@ -44,6 +44,11 @@ const LoginForm: FC = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const isValid = formState.validate();
+    if (!isValid) {
+      return;
+    }
+
     const { email, password } = formState.values;
     login({
       variables: { email, password },
@@ -66,7 +71,11 @@ const LoginForm: FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
+    <form
+      onSubmit={handleSubmit}
+      className={styles.form}
+      ref={formState.formRef}
+    >
       <h2>Login</h2>
       <Input
         required

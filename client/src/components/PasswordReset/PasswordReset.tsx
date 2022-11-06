@@ -38,6 +38,11 @@ const PasswordReset: FC<Props> = () => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const isValid = formState.validate();
+    if (!isValid) {
+      return;
+    }
+
     const { newPassword, oldPassword } = formState.values;
     resetPassword({
       variables: { newPassword, oldPassword },
@@ -60,7 +65,7 @@ const PasswordReset: FC<Props> = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} ref={formState.formRef}>
       <h3>Reset Password</h3>
       <Input
         label="Current password"

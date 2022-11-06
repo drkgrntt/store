@@ -26,6 +26,11 @@ const ForgotPasswordForm: FC<Props> = () => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const isValid = formState.validate();
+    if (!isValid) {
+      return;
+    }
+
     forgotPassword({
       variables: { email: formState.values.email },
       onCompleted({ forgotPassword }) {
@@ -48,7 +53,11 @@ const ForgotPasswordForm: FC<Props> = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
+    <form
+      onSubmit={handleSubmit}
+      className={styles.form}
+      ref={formState.formRef}
+    >
       <h2>Forgot Password</h2>
       <Input
         formState={formState}

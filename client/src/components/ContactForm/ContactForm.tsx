@@ -29,6 +29,11 @@ const ContactForm: FC<Props> = () => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const isValid = formState.validate();
+    if (!isValid) {
+      return;
+    }
+
     const { email, message } = formState.values;
     sendMessage({
       variables: { email, message },
@@ -57,7 +62,11 @@ const ContactForm: FC<Props> = () => {
   };
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form
+      className={styles.form}
+      onSubmit={handleSubmit}
+      ref={formState.formRef}
+    >
       <h2>Contact</h2>
       <Input
         formState={formState}

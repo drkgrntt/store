@@ -45,6 +45,11 @@ const ResetPasswordForm: FC<Props> = () => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const isValid = formState.validate();
+    if (!isValid) {
+      return;
+    }
+
     resetForgottenPassword({
       variables: {
         email: formState.values.email,
@@ -75,7 +80,11 @@ const ResetPasswordForm: FC<Props> = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
+    <form
+      onSubmit={handleSubmit}
+      className={styles.form}
+      ref={formState.formRef}
+    >
       <h2>Reset your forgotten password</h2>
       <Input
         required
