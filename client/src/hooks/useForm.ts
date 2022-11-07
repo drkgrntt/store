@@ -101,7 +101,7 @@ export const useForm = <FormState extends Record<string, InputValueType>>(
     } else if (validation) {
       const message = validate(getValue(event), validation, values);
       setErrors((prev) => ({ ...prev, [name]: message }));
-      return !!message;
+      return !message;
     } else if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
