@@ -1,11 +1,12 @@
 import { gql, useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
-import { FC, FormEvent, useState } from "react";
+import { FC, FormEvent, useRef, useState } from "react";
 import { useForm, Validations } from "../../hooks/useForm";
 import { useUser } from "../../hooks/useUser";
 import { useNotification } from "../../providers/notification";
 import { User } from "../../types/User";
 import Button from "../Button";
+import { ClickStateRef } from "../Button/Button";
 import Input from "../Input";
 import styles from "./RegisterForm.module.scss";
 
@@ -48,11 +49,13 @@ const RegisterForm: FC = () => {
   const { refetch } = useUser();
   const { createErrorNotification, createToastNotification } =
     useNotification();
+  const enableButtonRef = useRef<ClickStateRef>();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const isValid = formState.validate();
     if (!isValid) {
+      enableButtonRef.current?.();
       return;
     }
 
@@ -67,6 +70,7 @@ const RegisterForm: FC = () => {
           title: "Register error",
           body: error.message,
         });
+        enableButtonRef.current?.();
       },
       async onCompleted({ register }) {
         formState.clear();
@@ -75,6 +79,7 @@ const RegisterForm: FC = () => {
           title: "Logged in",
           body: `Logged in as ${register?.email}`,
         });
+        enableButtonRef.current?.();
         push((query.next as string) ?? "/");
       },
     });
@@ -110,7 +115,11 @@ const RegisterForm: FC = () => {
         type="password"
         formState={formState}
       />
-      <Button type="submit" disabled={!formState.isValid}>
+      <Button
+        type="submit"
+        disabled={!formState.isValid}
+        enableButtonRef={enableButtonRef}
+      >
         Sign Up
       </Button>
     </form>

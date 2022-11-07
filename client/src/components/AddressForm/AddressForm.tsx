@@ -1,5 +1,5 @@
 import { gql, useMutation } from "@apollo/client";
-import { FC, FormEvent, useState } from "react";
+import { FC, FormEvent, useRef, useState } from "react";
 import { useForm } from "../../hooks/useForm";
 import { Address, AddressType } from "../../types/Address";
 import Button from "../Button";
@@ -9,6 +9,7 @@ import { State, City } from "country-state-city";
 import styles from "./AddressForm.module.scss";
 import { useNotification } from "../../providers/notification";
 import { useAddresses } from "../../hooks/useAddresses";
+import { ClickStateRef } from "../Button/Button";
 
 interface Props {
   address?: Address;
@@ -109,11 +110,13 @@ const AddressForm: FC<Props> = ({ address, onCancel = () => null }) => {
   const { addressToString } = useAddresses();
   const [createAddress] = useMutation(CREATE_ADDRESS);
   const [updateAddress] = useMutation(UPDATE_ADDRESS);
+  const enableButtonRef = useRef<ClickStateRef>();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const isValid = formState.validate();
     if (!isValid) {
+      enableButtonRef.current?.();
       return;
     }
 
@@ -137,6 +140,7 @@ const AddressForm: FC<Props> = ({ address, onCancel = () => null }) => {
           title: "Address created!",
           body: addressToString(formState.values as Address),
         });
+        enableButtonRef.current?.();
         formState.clear();
         onCancel();
       },
@@ -145,6 +149,7 @@ const AddressForm: FC<Props> = ({ address, onCancel = () => null }) => {
           title: "Problem saving address",
           body: error.message,
         });
+        enableButtonRef.current?.();
       },
     });
   };
@@ -206,6 +211,7 @@ const AddressForm: FC<Props> = ({ address, onCancel = () => null }) => {
           type="submit"
           className={styles.submit}
           disabled={!formState.isValid}
+          enableButtonRef={enableButtonRef}
         >
           Save Address
         </Button>

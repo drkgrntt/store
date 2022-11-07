@@ -1,13 +1,14 @@
 import { gql, useMutation } from "@apollo/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FC, FormEvent, useState } from "react";
+import { FC, FormEvent, useRef, useState } from "react";
 import { useForm } from "../../hooks/useForm";
 import { useModal } from "../../hooks/useModal";
 import { useUser } from "../../hooks/useUser";
 import { useNotification } from "../../providers/notification";
 import { User } from "../../types/User";
 import Button from "../Button";
+import { ClickStateRef } from "../Button/Button";
 import Input from "../Input";
 import styles from "./LoginForm.module.scss";
 
@@ -41,11 +42,13 @@ const LoginForm: FC = () => {
   const { modalHref } = useModal();
   const { createErrorNotification, createToastNotification } =
     useNotification();
+  const enableButtonRef = useRef<ClickStateRef>();
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const isValid = formState.validate();
     if (!isValid) {
+      enableButtonRef.current?.();
       return;
     }
 
@@ -57,6 +60,7 @@ const LoginForm: FC = () => {
           error.message = "Invalid email or password";
 
         createErrorNotification({ title: "Login error", body: error.message });
+        enableButtonRef.current?.();
       },
       async onCompleted({ login }) {
         formState.clear();
@@ -65,6 +69,7 @@ const LoginForm: FC = () => {
           title: "Logged in",
           body: `Logged in as ${login?.email}`,
         });
+        enableButtonRef.current?.();
         push((query.next as string) ?? "/");
       },
     });
@@ -99,7 +104,11 @@ const LoginForm: FC = () => {
       >
         Forgot Password
       </Link>
-      <Button type="submit" disabled={!formState.isValid}>
+      <Button
+        type="submit"
+        disabled={!formState.isValid}
+        enableButtonRef={enableButtonRef}
+      >
         Login
       </Button>
     </form>

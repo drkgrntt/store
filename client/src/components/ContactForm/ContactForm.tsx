@@ -1,9 +1,10 @@
 import { gql, useMutation } from "@apollo/client";
-import { FC, FormEvent } from "react";
+import { FC, FormEvent, useRef } from "react";
 import { useForm } from "../../hooks/useForm";
 import { useModal } from "../../hooks/useModal";
 import { useNotification } from "../../providers/notification";
 import Button from "../Button";
+import { ClickStateRef } from "../Button/Button";
 import Input from "../Input";
 import styles from "./ContactForm.module.scss";
 
@@ -26,11 +27,13 @@ const ContactForm: FC<Props> = () => {
   const { closeModal } = useModal();
   const { createToastNotification, createErrorNotification } =
     useNotification();
+  const enableButtonRef = useRef<ClickStateRef>();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const isValid = formState.validate();
     if (!isValid) {
+      enableButtonRef.current?.();
       return;
     }
 
@@ -51,12 +54,14 @@ const ContactForm: FC<Props> = () => {
             body: "Please try again later",
           });
         }
+        enableButtonRef.current?.();
       },
       onError(error) {
         createErrorNotification({
           title: "Something went wrong",
           body: error.message,
         });
+        enableButtonRef.current?.();
       },
     });
   };
@@ -87,6 +92,7 @@ const ContactForm: FC<Props> = () => {
         type="submit"
         className={styles.submit}
         disabled={!formState.isValid}
+        enableButtonRef={enableButtonRef}
       >
         Submit
       </Button>

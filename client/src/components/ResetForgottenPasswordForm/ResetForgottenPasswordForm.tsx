@@ -1,10 +1,11 @@
 import { gql, useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
-import { FC, FormEvent } from "react";
+import { FC, FormEvent, useRef } from "react";
 import { useForm, Validations } from "../../hooks/useForm";
 import { useModal } from "../../hooks/useModal";
 import { useNotification } from "../../providers/notification";
 import Button from "../Button";
+import { ClickStateRef } from "../Button/Button";
 import Input from "../Input";
 import styles from "./ResetForgottenPasswordForm.module.scss";
 
@@ -40,6 +41,7 @@ const ResetPasswordForm: FC<Props> = () => {
   const { openModal } = useModal();
   const { createToastNotification, createErrorNotification } =
     useNotification();
+  const enableButtonRef = useRef<ClickStateRef>();
 
   if (!query.token) return null;
 
@@ -47,6 +49,7 @@ const ResetPasswordForm: FC<Props> = () => {
     event.preventDefault();
     const isValid = formState.validate();
     if (!isValid) {
+      enableButtonRef.current?.();
       return;
     }
 
@@ -69,12 +72,14 @@ const ResetPasswordForm: FC<Props> = () => {
             body: "Please try again later.",
           });
         }
+        enableButtonRef.current?.();
       },
       onError(error) {
         createErrorNotification({
           title: "Something went wrong",
           body: error.message,
         });
+        enableButtonRef.current?.();
       },
     });
   };
@@ -113,6 +118,7 @@ const ResetPasswordForm: FC<Props> = () => {
         className={styles.submit}
         type="submit"
         disabled={!formState.isValid}
+        enableButtonRef={enableButtonRef}
       >
         Reset Password
       </Button>

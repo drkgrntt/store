@@ -1,12 +1,13 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import Error from "next/error";
 import { useRouter } from "next/router";
-import { FC, FormEvent } from "react";
+import { FC, FormEvent, useRef } from "react";
 import { useForm } from "../../hooks/useForm";
 import { useModal } from "../../hooks/useModal";
 import { useNotification } from "../../providers/notification";
 import { Order } from "../../types/Order";
 import Button from "../Button";
+import { ClickStateRef } from "../Button/Button";
 import Input from "../Input";
 import Loader from "../Loader";
 import styles from "./OrderEditForm.module.scss";
@@ -73,6 +74,7 @@ const OrderEditForm: FC<Props> = () => {
   const formState = useForm((order as typeof INITIAL_STATE) ?? INITIAL_STATE);
   const { createToastNotification, createErrorNotification } =
     useNotification();
+  const enableButtonRef = useRef<ClickStateRef>();
 
   if (loading) return <Loader />;
 
@@ -83,6 +85,7 @@ const OrderEditForm: FC<Props> = () => {
     event.preventDefault();
     const isValid = formState.validate();
     if (!isValid) {
+      enableButtonRef.current?.();
       return;
     }
 
@@ -99,12 +102,14 @@ const OrderEditForm: FC<Props> = () => {
       onCompleted() {
         createToastNotification({ title: "Order updated" });
         closeModal();
+        enableButtonRef.current?.();
       },
       onError(error) {
         createErrorNotification({
           title: "Problem updating order",
           body: error.message,
         });
+        enableButtonRef.current?.();
       },
     });
   };
@@ -139,6 +144,7 @@ const OrderEditForm: FC<Props> = () => {
         type="submit"
         className={styles.submit}
         disabled={!formState.isValid}
+        enableButtonRef={enableButtonRef}
       >
         Update
       </Button>

@@ -1,6 +1,6 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
-import { FC, FormEvent, useEffect, useState } from "react";
+import { FC, FormEvent, useEffect, useRef, useState } from "react";
 import { useForm } from "../../hooks/useForm";
 import { useModal } from "../../hooks/useModal";
 import { useUser } from "../../hooks/useUser";
@@ -13,6 +13,7 @@ import Input from "../Input";
 import styles from "./ContentForm.module.scss";
 import categoryStyles from "../CategorySearch/CategorySearch.module.scss";
 import Selectable from "../Selectable";
+import { ClickStateRef } from "../Button/Button";
 
 interface Props {}
 
@@ -83,6 +84,7 @@ const ContentForm: FC<Props> = () => {
     useNotification();
   const [attachCategory] = useMutation(ATTACH_CATEGORY);
   const [detachCategory] = useMutation(DETACH_CATEGORY);
+  const enableButtonRef = useRef<ClickStateRef>();
 
   const [categories, setCategories] = useState<Category[]>([]);
   useEffect(() => {
@@ -120,6 +122,7 @@ const ContentForm: FC<Props> = () => {
     event.preventDefault();
     const isValid = formState.validate();
     if (!isValid) {
+      enableButtonRef.current?.();
       return;
     }
 
@@ -130,6 +133,7 @@ const ContentForm: FC<Props> = () => {
         async onCompleted({ updateContent }) {
           await saveCategories(updateContent.id);
           formState.clear();
+          enableButtonRef.current?.();
           createToastNotification({ title: "Content saved!" });
           closeModal();
         },
@@ -138,6 +142,7 @@ const ContentForm: FC<Props> = () => {
             title: "Problem saving content",
             body: error.message,
           });
+          enableButtonRef.current?.();
         },
       });
     } else {
@@ -146,6 +151,7 @@ const ContentForm: FC<Props> = () => {
         async onCompleted({ createContent }) {
           await saveCategories(createContent.id);
           formState.clear();
+          enableButtonRef.current?.();
           createToastNotification({ title: "Content saved!" });
           closeModal();
         },
@@ -154,6 +160,7 @@ const ContentForm: FC<Props> = () => {
             title: "Problem saving content",
             body: error.message,
           });
+          enableButtonRef.current?.();
         },
       });
     }
@@ -194,6 +201,7 @@ const ContentForm: FC<Props> = () => {
         type="submit"
         className={styles.submit}
         disabled={!formState.isValid}
+        enableButtonRef={enableButtonRef}
       >
         Submit
       </Button>
