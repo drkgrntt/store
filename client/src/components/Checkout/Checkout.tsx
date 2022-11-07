@@ -21,6 +21,7 @@ import Loader from "../Loader";
 import { useCart } from "../../providers/cart";
 import { useNotification } from "../../providers/notification";
 import styles from "./Checkout.module.scss";
+import { ClickStateRef } from "../Button/Button";
 
 interface Props {}
 
@@ -120,7 +121,7 @@ const Checkout: FC<Props> = () => {
     CLIENT_SECRET,
     {
       variables: { totalCost, clientSecret },
-      skip: !user || !totalCost,
+      skip: !user || !totalCost || !!query.payment_intent_client_secret,
     }
   );
 
@@ -178,9 +179,12 @@ const CheckoutFormWithStripe: FC<{
   const { shippingAddresses, addressToString } = useAddresses();
   const { createToastNotification, createErrorNotification } =
     useNotification();
+  const enableButtonRef = useRef<ClickStateRef>();
+  const orderPlacedRef = useRef(false);
 
   useEffect(() => {
-    if (!query.payment_intent_client_secret) return;
+    if (!query.payment_intent_client_secret || orderPlacedRef.current) return;
+    orderPlacedRef.current = true;
 
     placeOrder({
       variables: {
@@ -192,6 +196,7 @@ const CheckoutFormWithStripe: FC<{
           title: "Thank you!",
           body: "Your order has been placed.",
         });
+        orderPlacedRef.current = false;
         push("/");
       },
       onError(error) {
@@ -202,12 +207,13 @@ const CheckoutFormWithStripe: FC<{
         push({ query: { ...query, payment_intent_client_secret: [] } });
       },
     });
-  }, [query]);
+  }, [query.payment_intent_client_secret]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const isValid = formState.validate();
     if (!isValid) {
+      enableButtonRef.current?.();
       return;
     }
 
@@ -216,6 +222,7 @@ const CheckoutFormWithStripe: FC<{
         title: "Problem with checkout",
         body: "We are having issues. Please try again later.",
       });
+      enableButtonRef.current?.();
       return;
     }
 
@@ -257,12 +264,14 @@ const CheckoutFormWithStripe: FC<{
           //   },
           // });
         }
+        enableButtonRef.current?.();
       },
       onError(error) {
         createErrorNotification({
           title: "Problem with checkout",
           body: error.message,
         });
+        enableButtonRef.current?.();
       },
     });
   };
@@ -270,6 +279,7 @@ const CheckoutFormWithStripe: FC<{
   return (
     <>
       <form
+        noValidate
         onSubmit={handleSubmit}
         className={styles.form}
         ref={formState.formRef}
@@ -294,11 +304,12 @@ const CheckoutFormWithStripe: FC<{
         />
         <PaymentElement />
         <Button
+          enableButtonRef={enableButtonRef}
           disabled={!formState.isValid || !stripe || !elements}
           type="submit"
         >
           Place order!
-        </Button>{" "}
+        </Button>
       </form>
     </>
   );

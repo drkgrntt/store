@@ -28,11 +28,12 @@ const Button: FC<Props> = ({
   children,
 }) => {
   const [clicked, setClicked] = useState(false);
-  if (enableButtonRef) enableButtonRef.current = () => setClicked(false);
+  if (enableButtonRef)
+    enableButtonRef.current = () => setTimeout(() => setClicked(false));
 
   const handleClick = () => {
     console.log("click");
-    setClicked(true);
+    setTimeout(() => setClicked(true));
     onClick();
   };
 

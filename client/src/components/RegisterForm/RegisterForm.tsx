@@ -82,6 +82,7 @@ const RegisterForm: FC = () => {
 
   return (
     <form
+      noValidate
       onSubmit={handleSubmit}
       className={styles.form}
       ref={formState.formRef}

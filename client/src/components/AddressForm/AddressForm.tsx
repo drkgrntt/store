@@ -163,6 +163,7 @@ const AddressForm: FC<Props> = ({ address, onCancel = () => null }) => {
 
   return (
     <form
+      noValidate
       onSubmit={handleSubmit}
       className={styles.form}
       ref={formState.formRef}

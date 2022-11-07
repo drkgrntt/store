@@ -65,7 +65,7 @@ const PasswordReset: FC<Props> = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} ref={formState.formRef}>
+    <form onSubmit={handleSubmit} ref={formState.formRef} noValidate>
       <h3>Reset Password</h3>
       <Input
         label="Current password"

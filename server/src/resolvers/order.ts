@@ -30,7 +30,7 @@ import {
   CONTACT_MESSAGE,
 } from "../utils/email";
 import { addressToString } from "../utils";
-import { Op, WhereOptions } from "sequelize";
+import { Op, Transaction, WhereOptions } from "sequelize";
 
 @Resolver(OrderProduct)
 export class OrderedProductResolver {
@@ -217,13 +217,19 @@ export class OrderResolver {
 
   @Query(() => Boolean)
   @UseMiddleware(isAuth)
-  async paymentSucceeded(@Arg("clientSecret") clientSecret: string) {
+  async paymentSucceeded(
+    @Arg("clientSecret") clientSecret: string,
+    transaction?: Transaction
+  ) {
     const config: Stripe.StripeConfig = { apiVersion: "2022-08-01" };
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, config);
 
     const [paymentIntentId] = clientSecret.split("_secret");
 
-    const existingOrder = await Order.findOne({ where: { paymentIntentId } });
+    const existingOrder = await Order.findOne({
+      where: { paymentIntentId },
+      transaction,
+    });
     if (existingOrder) false;
 
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
@@ -239,15 +245,18 @@ export class OrderResolver {
     @Arg("notes", { nullable: true }) notes?: string,
     @Arg("dryRun", { nullable: true }) dryRun?: boolean
   ): Promise<Order> {
-    if (!dryRun) {
-      const paymentSucceeded = await this.paymentSucceeded(clientSecret);
-      if (!paymentSucceeded)
-        throw new Error("The payment for this order did not succeed.");
-    }
-
     const transaction = await sequelize.transaction();
 
     try {
+      if (!dryRun) {
+        const paymentSucceeded = await this.paymentSucceeded(
+          clientSecret,
+          transaction
+        );
+        if (!paymentSucceeded)
+          throw new Error("The payment for this order did not succeed.");
+      }
+
       const [paymentIntentId] = clientSecret.split("_secret");
 
       let order = await Order.create(

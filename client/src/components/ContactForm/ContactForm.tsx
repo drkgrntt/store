@@ -63,6 +63,7 @@ const ContactForm: FC<Props> = () => {
 
   return (
     <form
+      noValidate
       className={styles.form}
       onSubmit={handleSubmit}
       ref={formState.formRef}

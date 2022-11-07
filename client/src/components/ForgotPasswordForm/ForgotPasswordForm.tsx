@@ -54,6 +54,7 @@ const ForgotPasswordForm: FC<Props> = () => {
 
   return (
     <form
+      noValidate
       onSubmit={handleSubmit}
       className={styles.form}
       ref={formState.formRef}
