@@ -269,9 +269,9 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
         method: "POST",
         body: formData,
       })
-        .then((response) => response.text())
+        .then((response) => response.json())
         .then((data) => {
-          console.log({ data });
+          setUrls((prev) => [...prev, data.url]);
           refetchImages();
         })
         .catch((err) => {
@@ -398,6 +398,7 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
         label="Description"
         name="description"
         required
+        type="textarea"
       />
       <div className={styles.row}>
         <Input

@@ -53,7 +53,7 @@ export class ProductResolver {
     @Ctx() { me }: Context,
     @Arg("active", { nullable: true }) active?: boolean,
     @Arg("page", { nullable: true }) page: number = 0,
-    @Arg("perPage", { nullable: true }) perPage: number = 30,
+    @Arg("perPage", { nullable: true }) perPage: number = 20,
     @Arg("search", { nullable: true }) search?: string
   ): Promise<ProductPage> {
     const where: { isActive?: boolean; [Op.or]?: Record<string, any>[] } = {

@@ -1,9 +1,9 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { gql, useQuery } from "@apollo/client";
 import { Product } from "../../types/Product";
 import Loader from "../Loader";
-import { combineClasses, priceToCurrency } from "../../utils";
+import { combineClasses, priceToCurrency, substring } from "../../utils";
 import Selectable from "../Selectable";
 import { useUser } from "../../hooks/useUser";
 import styles from "./ProductList.module.scss";
@@ -18,6 +18,7 @@ import Button from "../Button";
 import { useForm } from "../../hooks/useForm";
 import Input from "../Input";
 import { useDebounce } from "../../hooks/useDebounce";
+import { ClickStateRef } from "../Button/Button";
 
 interface Props {
   adminView?: boolean;
@@ -70,6 +71,8 @@ export const ProductList: FC<Props> = ({ adminView }) => {
     },
   });
 
+  const enableButtonRef = useRef<ClickStateRef>();
+
   const debouncedSearch = useDebounce(refetch);
   useEffect(debouncedSearch, [query.search]);
 
@@ -82,16 +85,8 @@ export const ProductList: FC<Props> = ({ adminView }) => {
         active: variables?.active,
       },
     });
+    enableButtonRef.current?.();
   };
-
-  // [
-  //   ...(data?.products ?? []),
-  //   ...(data?.products ?? []),
-  //   ...(data?.products ?? []),
-  //   ...(data?.products ?? []),
-  //   ...(data?.products ?? []),
-  //   ...(data?.products ?? []),
-  // ];
 
   return (
     <>
@@ -111,7 +106,11 @@ export const ProductList: FC<Props> = ({ adminView }) => {
       </div>
       <div className={styles.load}>
         {loading && <Loader />}
-        {data?.products.hasMore && <Button onClick={loadMore}>More</Button>}
+        {data?.products.hasMore && (
+          <Button onClick={loadMore} enableButtonRef={enableButtonRef}>
+            More
+          </Button>
+        )}
       </div>
       <Modal name="image" wide>
         <Image
@@ -130,6 +129,7 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
   const { user } = useUser();
   const { modalHref } = useModal();
   const { addToCart, quantityInCart } = useCart();
+  const [isReadMore, setIsReadMore] = useState(false);
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(
     product.images.findIndex((i) => i.primary) > -1
@@ -203,7 +203,20 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
         )}
       </div>
       <h3>{product.title}</h3>
-      <p>{product.description}</p>
+      <p className={styles.description}>
+        {isReadMore ? (
+          product.description
+        ) : (
+          <>
+            {substring(product.description)[0]}{" "}
+            {substring(product.description)[1] && (
+              <Selectable onClick={() => setIsReadMore(true)}>
+                Read More
+              </Selectable>
+            )}
+          </>
+        )}
+      </p>
       <p>{priceToCurrency(product.price)}</p>
       <p>{availableQuantity < 0 ? 0 : availableQuantity} available</p>
       {product.isMadeToOrder && <p>Made to order</p>}

@@ -6,6 +6,11 @@ export const combineClasses = (...classNames: string[]) => {
   return classNames.filter(Boolean).join(" ").trim();
 };
 
+export const substring = (string: string, length = 100): [string, boolean] => {
+  if (string.length <= length) return [string, false];
+  return [`${string.substring(0, length).trim()}...`, true];
+};
+
 export const emptyValue = (value: number | boolean | string | unknown) => {
   switch (typeof value) {
     case "number":
