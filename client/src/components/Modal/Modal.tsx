@@ -26,6 +26,8 @@ const Modal: FC<Props> = ({ name, children, wide, className = "" }) => {
     event.stopPropagation();
   };
 
+  if (query.modal !== name) return null;
+
   return (
     <dialog
       className={styles.background}
@@ -39,7 +41,7 @@ const Modal: FC<Props> = ({ name, children, wide, className = "" }) => {
         <Selectable onClick={closeModal} className={styles.close}>
           <FaTimes />
         </Selectable>
-        <div className={className}>{query.modal === name && children}</div>
+        <div className={className}>{children}</div>
       </div>
     </dialog>
   );
