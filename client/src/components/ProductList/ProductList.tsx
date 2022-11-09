@@ -227,4 +227,5 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
   );
 };
 
-export default withApollo({ ssr: true })(ProductList);
+export default ProductList;
+// export default withApollo({ ssr: true })(ProductList);

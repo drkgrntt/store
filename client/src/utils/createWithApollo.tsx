@@ -160,6 +160,7 @@ export const createWithApollo = (
                 // your entire AppTree once for every query. Check out apollo fragments
                 // if you want to reduce the number of rerenders.
                 // https://www.apollographql.com/docs/react/data/fragments/
+
                 await getDataFromTree(<AppTree {...props} />);
               } catch (error) {
                 // Prevent Apollo Client GraphQL errors from crashing SSR.
