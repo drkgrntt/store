@@ -228,4 +228,3 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
 };
 
 export default ProductList;
-// export default withApollo({ ssr: true })(ProductList);
