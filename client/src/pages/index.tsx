@@ -7,4 +7,4 @@ const Home: NextPage = () => {
   return <ProductList />;
 };
 
-export default withApollo({ ssr: false })(Home);
+export default withApollo({ ssr: true })(Home);

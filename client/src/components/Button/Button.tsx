@@ -23,7 +23,7 @@ const Button: FC<Props> = ({
   onClick = () => {},
   id,
   style = {},
-  title = "",
+  title,
   type = "button",
   children,
 }) => {

@@ -15,10 +15,10 @@ import Modal from "../Modal";
 import { useRouter } from "next/router";
 import { Paginated } from "../../types/util";
 import Button from "../Button";
-import { useForm } from "../../hooks/useForm";
 import Input from "../Input";
 import { useDebounce } from "../../hooks/useDebounce";
 import { ClickStateRef } from "../Button/Button";
+import { withApollo } from "../../utils/withApollo";
 
 interface Props {
   adminView?: boolean;
@@ -227,4 +227,4 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
   );
 };
 
-export default ProductList;
+export default withApollo({ ssr: true })(ProductList);

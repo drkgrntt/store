@@ -1,6 +1,11 @@
 import App from "next/app";
 import Head from "next/head";
-import { ApolloProvider } from "@apollo/client";
+import {
+  ApolloProvider,
+  NormalizedCacheObject,
+  ApolloClient,
+} from "@apollo/client";
+import { NextPage, NextPageContext } from "next";
 
 // On the client, we store the Apollo Client in the following variable.
 // This prevents the client from reinitializing between page transitions.
@@ -81,9 +86,11 @@ const initApolloClient = (apolloClient: any, initialState: any, ctx: any) => {
  * @param  {Boolean} [withApolloOptions.ssr=false]
  * @returns {(PageComponent: ReactNode) => ReactNode}
  */
-export const createWithApollo = (ac: any) => {
+export const createWithApollo = (
+  ac: (ctx: NextPageContext) => ApolloClient<NormalizedCacheObject>
+) => {
   return ({ ssr = false } = {}) =>
-    (PageComponent: any) => {
+    (PageComponent: NextPage) => {
       const WithApollo = ({ apolloClient, apolloState, ...pageProps }: any) => {
         let client;
         if (apolloClient) {
@@ -182,7 +189,11 @@ export const createWithApollo = (ac: any) => {
     };
 };
 
-function createApolloClient(apolloClient: any, initialState: any, ctx: any) {
+function createApolloClient(
+  apolloClient: any,
+  initialState: any,
+  ctx: NextPageContext
+) {
   // The `ctx` (NextPageContext) will only be present on the server.
   // use it to extract auth headers (ctx.req) or similar.
   apolloClient.ssrMode = Boolean(ctx);
