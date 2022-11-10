@@ -1,20 +1,48 @@
-import { FC } from "react";
+import { FC, MutableRefObject, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import styles from "./Header.module.scss";
 import Link from "next/link";
+import { combineClasses } from "../../../utils";
 
 interface Props {}
 
 const Header: FC<Props> = () => {
+  const headerRef = useRef<HTMLElement>();
+  const [isTop, setIsTop] = useState(true);
+
+  useEffect(() => {
+    const cb = () => {
+      if (!headerRef.current) return;
+      const headerRect = headerRef.current.getBoundingClientRect();
+      const isOutOfView = headerRect.bottom <= 300;
+
+      if (isOutOfView && isTop) {
+        setIsTop(false);
+      } else if (!isOutOfView && !isTop) {
+        setIsTop(true);
+      }
+    };
+
+    document.addEventListener("scroll", cb);
+    return () => document.removeEventListener("scroll", cb);
+  }, [headerRef.current, isTop]);
+
   return (
     <header
+      ref={headerRef as MutableRefObject<HTMLElement>}
       title="Small-batch colorful and quirky earrings (and a few things in between)"
       className={styles.header}
     >
       <h1 className={styles.title}>
         Small-batch colorful and quirky earrings (and a few things in between)
       </h1>
-      <Link href="/" className={styles.homeImageLink}>
+      <Link
+        href="/"
+        className={combineClasses(
+          styles.homeImageLink,
+          isTop ? "" : styles.float
+        )}
+      >
         <Image
           src="/images/logo.jpg"
           height={250}
