@@ -35,12 +35,21 @@ const NavLink: FC<{
   onClick: () => void;
   onFocus?: () => void;
   onBlur?: () => void;
+  scroll?: boolean;
   children?: ReactNode;
-}> = ({ children, href, onClick, onFocus = () => {}, onBlur = () => {} }) => {
+}> = ({
+  children,
+  href,
+  onClick,
+  scroll = true,
+  onFocus = () => {},
+  onBlur = () => {},
+}) => {
   const { pathname } = useRouter();
 
   return (
     <Link
+      scroll={scroll}
       href={href}
       onFocus={onFocus}
       onBlur={onBlur}
@@ -100,8 +109,13 @@ const NavMenu: FC<Props> = () => {
 
   return (
     <>
+      {/* <div className={styles.topBar} /> */}
       <div className={styles.cartWrapper}>
-        <Link href={modalHref("cart")} className={styles.cartLink}>
+        <Link
+          href={modalHref("cart")}
+          className={styles.cartLink}
+          scroll={false}
+        >
           <FaShoppingCart /> ({totalQuantity})
         </Link>
       </div>
@@ -133,6 +147,7 @@ const NavMenu: FC<Props> = () => {
           onBlur={closeMenu}
           onClick={closeMenu}
           href={modalHref("cart")}
+          scroll={false}
         >
           <FaShoppingCart /> Cart
         </NavLink>
@@ -141,6 +156,7 @@ const NavMenu: FC<Props> = () => {
           onBlur={closeMenu}
           onClick={closeMenu}
           href={modalHref("about")}
+          scroll={false}
         >
           <FaAddressCard /> About the Maker
         </NavLink>
@@ -149,6 +165,7 @@ const NavMenu: FC<Props> = () => {
           onBlur={closeMenu}
           onClick={closeMenu}
           href={modalHref("faq")}
+          scroll={false}
         >
           <FaQuestion /> FAQ
         </NavLink>
@@ -157,6 +174,7 @@ const NavMenu: FC<Props> = () => {
           onBlur={closeMenu}
           onClick={closeMenu}
           href={modalHref("contact")}
+          scroll={false}
         >
           <FaEnvelope /> Contact
         </NavLink>
@@ -178,6 +196,7 @@ const NavMenu: FC<Props> = () => {
                   onBlur={closeMenu}
                   onClick={closeMenu}
                   href={modalHref("product-form")}
+                  scroll={false}
                 >
                   <FaPlus /> Add Product
                 </NavLink>{" "}
@@ -198,6 +217,7 @@ const NavMenu: FC<Props> = () => {
             onBlur={closeMenu}
             onClick={closeMenu}
             href={modalHref("login")}
+            scroll={false}
           >
             <FaPenNib />
             Login / Sign Up

@@ -17,7 +17,7 @@ export const useModal = () => {
       if (!Array.isArray(params)) params = [params];
       params.forEach((param) => (modalQueryParams[param] = []));
     }
-    push({ query: modalQueryParams });
+    push({ query: modalQueryParams }, undefined, { scroll: false });
   };
 
   const modalHref = (

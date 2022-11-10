@@ -1,5 +1,5 @@
 .background {
-  z-index: 100;
+  z-index: var(--z-modal);
   position: fixed;
   top: 0;
   left: 0;
@@ -29,5 +29,5 @@
 .close {
   position: absolute;
   right: 1rem;
-  z-index: 10;
+  z-index: var(--z-front);
 }

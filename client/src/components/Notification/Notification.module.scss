@@ -4,7 +4,7 @@
   max-width: 95vw;
   background-color: var(--white);
   top: 1rem;
-  z-index: 1000;
+  z-index: var(--z-notification);
   padding: 1rem;
   display: flex;
   align-items: flex-start;

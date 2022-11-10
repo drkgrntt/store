@@ -166,6 +166,7 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
           <Link
             href={modalHref("product-form", { id: product.id })}
             className={styles.editButton}
+            scroll={false}
           >
             <FaPen />
           </Link>
@@ -177,6 +178,7 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
                 selectedImage.title ?? `The selected image of ${product.title}`,
               src: selectedImage.url,
             })}
+            scroll={false}
           >
             <Image
               alt={
