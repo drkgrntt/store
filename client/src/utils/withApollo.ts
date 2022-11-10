@@ -27,6 +27,7 @@ const createClient = (ctx: NextPageContext) => {
   });
 
   const authLink = setContext((_, { headers }) => {
+    console.log({ headers, ctx: ctx?.req?.headers });
     return {
       headers: {
         ...headers,

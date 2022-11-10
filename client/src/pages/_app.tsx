@@ -16,4 +16,4 @@ const App = ({ Component, pageProps }: AppPropsWithApollo) => {
   );
 };
 
-export default withApollo({ ssr: false })(App as any);
+export default withApollo({ ssr: true })(App as any);
