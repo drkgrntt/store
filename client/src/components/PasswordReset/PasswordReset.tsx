@@ -5,6 +5,7 @@ import { useNotification } from "../../providers/notification";
 import Button from "../Button";
 import { ClickStateRef } from "../Button/Button";
 import Input from "../Input";
+import styles from "./PasswordReset.module.scss";
 
 interface Props {}
 
@@ -70,7 +71,12 @@ const PasswordReset: FC<Props> = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} ref={formState.formRef} noValidate>
+    <form
+      onSubmit={handleSubmit}
+      ref={formState.formRef}
+      noValidate
+      className={styles.form}
+    >
       <h3>Reset Password</h3>
       <Input
         label="Current password"
@@ -97,6 +103,7 @@ const PasswordReset: FC<Props> = () => {
         disabled={!formState.isValid}
         type="submit"
         enableButtonRef={enableButtonRef}
+        className={styles.submit}
       >
         Reset
       </Button>

@@ -1,11 +1,11 @@
 .topBar {
   position: fixed;
   top: 0;
-  background-color: var(--black);
-  opacity: 0.5;
-  height: 4rem;
+  height: 6rem;
   width: 100%;
   z-index: var(--z-front);
+  background: var(--black);
+  background: linear-gradient(to bottom, var(--black), transparent);
 }
 
 .toggle {

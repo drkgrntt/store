@@ -24,11 +24,14 @@
   opacity: 0;
 }
 
-.logo {
+.homeImageLink {
   position: absolute;
   top: 5rem;
   left: 50%;
   transform: translateX(-50%);
+}
+
+.logo {
   border-radius: 50%;
   box-shadow: var(--heavy-shadow);
 }

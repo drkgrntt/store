@@ -109,7 +109,7 @@ const NavMenu: FC<Props> = () => {
 
   return (
     <>
-      {/* <div className={styles.topBar} /> */}
+      <div className={styles.topBar} />
       <div className={styles.cartWrapper}>
         <Link
           href={modalHref("cart")}
