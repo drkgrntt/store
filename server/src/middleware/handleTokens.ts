@@ -6,7 +6,7 @@ export const handleTokens = (_: Request, res: Response, next: NextFunction) => {
     res.cookie("token", value, {
       sameSite: __prod__ ? "none" : "lax",
       secure: true,
-      domain: "midwestdaisy.com",
+      domain: __prod__ ? "midwestdaisy.com" : undefined,
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 30,
     });
@@ -16,7 +16,7 @@ export const handleTokens = (_: Request, res: Response, next: NextFunction) => {
     res.cookie("token", "a.b.c", {
       sameSite: __prod__ ? "none" : "lax",
       secure: true,
-      domain: "midwestdaisy.com",
+      domain: __prod__ ? "midwestdaisy.com" : undefined,
       httpOnly: true,
       maxAge: 0,
     });
