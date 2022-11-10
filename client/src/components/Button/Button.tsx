@@ -32,7 +32,6 @@ const Button: FC<Props> = ({
     enableButtonRef.current = () => setTimeout(() => setClicked(false));
 
   const handleClick = () => {
-    console.log("click");
     setTimeout(() => setClicked(true));
     onClick();
   };
