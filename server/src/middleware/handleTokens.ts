@@ -6,6 +6,7 @@ export const handleTokens = (_: Request, res: Response, next: NextFunction) => {
     res.cookie("token", value, {
       sameSite: __prod__ ? "none" : "lax",
       secure: true,
+      domain: __prod__ ? undefined : ".vercel.app",
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 30,
     });
@@ -15,6 +16,7 @@ export const handleTokens = (_: Request, res: Response, next: NextFunction) => {
     res.cookie("token", "a.b.c", {
       sameSite: __prod__ ? "none" : "lax",
       secure: true,
+      domain: __prod__ ? undefined : ".vercel.app",
       httpOnly: true,
       maxAge: 0,
     });
