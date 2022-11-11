@@ -1,11 +1,16 @@
 .topBar {
-  position: absolute;
   top: 0;
   height: 6rem;
   width: 100%;
   z-index: var(--z-front);
   background: var(--black);
   background: linear-gradient(to bottom, var(--black), transparent);
+  position: fixed;
+
+  &.gone {
+    position: absolute;
+    top: 250px;
+  }
 }
 
 .toggle {

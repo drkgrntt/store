@@ -1,9 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
 :root {
-  // color: rgb(169, 145, 111); // test line to get color picker
+  // color: rgb(169, 255, 212); // test line to get color picker
 
-  --green-value: 16, 137, 141;
+  --green-value: 169, 255, 212;
   --yellow-value: 256, 196, 0;
   --pink-value: 224, 176, 210;
   --red-value: 170, 0, 0;
@@ -13,7 +13,7 @@
   --white-value: 250, 250, 250;
 
   --primary-color-value: var(--pink-value);
-  --secondary-color-value: var(--yellow-value);
+  --secondary-color-value: var(--green-value);
   --alert-color-value: var(--red-value);
   --neutral-color-value: var(--grey-value);
 

@@ -1,7 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FC, MouseEvent, ReactNode, useState } from "react";
+import { FC, MouseEvent, ReactNode, useEffect, useState } from "react";
 import { useUser } from "../../../hooks/useUser";
 import { combineClasses } from "../../../utils";
 import {
@@ -94,6 +94,24 @@ const NavMenu: FC<Props> = () => {
   const { modalHref } = useModal();
   const { totalQuantity } = useCart();
 
+  const [isTop, setIsTop] = useState(true);
+
+  useEffect(() => {
+    const cb = () => {
+      const bodyRect = document.body.getBoundingClientRect();
+      const isOutOfView = bodyRect.top <= -250;
+
+      if (isOutOfView && isTop) {
+        setIsTop(false);
+      } else if (!isOutOfView && !isTop) {
+        setIsTop(true);
+      }
+    };
+
+    document.addEventListener("scroll", cb);
+    return () => document.removeEventListener("scroll", cb);
+  }, [isTop]);
+
   const closeMenu = () => setOpen(false);
   const openMenu = () => setOpen(true);
   const toggleMenu = () => setOpen((prev) => !prev);
@@ -109,7 +127,9 @@ const NavMenu: FC<Props> = () => {
 
   return (
     <>
-      <div className={styles.topBar} />
+      <div
+        className={combineClasses(styles.topBar, isTop ? "" : styles.gone)}
+      />
       <div className={styles.cartWrapper}>
         <Link
           href={modalHref("cart")}

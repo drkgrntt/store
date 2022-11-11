@@ -28,6 +28,11 @@
 .imageContainer {
   position: relative;
 
+  transition: 0.2s;
+  &:hover {
+    scale: 1.03;
+  }
+
   & > .editButton,
   & > .imageNav {
     opacity: 1;
