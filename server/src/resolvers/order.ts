@@ -273,27 +273,25 @@ export class OrderResolver {
       const orderedProducts = await Promise.all(
         // Convert all cart items into order items
         cart.map(async (userProduct) => {
+          const { product } = userProduct;
           const orderProduct = await OrderProduct.create(
             {
               orderId: order.id,
-              productId: userProduct.productId,
+              productId: product.id,
               count: userProduct.count,
-              price: userProduct.product.price,
+              price: product.price,
             },
             { transaction }
           );
 
           // Decrement product quantity
-          const newQuantity = userProduct.product.quantity - orderProduct.count;
+          const newQuantity = product.quantity - orderProduct.count;
           if (newQuantity < 0) {
-            userProduct.product.quantity = 0;
+            product.quantity = 0;
           } else {
-            userProduct.product.quantity = newQuantity;
+            product.quantity = newQuantity;
           }
-          await userProduct.product.save({ transaction });
-
-          // Remove from cart
-          await userProduct.destroy({ transaction });
+          await product.save({ transaction });
 
           return orderProduct;
         })

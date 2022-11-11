@@ -11,9 +11,10 @@ import {
   AllowNull,
   Is,
   BeforeCreate,
+  AfterCreate,
 } from "sequelize-typescript";
 import { Field, ObjectType } from "type-graphql";
-import { Product, Order } from ".";
+import { Product, Order, UserProduct } from ".";
 import { Transaction } from "sequelize/types";
 
 @ObjectType()
@@ -91,6 +92,26 @@ export class OrderProduct extends Model {
       throw new Error(
         "You cannot order more than what is available unless it can be made to order."
       );
+    }
+  }
+
+  @AfterCreate
+  static async reduceAvailability(
+    instance: OrderProduct,
+    { transaction }: { transaction: Transaction }
+  ) {
+    const userProducts = await UserProduct.findAll({
+      where: { productId: instance.productId },
+      transaction,
+    });
+
+    for (const userProduct of userProducts) {
+      if (userProduct.count - instance.count > 0) {
+        userProduct.count -= instance.count;
+        await userProduct.save({ transaction });
+      } else {
+        await userProduct.destroy({ transaction });
+      }
     }
   }
 }
