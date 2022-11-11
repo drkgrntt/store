@@ -33,6 +33,13 @@ const Header: FC<Props> = () => {
       title="Small-batch colorful and quirky earrings (and a few things in between)"
       className={styles.header}
     >
+      <Image
+        src="/images/banner.jpg"
+        width={2000}
+        height={800}
+        alt="Banner image"
+        className={styles.banner}
+      />
       <h1 className={styles.title}>
         Small-batch colorful and quirky earrings (and a few things in between)
       </h1>
