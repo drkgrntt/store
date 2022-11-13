@@ -7,6 +7,8 @@ export const useModal = () => {
   const { push, query } = useRouter();
 
   const closeModal = () => {
+    if (query.prev) return push(query.prev as string);
+
     const modalQueryParams: ParsedUrlQuery = {
       ...query,
       modal: [],

@@ -1,4 +1,6 @@
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { FC, MouseEvent } from "react";
 import { useModal } from "../../hooks/useModal";
 import { useUser } from "../../hooks/useUser";
@@ -25,12 +27,13 @@ const Cart: FC<Props> = ({ isCheckout }) => {
     totalQuantity,
   } = useCart();
   const { user } = useUser();
-  const { openModal } = useModal();
+  const { openModal, modalHref } = useModal();
+  const { asPath } = useRouter();
 
   return (
     <div>
       {user && !!lsCart.length && (
-        <details>
+        <details className={styles.item}>
           <summary>
             Your cart is different from what it was before logging in. Would you
             like to correct that?
@@ -77,7 +80,7 @@ const Cart: FC<Props> = ({ isCheckout }) => {
         </details>
       )}
       {!isCheckout && <h2>Cart</h2>}
-      <ul>
+      <ul className={styles.items}>
         {cart.map((item) => {
           const handleItemClick = (event: MouseEvent<HTMLAnchorElement>) => {
             event.stopPropagation();
@@ -95,14 +98,25 @@ const Cart: FC<Props> = ({ isCheckout }) => {
 
                 {item.product.images.map((image) => {
                   return (
-                    <Image
-                      key={image.url}
-                      height={120}
-                      width={120}
-                      src={image.url}
-                      alt={image.title ?? item.product.title}
-                      className={styles.image}
-                    />
+                    <Link
+                      href={modalHref("image", {
+                        alt:
+                          image.title ??
+                          `The selected image of ${item.product.title}`,
+                        src: image.url,
+                        prev: asPath,
+                      })}
+                      scroll={false}
+                    >
+                      <Image
+                        key={image.url}
+                        height={120}
+                        width={120}
+                        src={image.url}
+                        alt={image.title ?? item.product.title}
+                        className={styles.image}
+                      />
+                    </Link>
                   );
                 })}
                 <ul>

@@ -24,7 +24,7 @@ const OrderList: FC<Props> = ({ orders, isEditable }) => {
         return (
           <details key={order.id} className={styles.item}>
             <summary>
-              {order.createdAt.toLocaleDateString()} -{" "}
+              {order.createdAt.toLocaleDateString?.()} -{" "}
               {priceToCurrency(order.totalCost)}
               <br />
               {addressToString(order.address)}

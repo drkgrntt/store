@@ -148,8 +148,8 @@ const Admin: FC<Props> = () => {
         </h3>
         {contents?.map((content) => (
           <details key={content.id} className={styles.content}>
-            <summary className={styles.contentTitle}>
-              {content.title}{" "}
+            <summary>
+              <span className={styles.contentTitle}>{content.title}</span>
               <Link href={modalHref("content-form", { id: content.id })}>
                 <FaPen />
               </Link>
