@@ -1,4 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
+import Image from "next/image";
 import { FC } from "react";
 import { Content } from "../../types/Content";
 import Loader from "../Loader";
@@ -35,6 +36,13 @@ const About: FC<Props> = () => {
   return (
     <div>
       <h2>{content.title}</h2>
+      <Image
+        height={500}
+        width={500}
+        className={styles.image}
+        alt="Ceanne"
+        src="/images/ceanne.jpg"
+      />
       <div className={styles.body}>{content.detail}</div>
     </div>
   );
