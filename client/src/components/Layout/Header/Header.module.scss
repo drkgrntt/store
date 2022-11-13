@@ -28,7 +28,7 @@
 }
 
 .homeImageLink {
-  position: absolute;
+  position: fixed;
   top: 5rem;
   left: 50%;
   transform: translateX(-50%);
@@ -37,7 +37,6 @@
   transition: 0.4s ease-in-out;
 
   &.float {
-    position: fixed;
     top: 0;
     left: 0;
     scale: 0.3;
