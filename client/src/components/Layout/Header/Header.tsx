@@ -39,6 +39,7 @@ const Header: FC<Props> = () => {
         height={800}
         alt="Banner image"
         className={styles.banner}
+        priority
       />
       <h1 className={styles.title}>
         Small-batch colorful and quirky earrings (and a few things in between)
@@ -56,6 +57,7 @@ const Header: FC<Props> = () => {
           width={250}
           alt="Site Logo"
           className={styles.logo}
+          priority
         />
       </Link>
     </header>
