@@ -107,9 +107,9 @@ const Cart: FC<Props> = ({ isCheckout }) => {
                         prev: asPath,
                       })}
                       scroll={false}
+                      key={image.url}
                     >
                       <Image
-                        key={image.url}
                         height={120}
                         width={120}
                         src={image.url}
