@@ -13,7 +13,9 @@ import {
 } from "type-graphql";
 import { isAdmin } from "../middleware/isAdmin";
 import { Context, Paginated } from "../types";
-import { Op } from "sequelize";
+import { Op, WhereOptions } from "sequelize";
+// import fs from "fs/promises";
+// import path from "path";
 
 @ObjectType()
 class ProductPage implements Paginated<Product> {
@@ -56,8 +58,9 @@ export class ProductResolver {
     @Arg("perPage", { nullable: true }) perPage: number = 20,
     @Arg("search", { nullable: true }) search?: string
   ): Promise<ProductPage> {
-    const where: { isActive?: boolean; [Op.or]?: Record<string, any>[] } = {
+    const where: WhereOptions = {
       isActive: true,
+      [Op.or]: [{ isMadeToOrder: true }, { quantity: { [Op.gt]: 0 } }],
     };
     if (me?.isAdmin) {
       if (active === undefined) {
@@ -81,19 +84,73 @@ export class ProductResolver {
         []
       );
 
-      where[Op.or] = [
-        { title: { [Op.iLike]: `%${search}%` } },
-        { id: ids },
-        { description: { [Op.iLike]: `%${search}%` } },
-      ];
+      where[Op.and as unknown as string] = {
+        [Op.or]: [
+          { title: { [Op.iLike]: `%${search}%` } },
+          { id: ids },
+          { description: { [Op.iLike]: `%${search}%` } },
+        ],
+      };
     }
 
-    const found = await Product.findAll({
-      where,
-      limit: perPage + 1,
-      offset: page * perPage,
-      order: [["createdAt", "desc"]],
-    });
+    const featuredProductIds = (
+      await Product.findAll({
+        attributes: ["id"],
+        where,
+        include: {
+          model: Category,
+          where: { name: "Feature" },
+        },
+      })
+    ).map(({ id }) => id);
+    const numFeatured = featuredProductIds.length;
+
+    const limit = perPage + 1;
+    const offset = page * perPage;
+    let found: Product[] = [];
+
+    // Get featured
+    if (numFeatured > offset + limit) {
+      found = await Product.findAll({
+        where: { ...where, id: featuredProductIds },
+        limit,
+        offset,
+        order: [["createdAt", "desc"]],
+      });
+    }
+    // Get non-featured
+    else if (numFeatured < offset) {
+      found = await Product.findAll({
+        where: { ...where, id: { [Op.not]: featuredProductIds } },
+        limit,
+        offset: offset - numFeatured,
+        order: [["createdAt", "desc"]],
+      });
+    }
+    // Merge at the seam
+    else {
+      const featured = await Product.findAll({
+        where: { ...where, id: featuredProductIds },
+        limit,
+        offset,
+        order: [["createdAt", "desc"]],
+      });
+      const nonFeatured = await Product.findAll({
+        where: { ...where, id: { [Op.not]: featuredProductIds } },
+        limit: limit - featured.length,
+        offset: 0,
+        order: [["createdAt", "desc"]],
+      });
+      found = [...featured, ...nonFeatured];
+    }
+
+    // const sql = (
+    //   await fs.readFile(path.join("sql", "products.sql"))
+    // ).toString();
+    // const found = await sequelize.query(sql, {
+    //   model: Product,
+    //   replacements: [(perPage + 1).toString(), (page * perPage).toString()],
+    // });
 
     const products = found.slice(0, perPage);
     const hasMore = found.length > perPage;
