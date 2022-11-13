@@ -33,6 +33,10 @@ import {
   ContentCategory,
 } from "./models";
 import { handleTokens } from "./middleware/handleTokens";
+import {
+  createImageIdsByProductLoader,
+  createImageLoader,
+} from "./dataloaders";
 
 const main = async () => {
   const sequelize = new Sequelize(process.env.DATABASE_URL, {
@@ -100,6 +104,8 @@ const main = async () => {
         me,
         token,
         sequelize,
+        imageLoader: createImageLoader(),
+        imageIdsByProductLoader: createImageIdsByProductLoader(),
       };
     },
   });

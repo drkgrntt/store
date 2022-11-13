@@ -42,11 +42,15 @@ export class ProductResolver {
   }
 
   @FieldResolver(() => [ProductImage])
-  async images(@Root() product: Product): Promise<ProductImage[]> {
-    if (product.images?.length) return product.images;
-    const images = await ProductImage.findAll({
-      where: { productId: product.id },
-    });
+  async images(
+    @Root() product: Product,
+    @Ctx() { imageLoader, imageIdsByProductLoader }: Context
+  ): Promise<ProductImage[]> {
+    const imageIds = await imageIdsByProductLoader.load(product.id);
+    const images = (await imageLoader.loadMany(
+      imageIds || []
+    )) as ProductImage[];
+
     return images;
   }
 
@@ -149,6 +153,7 @@ export class ProductResolver {
     // ).toString();
     // const found = await sequelize.query(sql, {
     //   model: Product,
+    //   mapToModel: true,
     //   replacements: [(perPage + 1).toString(), (page * perPage).toString()],
     // });
 

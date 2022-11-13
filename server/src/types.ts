@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
 import { Sequelize } from "sequelize-typescript";
+import {
+  createImageIdsByProductLoader,
+  createImageLoader,
+} from "./dataloaders";
 import { User } from "./models";
 
 export interface Context {
@@ -8,6 +12,8 @@ export interface Context {
   me: User;
   token: string;
   sequelize: Sequelize;
+  imageLoader: ReturnType<typeof createImageLoader>;
+  imageIdsByProductLoader: ReturnType<typeof createImageIdsByProductLoader>;
 }
 
 export interface Paginated<T> {
