@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { Sequelize } from "sequelize-typescript";
 import {
+  createAddressIdsByUserLoader,
+  createAddressLoader,
   createImageIdsByProductLoader,
   createImageLoader,
 } from "./dataloaders";
@@ -12,6 +14,8 @@ export interface Context {
   me: User;
   token: string;
   sequelize: Sequelize;
+  addressLoader: ReturnType<typeof createAddressLoader>;
+  addressIdsByUserLoader: ReturnType<typeof createAddressIdsByUserLoader>;
   imageLoader: ReturnType<typeof createImageLoader>;
   imageIdsByProductLoader: ReturnType<typeof createImageIdsByProductLoader>;
 }

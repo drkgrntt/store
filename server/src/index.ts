@@ -34,6 +34,8 @@ import {
 } from "./models";
 import { handleTokens } from "./middleware/handleTokens";
 import {
+  createAddressIdsByUserLoader,
+  createAddressLoader,
   createImageIdsByProductLoader,
   createImageLoader,
 } from "./dataloaders";
@@ -106,6 +108,8 @@ const main = async () => {
         sequelize,
         imageLoader: createImageLoader(),
         imageIdsByProductLoader: createImageIdsByProductLoader(),
+        addressLoader: createAddressLoader(),
+        addressIdsByUserLoader: createAddressIdsByUserLoader(),
       };
     },
   });

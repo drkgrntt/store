@@ -26,28 +26,42 @@ export class UserResolver {
   }
 
   @FieldResolver(() => [Address])
-  async addresses(@Root() user: User): Promise<Address[]> {
-    if (user.addresses?.length) return user.addresses;
-    const addresses = await Address.findAll({ where: { userId: user.id } });
+  async addresses(
+    @Root() user: User,
+    @Ctx() { addressIdsByUserLoader, addressLoader }: Context
+  ): Promise<Address[]> {
+    const addressIds = await addressIdsByUserLoader.load(user.id);
+    const addresses = (await addressLoader.loadMany(
+      addressIds || []
+    )) as Address[];
+
     return addresses;
   }
 
   @FieldResolver(() => Address, { nullable: true })
-  async billingAddress(@Root() user: User): Promise<Address | null> {
-    if (user.billingAddress) return user.billingAddress;
-    const billingAddress = await Address.findOne({
-      where: { userId: user.id, type: AddressType.BILLING },
-    });
-    return billingAddress;
+  async billingAddress(
+    @Root() user: User,
+    @Ctx() { addressIdsByUserLoader, addressLoader }: Context
+  ): Promise<Address | undefined> {
+    const addressIds = await addressIdsByUserLoader.load(user.id);
+    const addresses = (await addressLoader.loadMany(
+      addressIds || []
+    )) as Address[];
+
+    return addresses.find((a) => a.type === AddressType.BILLING);
   }
 
   @FieldResolver(() => [Address])
-  async shippingAddresses(@Root() user: User): Promise<Address[]> {
-    if (user.addresses?.length) return user.addresses;
-    const addresses = await Address.findAll({
-      where: { userId: user.id, type: AddressType.SHIPPING },
-    });
-    return addresses;
+  async shippingAddresses(
+    @Root() user: User,
+    @Ctx() { addressIdsByUserLoader, addressLoader }: Context
+  ): Promise<Address[]> {
+    const addressIds = await addressIdsByUserLoader.load(user.id);
+    const addresses = (await addressLoader.loadMany(
+      addressIds || []
+    )) as Address[];
+
+    return addresses.filter((a) => a.type === AddressType.SHIPPING);
   }
 
   @FieldResolver(() => [Order])

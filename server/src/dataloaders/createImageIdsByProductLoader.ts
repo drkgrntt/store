@@ -13,8 +13,8 @@ export const createImageIdsByProductLoader = () => {
     // Essentially is of type Record<productId: imageId[]>
     const imageIdsMap = images.reduce((map, image) => {
       map[image.productId] = images
-        .filter((ch) => image.productId === ch.productId)
-        .map((ch) => ch.id);
+        .filter((i) => image.productId === i.productId)
+        .map((i) => i.id);
       return map;
     }, {} as Record<string, string[]>);
 
