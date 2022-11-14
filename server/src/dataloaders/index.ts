@@ -4,3 +4,5 @@ export { createOrderLoader } from "./createOrderLoader";
 export { createOrderIdsByUserLoader } from "./createOrderIdsByUserLoader";
 export { createAddressLoader } from "./createAddressLoader";
 export { createAddressIdsByUserLoader } from "./createAddressIdsByUserLoader";
+export { createUserProductLoader } from "./createUserProductLoader";
+export { createUserProductIdsByUserLoader } from "./createUserProductIdsByUserLoader";

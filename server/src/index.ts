@@ -40,6 +40,8 @@ import {
   createImageLoader,
   createOrderIdsByUserLoader,
   createOrderLoader,
+  createUserProductIdsByUserLoader,
+  createUserProductLoader,
 } from "./dataloaders";
 
 const main = async () => {
@@ -114,6 +116,8 @@ const main = async () => {
         orderIdsByUserLoader: createOrderIdsByUserLoader(),
         addressLoader: createAddressLoader(),
         addressIdsByUserLoader: createAddressIdsByUserLoader(),
+        userProductLoader: createUserProductLoader(),
+        userProductIdsByUserLoader: createUserProductIdsByUserLoader(),
       };
     },
   });

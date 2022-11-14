@@ -7,6 +7,8 @@ import {
   createImageIdsByProductLoader,
   createImageLoader,
   createOrderIdsByUserLoader,
+  createUserProductLoader,
+  createUserProductIdsByUserLoader,
 } from "./dataloaders";
 import { User } from "./models";
 
@@ -20,6 +22,10 @@ export interface Context {
   orderIdsByUserLoader: ReturnType<typeof createOrderIdsByUserLoader>;
   addressLoader: ReturnType<typeof createAddressLoader>;
   addressIdsByUserLoader: ReturnType<typeof createAddressIdsByUserLoader>;
+  userProductLoader: ReturnType<typeof createUserProductLoader>;
+  userProductIdsByUserLoader: ReturnType<
+    typeof createUserProductIdsByUserLoader
+  >;
   imageLoader: ReturnType<typeof createImageLoader>;
   imageIdsByProductLoader: ReturnType<typeof createImageIdsByProductLoader>;
 }

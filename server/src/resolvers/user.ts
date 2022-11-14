@@ -75,12 +75,14 @@ export class UserResolver {
   }
 
   @FieldResolver(() => [UserProduct])
-  async cart(@Root() user: User): Promise<UserProduct[]> {
-    if (user.cart) return user.cart;
-    const cart = await UserProduct.findAll({
-      where: { userId: user.id },
-      include: { model: Product },
-    });
+  async cart(
+    @Root() user: User,
+    @Ctx() { userProductIdsByUserLoader, userProductLoader }: Context
+  ): Promise<UserProduct[]> {
+    const userProductIds = await userProductIdsByUserLoader.load(user.id);
+    const cart = (await userProductLoader.loadMany(
+      userProductIds || []
+    )) as UserProduct[];
     return cart;
   }
 
