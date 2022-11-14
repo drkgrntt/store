@@ -6,3 +6,5 @@ export { createAddressLoader } from "./createAddressLoader";
 export { createAddressIdsByUserLoader } from "./createAddressIdsByUserLoader";
 export { createUserProductLoader } from "./createUserProductLoader";
 export { createUserProductIdsByUserLoader } from "./createUserProductIdsByUserLoader";
+export { createOrderProductLoader } from "./createOrderProductLoader";
+export { createOrderProductIdsByOrderLoader } from "./createOrderProductIdsByOrderLoader";

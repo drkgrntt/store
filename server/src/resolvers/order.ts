@@ -90,12 +90,14 @@ export class OrderResolver {
   }
 
   @FieldResolver(() => [OrderProduct])
-  async orderedProducts(@Root() order: Order): Promise<OrderProduct[]> {
-    if (order.orderedProducts?.length) return order.orderedProducts;
-    const orderedProducts = await OrderProduct.findAll({
-      where: { orderId: order.id },
-      include: { model: Product },
-    });
+  async orderedProducts(
+    @Root() order: Order,
+    @Ctx() { orderProductIdsByOrderLoader, orderProductLoader }: Context
+  ): Promise<OrderProduct[]> {
+    const userProductIds = await orderProductIdsByOrderLoader.load(order.id);
+    const orderedProducts = (await orderProductLoader.loadMany(
+      userProductIds || []
+    )) as OrderProduct[];
     return orderedProducts;
   }
 
@@ -118,7 +120,8 @@ export class OrderResolver {
     @Arg("page", { nullable: true }) page: number = 0,
     @Arg("perPage", { nullable: true }) perPage: number = 30,
     @Arg("isShipped", { nullable: true }) isShipped: boolean,
-    @Arg("isComplete", { nullable: true }) isComplete: boolean
+    @Arg("isComplete", { nullable: true }) isComplete: boolean,
+    @Ctx() { orderLoader }: Context
   ): Promise<OrderPage> {
     let where: WhereOptions = {};
 
@@ -136,6 +139,8 @@ export class OrderResolver {
 
     const orders = found.slice(0, perPage);
     const hasMore = found.length > perPage;
+
+    orders.forEach((order) => orderLoader.prime(order.id, order));
 
     return {
       edges: orders,
@@ -158,7 +163,7 @@ export class OrderResolver {
   @Query(() => Order, { nullable: true })
   @UseMiddleware(isAuth)
   async order(
-    @Ctx() { me }: Context,
+    @Ctx() { me, orderLoader }: Context,
     @Arg("id") id: string
   ): Promise<Order | null> {
     const where: { id: string; userId?: string } = { id };
@@ -166,6 +171,7 @@ export class OrderResolver {
     const order = await Order.findOne({
       where,
     });
+    if (order) orderLoader.prime(order.id, order);
     return order;
   }
 
