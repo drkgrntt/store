@@ -65,13 +65,13 @@ export class UserResolver {
   }
 
   @FieldResolver(() => [Order])
-  async orders(@Root() user: User): Promise<Order[]> {
-    if (user.orders?.length) return user.orders;
-    const orders = await Order.findAll({
-      where: { userId: user.id },
-      order: [["createdAt", "desc"]],
-    });
-    return orders;
+  async orders(
+    @Root() user: User,
+    @Ctx() { orderIdsByUserLoader, orderLoader }: Context
+  ): Promise<Order[]> {
+    const orderIds = await orderIdsByUserLoader.load(user.id);
+    const orders = (await orderLoader.loadMany(orderIds || [])) as Order[];
+    return orders.sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
   }
 
   @FieldResolver(() => [UserProduct])

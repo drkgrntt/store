@@ -38,6 +38,8 @@ import {
   createAddressLoader,
   createImageIdsByProductLoader,
   createImageLoader,
+  createOrderIdsByUserLoader,
+  createOrderLoader,
 } from "./dataloaders";
 
 const main = async () => {
@@ -108,6 +110,8 @@ const main = async () => {
         sequelize,
         imageLoader: createImageLoader(),
         imageIdsByProductLoader: createImageIdsByProductLoader(),
+        orderLoader: createOrderLoader(),
+        orderIdsByUserLoader: createOrderIdsByUserLoader(),
         addressLoader: createAddressLoader(),
         addressIdsByUserLoader: createAddressIdsByUserLoader(),
       };

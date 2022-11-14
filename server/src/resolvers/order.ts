@@ -81,12 +81,11 @@ export class OrderResolver {
   }
 
   @FieldResolver(() => Address)
-  async address(@Root() order: Order): Promise<Address> {
-    if (order.address) return order.address;
-    const address = await Address.findOne({
-      where: { id: order.addressId },
-    });
-    if (!address) throw new Error("Order needs an address.");
+  async address(
+    @Root() order: Order,
+    @Ctx() { addressLoader }: Context
+  ): Promise<Address> {
+    const address = await addressLoader.load(order.addressId);
     return address;
   }
 
@@ -147,12 +146,13 @@ export class OrderResolver {
 
   @Query(() => [Order])
   @UseMiddleware(isAuth)
-  async orders(@Ctx() { me }: Context): Promise<Order[]> {
-    const orders = await Order.findAll({
-      where: { userId: me.id },
-      order: [["createdAt", "desc"]],
-    });
-    return orders;
+  async orders(
+    @Ctx() { me }: Context,
+    @Ctx() { orderIdsByUserLoader, orderLoader }: Context
+  ): Promise<Order[]> {
+    const orderIds = await orderIdsByUserLoader.load(me.id);
+    const orders = (await orderLoader.loadMany(orderIds || [])) as Order[];
+    return orders.sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
   }
 
   @Query(() => Order, { nullable: true })

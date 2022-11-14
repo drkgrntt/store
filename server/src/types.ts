@@ -3,8 +3,10 @@ import { Sequelize } from "sequelize-typescript";
 import {
   createAddressIdsByUserLoader,
   createAddressLoader,
+  createOrderLoader,
   createImageIdsByProductLoader,
   createImageLoader,
+  createOrderIdsByUserLoader,
 } from "./dataloaders";
 import { User } from "./models";
 
@@ -14,6 +16,8 @@ export interface Context {
   me: User;
   token: string;
   sequelize: Sequelize;
+  orderLoader: ReturnType<typeof createOrderLoader>;
+  orderIdsByUserLoader: ReturnType<typeof createOrderIdsByUserLoader>;
   addressLoader: ReturnType<typeof createAddressLoader>;
   addressIdsByUserLoader: ReturnType<typeof createAddressIdsByUserLoader>;
   imageLoader: ReturnType<typeof createImageLoader>;
