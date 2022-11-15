@@ -4,6 +4,7 @@ import {
   createAddressIdsByUserLoader,
   createAddressLoader,
   createOrderLoader,
+  createProductLoader,
   createImageIdsByProductLoader,
   createImageLoader,
   createOrderIdsByUserLoader,
@@ -20,6 +21,7 @@ export interface Context {
   me: User;
   token: string;
   sequelize: Sequelize;
+  productLoader: ReturnType<typeof createProductLoader>;
   orderLoader: ReturnType<typeof createOrderLoader>;
   orderIdsByUserLoader: ReturnType<typeof createOrderIdsByUserLoader>;
   addressLoader: ReturnType<typeof createAddressLoader>;

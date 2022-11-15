@@ -1,5 +1,6 @@
 export { createImageLoader } from "./createImageLoader";
 export { createImageIdsByProductLoader } from "./createImageIdsByProductLoader";
+export { createProductLoader } from "./createProductLoader";
 export { createOrderLoader } from "./createOrderLoader";
 export { createOrderIdsByUserLoader } from "./createOrderIdsByUserLoader";
 export { createAddressLoader } from "./createAddressLoader";

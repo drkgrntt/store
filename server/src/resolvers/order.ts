@@ -35,11 +35,11 @@ import { Op, Transaction, WhereOptions } from "sequelize";
 @Resolver(OrderProduct)
 export class OrderedProductResolver {
   @FieldResolver(() => Product)
-  async product(@Root() orderedProduct: OrderProduct): Promise<Product> {
-    if (orderedProduct.product) return orderedProduct.product;
-    const product = await Product.findOne({
-      where: { id: orderedProduct.productId },
-    });
+  async product(
+    @Root() orderedProduct: OrderProduct,
+    @Ctx() { productLoader }: Context
+  ): Promise<Product> {
+    const product = await productLoader.load(orderedProduct.productId);
     if (!product)
       throw new Error("Ordered product needs a product associated.");
     return product;

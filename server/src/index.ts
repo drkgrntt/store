@@ -42,6 +42,7 @@ import {
   createOrderLoader,
   createOrderProductIdsByOrderLoader,
   createOrderProductLoader,
+  createProductLoader,
   createUserProductIdsByUserLoader,
   createUserProductLoader,
 } from "./dataloaders";
@@ -114,6 +115,7 @@ const main = async () => {
         sequelize,
         imageLoader: createImageLoader(),
         imageIdsByProductLoader: createImageIdsByProductLoader(),
+        productLoader: createProductLoader(),
         orderLoader: createOrderLoader(),
         orderIdsByUserLoader: createOrderIdsByUserLoader(),
         addressLoader: createAddressLoader(),

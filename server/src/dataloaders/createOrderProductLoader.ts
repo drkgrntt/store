@@ -1,5 +1,5 @@
 import DataLoader from "dataloader";
-import { Product, OrderProduct } from "../models";
+import { OrderProduct } from "../models";
 
 export const createOrderProductLoader = () => {
   return new DataLoader<string, OrderProduct>(async (orderProductIds) => {
@@ -7,7 +7,6 @@ export const createOrderProductLoader = () => {
       where: {
         id: orderProductIds,
       },
-      include: Product,
     });
 
     const orderProductMap = orderProducts.reduce((map, orderProduct) => {

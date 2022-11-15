@@ -56,7 +56,7 @@ export class ProductResolver {
 
   @Query(() => ProductPage)
   async products(
-    @Ctx() { me }: Context,
+    @Ctx() { me, productLoader }: Context,
     @Arg("active", { nullable: true }) active?: boolean,
     @Arg("page", { nullable: true }) page: number = 0,
     @Arg("perPage", { nullable: true }) perPage: number = 20,
@@ -156,6 +156,8 @@ export class ProductResolver {
     //   mapToModel: true,
     //   replacements: [(perPage + 1).toString(), (page * perPage).toString()],
     // });
+
+    found.forEach((product) => productLoader.prime(product.id, product));
 
     const products = found.slice(0, perPage);
     const hasMore = found.length > perPage;
