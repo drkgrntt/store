@@ -1,4 +1,4 @@
-export { UserResolver } from "./user";
+export { UserResolver, UserProductResolver } from "./user";
 export { ProductResolver } from "./product";
 export { ImageResolver } from "./image";
 export { CartResolver } from "./cart";

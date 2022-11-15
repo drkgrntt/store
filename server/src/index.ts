@@ -15,6 +15,7 @@ import {
   CategoryResolver,
   OrderedProductResolver,
   ContentResolver,
+  UserProductResolver,
 } from "./resolvers";
 import { Sequelize } from "sequelize-typescript";
 import cookieParser from "cookie-parser";
@@ -83,6 +84,7 @@ const main = async () => {
     schema: await buildSchema({
       resolvers: [
         UserResolver,
+        UserProductResolver,
         ProductResolver,
         ImageResolver,
         CartResolver,
