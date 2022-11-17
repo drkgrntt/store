@@ -22,6 +22,7 @@ import Selectable from "../Selectable";
 import styles from "./ProductForm.module.scss";
 import categoryStyles from "../CategorySearch/CategorySearch.module.scss";
 import { ClickStateRef } from "../Button/Button";
+import Loader from "../Loader";
 
 interface Props {
   onSuccess?: () => void;
@@ -30,6 +31,15 @@ interface Props {
 const IMAGE_URLS = gql`
   query ImageUrls {
     imageUrls
+  }
+`;
+
+const IMAGES = gql`
+  query Images {
+    images {
+      id
+      url
+    }
   }
 `;
 
@@ -181,9 +191,13 @@ const INITIAL_STATE = {
 const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
   const { user } = useUser();
   const { query } = useRouter();
-  const { data: { imageUrls } = {}, refetch: refetchImages } = useQuery<{
-    imageUrls: string[];
-  }>(IMAGE_URLS, { skip: !user?.isAdmin, fetchPolicy: "cache-and-network" });
+  const {
+    data: { images } = {},
+    refetch: refetchImages,
+    loading: loadingImages,
+  } = useQuery<{
+    images: { id: string; url: string }[];
+  }>(IMAGES, { skip: !user?.isAdmin, fetchPolicy: "cache-and-network" });
   const { data: { product } = {} } = useQuery<{ product: Product }>(PRODUCT, {
     variables: { productId: query.id },
     skip: !query.id || !user?.isAdmin,
@@ -435,48 +449,50 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
         />
       </div>
       <ul className={styles.images}>
-        {[
-          ...(product?.images.map((image) => image.url) ?? []),
-          ...(imageUrls ?? []),
-        ].map((url) => {
-          const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-            setUrls((prev) => {
-              if (event.target.checked) {
-                return [...prev, url];
-              } else {
-                return prev.filter((u) => u !== url);
-              }
-            });
-          };
-          return (
-            <div key={url}>
-              <input
-                className={styles.imageCheckbox}
-                type="checkbox"
-                id={url}
-                checked={urls.includes(url)}
-                onChange={handleChange}
-              />
-              <label htmlFor={url}>
-                <li
-                  className={combineClasses(
-                    styles.image,
-                    urls[0] === url ? styles.primaryImage : ""
-                  )}
-                  key={url}
-                >
-                  <Image
-                    alt="An image from the store folder of your Cloudinary account."
-                    src={url}
-                    height={120}
-                    width={120}
-                    className={styles.image}
-                  />
-                </li>
-              </label>
-            </div>
-          );
-        })}
+        {loadingImages && <Loader />}
+        {!loadingImages &&
+          [
+            ...(product?.images.map((image) => image.url) ?? []),
+            ...(images?.map((image) => image.url) ?? []),
+          ].map((url) => {
+            const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+              setUrls((prev) => {
+                if (event.target.checked) {
+                  return [...prev, url];
+                } else {
+                  return prev.filter((u) => u !== url);
+                }
+              });
+            };
+            return (
+              <div key={url}>
+                <input
+                  className={styles.imageCheckbox}
+                  type="checkbox"
+                  id={url}
+                  checked={urls.includes(url)}
+                  onChange={handleChange}
+                />
+                <label htmlFor={url}>
+                  <li
+                    className={combineClasses(
+                      styles.image,
+                      urls[0] === url ? styles.primaryImage : ""
+                    )}
+                    key={url}
+                  >
+                    <Image
+                      alt="An image from the store folder of your Cloudinary account."
+                      src={url}
+                      height={120}
+                      width={120}
+                      className={styles.image}
+                    />
+                  </li>
+                </label>
+              </div>
+            );
+          })}
       </ul>
       <label htmlFor="file-input">Add new image</label>
       <input
