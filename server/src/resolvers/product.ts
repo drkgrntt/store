@@ -63,13 +63,14 @@ export class ProductResolver {
     @Arg("perPage", { nullable: true }) perPage: number = 20,
     @Arg("search", { nullable: true }) search?: string
   ): Promise<ProductPage> {
-    const where: WhereOptions = {
+    let where: WhereOptions = {
       isActive: true,
       [Op.or]: [{ isMadeToOrder: true }, { quantity: { [Op.gt]: 0 } }],
     };
+
     if (me?.isAdmin) {
       if (active === undefined) {
-        delete where.isActive;
+        where = {};
       } else {
         where.isActive = active;
       }
