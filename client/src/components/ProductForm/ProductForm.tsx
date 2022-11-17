@@ -27,8 +27,9 @@ interface Props {
   onSuccess?: () => void;
 }
 
-const PRODUCT = gql`
-  query GetProduct($productId: String!) {
+const PRODUCT_INFO = gql`
+  query GetProductInfo($productId: String!) {
+    imageUrls
     product(id: $productId) {
       id
       title
@@ -120,12 +121,6 @@ const UPDATE_PRODUCT = gql`
   }
 `;
 
-const IMAGE_URLS = gql`
-  query ImageUrls {
-    imageUrls
-  }
-`;
-
 const ATTACH_IMAGE = gql`
   mutation AttachImage($primary: Boolean!, $url: String!, $productId: String!) {
     attachImage(primary: $primary, url: $url, productId: $productId) {
@@ -181,10 +176,10 @@ const INITIAL_STATE = {
 const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
   const { user } = useUser();
   const { query } = useRouter();
-  const { data: { imageUrls } = {}, refetch: refetchImages } = useQuery<{
+  const { data: { imageUrls, product } = {}, refetch } = useQuery<{
     imageUrls: string[];
-  }>(IMAGE_URLS, { skip: !user?.isAdmin, fetchPolicy: "cache-and-network" });
-  const { data: { product } = {} } = useQuery<{ product: Product }>(PRODUCT, {
+    product: Product;
+  }>(PRODUCT_INFO, {
     variables: { productId: query.id },
     skip: !query.id || !user?.isAdmin,
     fetchPolicy: "cache-and-network",
@@ -272,7 +267,7 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
         .then((response) => response.json())
         .then((data) => {
           setUrls((prev) => [...prev, data.url]);
-          refetchImages();
+          refetch();
         })
         .catch((err) => {
           console.log({ err });
