@@ -9,3 +9,5 @@ export { createUserProductLoader } from "./createUserProductLoader";
 export { createUserProductIdsByUserLoader } from "./createUserProductIdsByUserLoader";
 export { createOrderProductLoader } from "./createOrderProductLoader";
 export { createOrderProductIdsByOrderLoader } from "./createOrderProductIdsByOrderLoader";
+export { createCategoryLoader } from "./createCategoryLoader";
+export { createCategoryIdsByProductLoader } from "./createCategoryIdsByProductLoader";

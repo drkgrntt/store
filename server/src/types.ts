@@ -12,6 +12,8 @@ import {
   createUserProductIdsByUserLoader,
   createOrderProductLoader,
   createOrderProductIdsByOrderLoader,
+  createCategoryLoader,
+  createCategoryIdsByProductLoader,
 } from "./dataloaders";
 import { User } from "./models";
 
@@ -36,6 +38,10 @@ export interface Context {
   >;
   imageLoader: ReturnType<typeof createImageLoader>;
   imageIdsByProductLoader: ReturnType<typeof createImageIdsByProductLoader>;
+  categoryLoader: ReturnType<typeof createCategoryLoader>;
+  categoryIdsByProductLoader: ReturnType<
+    typeof createCategoryIdsByProductLoader
+  >;
 }
 
 export interface Paginated<T> {

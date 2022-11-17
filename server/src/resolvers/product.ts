@@ -32,13 +32,15 @@ class ProductPage implements Paginated<Product> {
 @Resolver(Product)
 export class ProductResolver {
   @FieldResolver(() => [Category])
-  async categories(@Root() product: Product): Promise<Category[]> {
-    if (product.categories?.length) return product.categories;
-    const records = await ProductCategory.findAll({
-      where: { productId: product.id },
-      include: Category,
-    });
-    return records.map((pc) => pc.category);
+  async categories(
+    @Root() product: Product,
+    @Ctx() { categoryLoader, categoryIdsByProductLoader }: Context
+  ): Promise<Category[]> {
+    const categoryIds = await categoryIdsByProductLoader.load(product.id);
+    const categories = (await categoryLoader.loadMany(
+      categoryIds || []
+    )) as Category[];
+    return categories;
   }
 
   @FieldResolver(() => [ProductImage])
@@ -50,7 +52,6 @@ export class ProductResolver {
     const images = (await imageLoader.loadMany(
       imageIds || []
     )) as ProductImage[];
-
     return images;
   }
 

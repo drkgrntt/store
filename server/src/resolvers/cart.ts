@@ -14,11 +14,12 @@ import { Context } from "../types";
 @Resolver(UserProduct)
 export class CartResolver {
   @FieldResolver(() => Product)
-  async product(@Root() userProduct: UserProduct): Promise<Product | null> {
-    if (userProduct.product) return userProduct.product;
-    const product = await Product.findOne({
-      where: { id: userProduct.productId },
-    });
+  async product(
+    @Root() userProduct: UserProduct,
+    @Ctx() { productLoader }: Context
+  ): Promise<Product> {
+    const product = await productLoader.load(userProduct.productId);
+    if (!product) throw new Error("User product needs a product associated.");
     return product;
   }
 

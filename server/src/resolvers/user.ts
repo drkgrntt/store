@@ -16,19 +16,6 @@ import { AddressType } from "../models/Address";
 import { FORGOT_PASSWORD, sendEmail } from "../utils/email";
 import { Op } from "sequelize";
 
-@Resolver(UserProduct)
-export class UserProductResolver {
-  @FieldResolver(() => Product)
-  async product(
-    @Root() userProduct: UserProduct,
-    @Ctx() { productLoader }: Context
-  ): Promise<Product> {
-    const product = await productLoader.load(userProduct.productId);
-    if (!product) throw new Error("User product needs a product associated.");
-    return product;
-  }
-}
-
 @Resolver(User)
 export class UserResolver {
   @FieldResolver(() => [Token])

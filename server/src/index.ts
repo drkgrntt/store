@@ -15,7 +15,6 @@ import {
   CategoryResolver,
   OrderedProductResolver,
   ContentResolver,
-  UserProductResolver,
 } from "./resolvers";
 import { Sequelize } from "sequelize-typescript";
 import cookieParser from "cookie-parser";
@@ -37,6 +36,8 @@ import { handleTokens } from "./middleware/handleTokens";
 import {
   createAddressIdsByUserLoader,
   createAddressLoader,
+  createCategoryIdsByProductLoader,
+  createCategoryLoader,
   createImageIdsByProductLoader,
   createImageLoader,
   createOrderIdsByUserLoader,
@@ -84,7 +85,6 @@ const main = async () => {
     schema: await buildSchema({
       resolvers: [
         UserResolver,
-        UserProductResolver,
         ProductResolver,
         ImageResolver,
         CartResolver,
@@ -122,6 +122,8 @@ const main = async () => {
         orderIdsByUserLoader: createOrderIdsByUserLoader(),
         addressLoader: createAddressLoader(),
         addressIdsByUserLoader: createAddressIdsByUserLoader(),
+        categoryLoader: createCategoryLoader(),
+        categoryIdsByProductLoader: createCategoryIdsByProductLoader(),
         userProductLoader: createUserProductLoader(),
         userProductIdsByUserLoader: createUserProductIdsByUserLoader(),
         orderProductLoader: createOrderProductLoader(),
