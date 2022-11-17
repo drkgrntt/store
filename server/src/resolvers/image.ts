@@ -33,6 +33,15 @@ class ImageUploadSignature {
   apikey: string;
 }
 
+@ObjectType()
+class Image {
+  @Field()
+  url: string;
+
+  @Field({ nullable: true })
+  id: string;
+}
+
 @Resolver(ProductImage)
 export class ImageResolver {
   @Query(() => [String])
@@ -52,6 +61,40 @@ export class ImageResolver {
       where: { url: urls },
     });
     return urls.filter((url) => !productImages.some((pi) => pi.url === url));
+  }
+
+  @Query(() => [Image])
+  @UseMiddleware(isAdmin)
+  async images(): Promise<Image[]> {
+    debugger;
+    const result = await v2.api.resources({
+      prefix: "store",
+      resource_type: "image",
+      type: "upload",
+      max_results: 500,
+    });
+
+    const images: Image[] = result.resources.map(
+      (resource: { url: string; public_id: string }) => ({
+        url: resource.url,
+        id: resource.public_id,
+      })
+    );
+    const productImages = await ProductImage.findAll({
+      attributes: ["url"],
+      where: { url: images.map((i) => i.url) },
+    });
+
+    return images.filter(
+      ({ url }) => !productImages.some((pi) => pi.url === url)
+    );
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAdmin)
+  async deleteImage(@Arg("id") id: string): Promise<boolean> {
+    await v2.uploader.destroy(id);
+    return true;
   }
 
   @Query(() => ImageUploadSignature)
