@@ -27,9 +27,14 @@ interface Props {
   onSuccess?: () => void;
 }
 
-const PRODUCT_INFO = gql`
-  query GetProductInfo($productId: String!) {
+const IMAGE_URLS = gql`
+  query ImageUrls {
     imageUrls
+  }
+`;
+
+const PRODUCT = gql`
+  query GetProduct($productId: String!) {
     product(id: $productId) {
       id
       title
@@ -176,10 +181,10 @@ const INITIAL_STATE = {
 const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
   const { user } = useUser();
   const { query } = useRouter();
-  const { data: { imageUrls, product } = {}, refetch } = useQuery<{
+  const { data: { imageUrls } = {}, refetch: refetchImages } = useQuery<{
     imageUrls: string[];
-    product: Product;
-  }>(PRODUCT_INFO, {
+  }>(IMAGE_URLS, { skip: !user?.isAdmin, fetchPolicy: "cache-and-network" });
+  const { data: { product } = {} } = useQuery<{ product: Product }>(PRODUCT, {
     variables: { productId: query.id },
     skip: !query.id || !user?.isAdmin,
     fetchPolicy: "cache-and-network",
@@ -267,7 +272,7 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
         .then((response) => response.json())
         .then((data) => {
           setUrls((prev) => [...prev, data.url]);
-          refetch();
+          refetchImages();
         })
         .catch((err) => {
           console.log({ err });
