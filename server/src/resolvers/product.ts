@@ -1,4 +1,4 @@
-import { Category, Product, ProductCategory, ProductImage } from "../models";
+import { Category, Product, ProductImage } from "../models";
 import {
   Arg,
   Ctx,

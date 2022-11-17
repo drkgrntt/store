@@ -1,4 +1,4 @@
-import { Address, Order, Product, Token, User, UserProduct } from "../models";
+import { Address, Order, Token, User, UserProduct } from "../models";
 import bcrypt from "bcrypt";
 import {
   Arg,
