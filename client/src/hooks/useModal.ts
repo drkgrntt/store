@@ -7,7 +7,8 @@ export const useModal = () => {
   const { push, query } = useRouter();
 
   const closeModal = () => {
-    if (query.prev) return push(query.prev as string);
+    if (query.prev)
+      return push(query.prev as string, undefined, { scroll: false });
 
     const modalQueryParams: ParsedUrlQuery = {
       ...query,
@@ -39,7 +40,7 @@ export const useModal = () => {
   };
 
   const openModal = (name: string, additionalParams?: ParsedUrlQuery) => {
-    push(modalHref(name, additionalParams));
+    push(modalHref(name, additionalParams), undefined, { scroll: false });
   };
 
   useEffect(() => {

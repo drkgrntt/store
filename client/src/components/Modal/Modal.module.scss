@@ -24,6 +24,11 @@
   transform: translate(-50%, -50%);
   overflow-y: scroll;
   padding: 1rem;
+
+  padding-bottom: 4rem;
+  @media (min-width: 40rem) {
+    padding-bottom: 1rem;
+  }
 }
 
 .close {

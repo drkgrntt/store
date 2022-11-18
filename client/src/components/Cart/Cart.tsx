@@ -89,7 +89,7 @@ const Cart: FC<Props> = ({ isCheckout }) => {
 
           return (
             <li key={item.id}>
-              <details>
+              <details open>
                 <summary>
                   {item.product.title} - x{item.count} -{" "}
                   {priceToCurrency(item.product.price * item.count)} -{" "}

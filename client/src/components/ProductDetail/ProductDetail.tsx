@@ -1,23 +1,24 @@
 import { gql, useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { Product, ProductImage } from "../../types/Product";
 import Error from "next/error";
 import Loader from "../Loader";
 import styles from "./ProductDetail.module.scss";
 import Image from "next/image";
 import Selectable from "../Selectable";
-import { priceToCurrency } from "../../utils";
+import { priceToCurrency, range } from "../../utils";
 import { useModal } from "../../hooks/useModal";
 import { useCart } from "../../providers/cart";
 import Button from "../Button";
 import Link from "next/link";
 import PageHead from "../PageHead";
+import { Paginated } from "../../types/util";
 
 interface Props {}
 
 const PRODUCT = gql`
-  query Products($id: String!) {
+  query Product($id: String!) {
     product(id: $id) {
       id
       title
@@ -40,6 +41,42 @@ const PRODUCT = gql`
   }
 `;
 
+const PRODUCTS = gql`
+  query RelatedProducts(
+    $active: Boolean
+    $page: Float
+    $perPage: Float
+    $search: String
+  ) {
+    products(active: $active, page: $page, perPage: $perPage, search: $search) {
+      hasMore
+      nextPage
+      edges {
+        id
+        title
+        description
+        price
+        quantity
+        isMadeToOrder
+        isActive
+        createdAt
+        updatedAt
+        images {
+          id
+          url
+          title
+          description
+          primary
+          createdAt
+          updatedAt
+        }
+      }
+    }
+  }
+`;
+
+const NUM_RELATED_PRODUCTS = 10;
+
 const ProductDetail: FC<Props> = () => {
   const { openModal, modalHref } = useModal();
   const { addToCart, quantityInCart } = useCart();
@@ -52,6 +89,26 @@ const ProductDetail: FC<Props> = () => {
       skip: !query.id,
     }
   );
+  const { data: { products } = {} } = useQuery<{
+    products: Paginated<Product>;
+  }>(PRODUCTS, {
+    variables: {
+      active: true,
+      perPage: NUM_RELATED_PRODUCTS,
+      search: product?.categories.map(({ name }) => name).join(" "),
+    },
+    skip: !product,
+    fetchPolicy: "no-cache",
+  });
+
+  const filteredSortedRelatedProducts = useMemo(
+    () =>
+      [...(products?.edges ?? [])]
+        .filter((rp) => rp.id !== product?.id)
+        .sort(() => Math.random() - Math.random()),
+    [products]
+  );
+
   const [selectedImage, setSelectedImage] = useState<ProductImage>();
 
   useEffect(() => {
@@ -104,7 +161,7 @@ const ProductDetail: FC<Props> = () => {
           <div className={styles.otherImages}>
             {product.images.map((image) => (
               <Selectable
-                key={image.id}
+                key={`sel-${image.id}`}
                 onClick={() => setSelectedImage(image)}
               >
                 <Image
@@ -133,6 +190,38 @@ const ProductDetail: FC<Props> = () => {
             )}
             <Button onClick={() => openModal("checkout")}>Checkout</Button>
           </div>
+        </div>
+      </div>
+      <div>
+        <h3>You might also like</h3>
+        <div className={styles.relatedProducts}>
+          {filteredSortedRelatedProducts.map((relatedProduct, i) => {
+            if (i >= 6) return null;
+            return (
+              <Link
+                title={relatedProduct.title}
+                key={`rp-${relatedProduct.id}`}
+                href={modalHref("detail", {
+                  id: relatedProduct.id,
+                })}
+                scroll={false}
+                className={styles.relatedProductLink}
+              >
+                <Image
+                  width={100}
+                  height={100}
+                  className={styles.relatedProductImage}
+                  src={
+                    (
+                      relatedProduct.images.find((image) => image.primary) ??
+                      relatedProduct.images[0]
+                    )?.url
+                  }
+                  alt={relatedProduct.title}
+                />
+              </Link>
+            );
+          })}
         </div>
       </div>
     </>

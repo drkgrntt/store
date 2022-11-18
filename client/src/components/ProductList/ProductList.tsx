@@ -162,11 +162,12 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
         )}
         {selectedImage && (
           <Link
-            href={modalHref("image", {
-              alt:
-                selectedImage.title ?? `The selected image of ${product.title}`,
-              src: selectedImage.url,
-            })}
+            // href={modalHref("image", {
+            //   alt:
+            //     selectedImage.title ?? `The selected image of ${product.title}`,
+            //   src: selectedImage.url,
+            // })}
+            href={modalHref("detail", { id: product.id })}
             scroll={false}
           >
             {product.images.map((image) => (
