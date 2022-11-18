@@ -11,14 +11,12 @@ import { FaChevronLeft, FaChevronRight, FaPen } from "react-icons/fa";
 import Link from "next/link";
 import { useModal } from "../../hooks/useModal";
 import { useCart } from "../../providers/cart";
-import Modal from "../Modal";
 import { useRouter } from "next/router";
 import { Paginated } from "../../types/util";
 import Button from "../Button";
 import Input from "../Input";
 import { useDebounce } from "../../hooks/useDebounce";
 import { ClickStateRef } from "../Button/Button";
-import { withApollo } from "../../utils/withApollo";
 
 interface Props {
   adminView?: boolean;
@@ -112,15 +110,6 @@ export const ProductList: FC<Props> = ({ adminView }) => {
           </Button>
         )}
       </div>
-      <Modal name="image" wide>
-        <Image
-          src={query.src as string}
-          alt={query.alt as string}
-          height={600}
-          width={1200}
-          className={styles.modalImage}
-        />
-      </Modal>
     </>
   );
 };
@@ -211,7 +200,13 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
           </Selectable>
         )}
       </div>
-      <h3>{product.title}</h3>
+      <Link
+        className={styles.titleLink}
+        href={modalHref("detail", { id: product.id })}
+        scroll={false}
+      >
+        <h3 className={styles.title}>{product.title}</h3>
+      </Link>
       <p className={styles.description}>
         {isReadMore ? (
           product.description

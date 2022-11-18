@@ -18,6 +18,8 @@ import ResetForgottenPasswordForm from "../ResetForgottenPasswordForm";
 import About from "../About";
 import Faq from "../Faq";
 import ContactForm from "../ContactForm";
+import ProductDetail from "../ProductDetail";
+import ImageDisplay from "../ImageDisplay";
 
 interface Props {
   children?: ReactNode;
@@ -79,6 +81,14 @@ const Layout: FC<Props> = ({ children }) => {
       <Header />
 
       <main className={styles.container}>{children}</main>
+
+      <Modal name="image" wide>
+        <ImageDisplay />
+      </Modal>
+
+      <Modal name="detail" wide>
+        <ProductDetail />
+      </Modal>
 
       <Modal name="about">
         <About />

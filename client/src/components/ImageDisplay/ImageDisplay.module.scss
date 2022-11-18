@@ -1,0 +1,15 @@
+.image {
+  object-fit: contain;
+  height: auto;
+  max-width: 100%;
+}
+
+.container {
+  position: relative;
+}
+
+.icon {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+}
