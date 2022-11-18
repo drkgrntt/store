@@ -180,15 +180,22 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
             })}
             scroll={false}
           >
-            <Image
-              alt={
-                selectedImage.title ?? `The selected image of ${product.title}`
-              }
-              width={600}
-              height={600}
-              src={selectedImage.url}
-              className={styles.selectedImage}
-            />
+            {product.images.map((image) => (
+              <Image
+                key={image.id}
+                alt={
+                  selectedImage.title ??
+                  `The selected image of ${product.title}`
+                }
+                width={600}
+                height={600}
+                src={selectedImage.url}
+                className={combineClasses(
+                  styles.selectedImage,
+                  selectedImage.id === image.id ? "" : styles.hidden
+                )}
+              />
+            ))}
           </Link>
         )}
         {product.images.length > 1 && (

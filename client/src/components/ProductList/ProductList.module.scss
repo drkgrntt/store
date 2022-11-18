@@ -60,6 +60,12 @@
   height: auto;
 }
 
+.hidden {
+  opacity: 0;
+  position: absolute;
+  width: 1px;
+}
+
 .imageNav {
   opacity: 0;
   position: absolute;
