@@ -77,9 +77,15 @@ export class ProductResolver {
     }
 
     if (search) {
+      const searchItems = search.split(" ");
+
       const categories = await Category.findAll({
         attributes: ["id"],
-        where: { name: { [Op.iLike]: `%${search}%` } },
+        where: {
+          [Op.or]: searchItems.map((item) => ({
+            name: { [Op.iLike]: `%${item}%` },
+          })),
+        },
         include: { model: Product, attributes: ["id"] },
       });
 
@@ -91,11 +97,13 @@ export class ProductResolver {
       );
 
       where[Op.and as unknown as string] = {
-        [Op.or]: [
-          { title: { [Op.iLike]: `%${search}%` } },
-          { id: ids },
-          { description: { [Op.iLike]: `%${search}%` } },
-        ],
+        [Op.or]: searchItems.map((item) => ({
+          [Op.or]: [
+            { title: { [Op.iLike]: `%${item}%` } },
+            { id: ids },
+            { description: { [Op.iLike]: `%${item}%` } },
+          ],
+        })),
       };
     }
 
