@@ -114,8 +114,3 @@ const createClient = (ctx: NextPageContext) => {
 };
 
 export const withApollo = createWithApollo(createClient);
-
-export type AppPropsWithApollo = AppProps & {
-  apolloClient: ApolloClient<NormalizedCacheObject>;
-  apolloState: Record<string, any>;
-};
