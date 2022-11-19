@@ -47,8 +47,15 @@ const PRODUCTS = gql`
     $page: Float
     $perPage: Float
     $search: String
+    $tagSearch: Boolean
   ) {
-    products(active: $active, page: $page, perPage: $perPage, search: $search) {
+    products(
+      active: $active
+      page: $page
+      perPage: $perPage
+      search: $search
+      tagSearch: $tagSearch
+    ) {
       hasMore
       nextPage
       edges {
@@ -75,7 +82,7 @@ const PRODUCTS = gql`
   }
 `;
 
-const NUM_RELATED_PRODUCTS = 10;
+const NUM_RELATED_PRODUCTS = 20;
 
 const ProductDetail: FC<Props> = () => {
   const { openModal, modalHref } = useModal();
@@ -96,6 +103,7 @@ const ProductDetail: FC<Props> = () => {
       active: true,
       perPage: NUM_RELATED_PRODUCTS,
       search: product?.categories.map(({ name }) => name).join(" "),
+      tagSearch: true,
     },
     skip: !product,
     fetchPolicy: "no-cache",
@@ -192,38 +200,40 @@ const ProductDetail: FC<Props> = () => {
           </div>
         </div>
       </div>
-      <div>
-        <h3>You might also like</h3>
-        <div className={styles.relatedProducts}>
-          {filteredSortedRelatedProducts.map((relatedProduct, i) => {
-            if (i >= 6) return null;
-            return (
-              <Link
-                title={relatedProduct.title}
-                key={`rp-${relatedProduct.id}`}
-                href={modalHref("detail", {
-                  id: relatedProduct.id,
-                })}
-                scroll={false}
-                className={styles.relatedProductLink}
-              >
-                <Image
-                  width={100}
-                  height={100}
-                  className={styles.relatedProductImage}
-                  src={
-                    (
-                      relatedProduct.images.find((image) => image.primary) ??
-                      relatedProduct.images[0]
-                    )?.url
-                  }
-                  alt={relatedProduct.title}
-                />
-              </Link>
-            );
-          })}
+      {!!filteredSortedRelatedProducts.length && (
+        <div>
+          <h3>You might also like</h3>
+          <div className={styles.relatedProducts}>
+            {filteredSortedRelatedProducts.map((relatedProduct, i) => {
+              if (i >= 6) return null;
+              return (
+                <Link
+                  title={relatedProduct.title}
+                  key={`rp-${relatedProduct.id}`}
+                  href={modalHref("detail", {
+                    id: relatedProduct.id,
+                  })}
+                  scroll={false}
+                  className={styles.relatedProductLink}
+                >
+                  <Image
+                    width={100}
+                    height={100}
+                    className={styles.relatedProductImage}
+                    src={
+                      (
+                        relatedProduct.images.find((image) => image.primary) ??
+                        relatedProduct.images[0]
+                      )?.url
+                    }
+                    alt={relatedProduct.title}
+                  />
+                </Link>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 };
