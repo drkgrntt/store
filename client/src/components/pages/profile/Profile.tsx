@@ -1,5 +1,4 @@
 import { FC, useReducer } from "react";
-import AddressForm from "../../AddressForm";
 import AddressList from "../../AddressList";
 import OrderList from "../../OrderList";
 import { useIsAuth } from "../../../hooks/useIsAuth";
@@ -9,6 +8,8 @@ import styles from "./Profile.module.scss";
 import Button from "../../Button";
 import { gql, useMutation } from "@apollo/client";
 import { useNotification } from "../../../providers/notification";
+import dynamic from "next/dynamic";
+const AddressForm = dynamic(() => import("../../AddressForm"));
 
 const PROFILE_STATE = {
   addressId: "",
