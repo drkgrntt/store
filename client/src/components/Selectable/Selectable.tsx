@@ -8,6 +8,7 @@ interface Props {
   onFocus?: (event: FocusEvent<HTMLAnchorElement>) => void;
   onBlur?: (event: FocusEvent<HTMLAnchorElement>) => void;
   children?: ReactNode;
+  title?: string;
 }
 
 const Selectable: FC<Props> = ({
@@ -16,6 +17,7 @@ const Selectable: FC<Props> = ({
   onClick = () => null,
   onFocus = () => null,
   onBlur = () => null,
+  title,
 }) => {
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -29,6 +31,7 @@ const Selectable: FC<Props> = ({
       onClick={handleClick}
       className={combineClasses(styles.selectable, className)}
       href="#"
+      title={title}
     >
       {children}
     </a>

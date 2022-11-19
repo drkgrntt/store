@@ -68,6 +68,9 @@
   height: 1.5rem;
 
   & span {
+    color: transparent;
+    font-size: 0;
+
     &:before {
       content: "";
       top: -8px;

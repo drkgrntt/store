@@ -141,6 +141,7 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
       <div className={styles.imageContainer}>
         {product.images.length > 1 && (
           <Selectable
+            title="Previous image"
             onClick={() =>
               setSelectedImageIndex((prev) =>
                 prev - 1 < 0 ? product.images.length - 1 : prev - 1
@@ -153,6 +154,7 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
         )}
         {user?.isAdmin && (
           <Link
+            title="Edit product"
             href={modalHref("product-form", { id: product.id })}
             className={styles.editButton}
             scroll={false}
@@ -190,6 +192,7 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
         )}
         {product.images.length > 1 && (
           <Selectable
+            title="Next image"
             onClick={() => {
               setSelectedImageIndex((prev) =>
                 prev + 1 >= product.images.length ? 0 : prev + 1
@@ -206,7 +209,7 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
         href={modalHref("detail", { id: product.id })}
         scroll={false}
       >
-        <h3 className={styles.title}>{product.title}</h3>
+        <h2 className={styles.title}>{product.title}</h2>
       </Link>
       <p className={styles.description}>
         {isReadMore ? (
