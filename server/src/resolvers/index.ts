@@ -6,3 +6,4 @@ export { OrderResolver, OrderedProductResolver } from "./order";
 export { AddressResolver } from "./address";
 export { CategoryResolver } from "./category";
 export { ContentResolver } from "./content";
+export { GeneralResolver } from "./general";

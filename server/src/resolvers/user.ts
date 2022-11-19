@@ -86,11 +86,6 @@ export class UserResolver {
     return cart;
   }
 
-  @Query(() => String)
-  ping(): "pong" {
-    return "pong";
-  }
-
   @Query(() => User, { nullable: true })
   me(@Ctx() { me }: any): User {
     return me;

@@ -7,6 +7,7 @@ import { __prod__ } from "./constants";
 import { ApolloServer } from "apollo-server-express";
 import {
   ProductResolver,
+  GeneralResolver,
   UserResolver,
   ImageResolver,
   AddressResolver,
@@ -31,6 +32,7 @@ import {
   Category,
   Content,
   ContentCategory,
+  Analytic,
 } from "./models";
 import { handleTokens } from "./middleware/handleTokens";
 import {
@@ -66,6 +68,7 @@ const main = async () => {
       ProductCategory,
       Content,
       ContentCategory,
+      Analytic,
     ],
   });
   await sequelize.sync();
@@ -84,6 +87,7 @@ const main = async () => {
   const server = new ApolloServer({
     schema: await buildSchema({
       resolvers: [
+        GeneralResolver,
         UserResolver,
         ProductResolver,
         ImageResolver,

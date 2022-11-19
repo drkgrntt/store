@@ -10,3 +10,4 @@ export { Category } from "./Category";
 export { Content } from "./Content";
 export { ProductCategory } from "./ProductCategory";
 export { ContentCategory } from "./ContentCategory";
+export { Analytic } from "./Analytic";
