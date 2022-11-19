@@ -58,10 +58,11 @@ export class ProductResolver {
   @Query(() => ProductPage)
   async products(
     @Ctx() { me, productLoader }: Context,
-    @Arg("active", { nullable: true }) active?: boolean,
     @Arg("page", { nullable: true }) page: number = 0,
     @Arg("perPage", { nullable: true }) perPage: number = 20,
-    @Arg("search", { nullable: true }) search?: string
+    @Arg("active", { nullable: true }) active?: boolean,
+    @Arg("search", { nullable: true }) search?: string,
+    @Arg("tagSearch", { nullable: true }) tagSearch?: boolean
   ): Promise<ProductPage> {
     let where: WhereOptions = {
       isActive: true,
@@ -96,14 +97,20 @@ export class ProductResolver {
         []
       );
 
+      const orParams: WhereOptions = [{ id: ids }];
+      if (!tagSearch) {
+        searchItems.forEach((item) => {
+          orParams.push({
+            [Op.or]: [
+              { title: { [Op.iLike]: `%${item}%` } },
+              { description: { [Op.iLike]: `%${item}%` } },
+            ],
+          });
+        });
+      }
+
       where[Op.and as unknown as string] = {
-        [Op.or]: searchItems.map((item) => ({
-          [Op.or]: [
-            { title: { [Op.iLike]: `%${item}%` } },
-            { id: ids },
-            { description: { [Op.iLike]: `%${item}%` } },
-          ],
-        })),
+        [Op.or]: orParams,
       };
     }
 
