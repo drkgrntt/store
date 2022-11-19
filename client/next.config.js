@@ -11,5 +11,5 @@ module.exports = withBundleAnalyzer({
     locales: ["en"],
     defaultLocale: "en",
   },
-  reactStrictMode: true,
+  reactStrictMode: false,
 });
