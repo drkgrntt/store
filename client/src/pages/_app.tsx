@@ -3,6 +3,7 @@ import { withApollo } from "../utils/withApollo";
 import Layout from "../components/Layout";
 import CartProvider from "../providers/cart";
 import NotificationProvider from "../providers/notification";
+import { Analytics } from "@vercel/analytics/react";
 import { AppProps } from "next/app";
 
 const App = ({ Component, pageProps }: AppProps) => {
@@ -11,6 +12,7 @@ const App = ({ Component, pageProps }: AppProps) => {
       <CartProvider>
         <Layout>
           <Component {...pageProps} />
+          <Analytics />
         </Layout>
       </CartProvider>
     </NotificationProvider>
