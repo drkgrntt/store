@@ -28,6 +28,7 @@ import {
   CUSTOMER_NEW_ORDER,
   sendEmail,
   CONTACT_MESSAGE,
+  ORDER_HAS_SHIPPED,
 } from "../utils/email";
 import { addressToString } from "../utils";
 import { Op, Transaction, WhereOptions } from "sequelize";
@@ -366,8 +367,27 @@ export class OrderResolver {
     @Arg("trackingNumber", { nullable: true }) trackingNumber?: string,
     @Arg("notes", { nullable: true }) notes?: string
   ): Promise<Order> {
-    const order = await Order.findOne({ where: { id } });
+    const order = await Order.findOne({
+      where: { id },
+      include: [
+        { model: User },
+        { model: Address },
+        {
+          model: OrderProduct,
+          include: [{ model: Product, include: [ProductImage] }],
+        },
+      ],
+    });
     if (!order) throw new Error("Invalid id");
+
+    let shouldSendShippedEmail = false;
+    if (
+      (!order.shippedOn || !order.trackingNumber) &&
+      trackingNumber &&
+      shippedOn
+    ) {
+      shouldSendShippedEmail = true;
+    }
 
     if (shippedOn !== undefined) order.shippedOn = shippedOn;
     if (completedOn !== undefined) order.completedOn = completedOn;
@@ -375,6 +395,34 @@ export class OrderResolver {
     if (notes !== undefined) order.notes = notes;
 
     await order.save();
+
+    if (shouldSendShippedEmail) {
+      const emailVariables = {
+        shippedDate: new Date(shippedOn as Date).toLocaleDateString(),
+        trackingNumber: trackingNumber as string,
+        orderId: order.id,
+        address: addressToString(order.address),
+        notes: notes ?? "",
+        productList: order.orderedProducts.map((op) => ({
+          imageUrl: (
+            op.product.images.find((image) => image.primary) ??
+            op.product.images[0]
+          ).url,
+          id: op.productId,
+          title: op.product.title,
+          cost: "$" + (op.price / 100).toFixed(2),
+          quantity: op.count.toString(),
+        })),
+        totalCost: (
+          order.orderedProducts.reduce(
+            (total, op) => total + op.price * op.count,
+            0
+          ) / 100
+        ).toFixed(2),
+      };
+
+      await sendEmail(ORDER_HAS_SHIPPED, emailVariables, order.user.email);
+    }
 
     return order;
   }

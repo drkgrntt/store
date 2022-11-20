@@ -7,6 +7,7 @@ export const ADMIN_NEW_ORDER = "admin-new-order";
 export const CUSTOMER_NEW_ORDER = "customer-new-order";
 export const FORGOT_PASSWORD = "forgot-password";
 export const CONTACT_MESSAGE = "contact-message";
+export const ORDER_HAS_SHIPPED = "order-has-shipped";
 
 type EmailTemplateVariables = Record<string, string | Record<string, string>[]>;
 interface EmailTemplate {
@@ -65,6 +66,28 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
       notes: "",
       orderId: "",
       address: "",
+      productList: [
+        {
+          imageUrl: "",
+          id: "",
+          title: "",
+          cost: "",
+          quantity: "",
+        },
+      ],
+      totalCost: "",
+    },
+  },
+  [ORDER_HAS_SHIPPED]: {
+    subject: "Your order has shipped!",
+    template: ORDER_HAS_SHIPPED,
+    partials: { productList: "product-info" },
+    variables: {
+      notes: "",
+      orderId: "",
+      address: "",
+      shippedDate: "",
+      trackingNumber: "",
       productList: [
         {
           imageUrl: "",

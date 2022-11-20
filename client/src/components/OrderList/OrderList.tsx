@@ -55,7 +55,12 @@ const OrderList: FC<Props> = ({ orders, isEditable }) => {
               )}
               <li>
                 {!order.isShipped && "Not "}Shipped
-                {order.isShipped && ` ${order.shippedOn?.toLocaleDateString()}`}
+                {order.isShipped &&
+                  ` ${
+                    order.shippedOn?.toLocaleDateString
+                      ? order.shippedOn?.toLocaleDateString()
+                      : new Date(order.shippedOn as Date).toLocaleDateString()
+                  }`}
               </li>
               {order.trackingNumber && (
                 <li>Tracking Number: {order.trackingNumber}</li>
@@ -63,7 +68,11 @@ const OrderList: FC<Props> = ({ orders, isEditable }) => {
               <li>
                 {!order.isComplete && "Not "}Completed
                 {order.isComplete &&
-                  ` ${order.completedOn?.toLocaleDateString()}`}
+                  ` ${
+                    order.completedOn?.toLocaleDateString
+                      ? order.completedOn?.toLocaleDateString()
+                      : new Date(order.completedOn as Date).toLocaleDateString()
+                  }`}
               </li>
               {order.orderedProducts.map((orderedProduct) => {
                 return (
