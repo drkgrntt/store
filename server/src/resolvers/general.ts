@@ -10,6 +10,8 @@ export class GeneralResolver {
     const data = url.parse(`${req.headers.origin}${path}`);
     const query = new URLSearchParams(data.search as string);
 
+    console.log({ headers: req.headers, socket: req.socket, req });
+
     Analytic.create({
       ip: req.headers["x-forwarded-for"] || req.socket.remoteAddress,
       useragent: req.headers["user-agent"],

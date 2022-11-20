@@ -23,6 +23,7 @@ const Header: FC<Props> = () => {
       }
     };
 
+    cb();
     document.addEventListener("scroll", cb);
     return () => document.removeEventListener("scroll", cb);
   }, [headerRef.current, isTop]);
