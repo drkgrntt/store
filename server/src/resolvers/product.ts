@@ -116,25 +116,28 @@ export class ProductResolver {
       };
     }
 
-    const featuredProductIds = (
-      await Product.findAll({
-        attributes: ["id"],
-        where,
-        include: {
-          model: Category,
-          where: { name: "Feature" },
-        },
-      })
-    ).map(({ id }) => id);
-    const numFeatured = featuredProductIds.length;
-
     const limit = perPage + 1;
     const offset = page * perPage;
-    let found: Product[] = [];
+
+    const featuredCountAttribute: [Literal, string] = [
+      sequelize.literal(
+        `(SELECT COUNT(*) FROM product_categories
+         JOIN categories ON categories.id = product_categories.category_id
+         WHERE categories.name = 'Feature'
+         AND "Product".id = product_categories.product_id)`
+      ),
+      "feature_count",
+    ];
+    const featureCountOrder: [Literal, string] = [
+      sequelize.literal("feature_count"),
+      "DESC",
+    ];
 
     const viewCountAttribute: [Literal, string] = [
       sequelize.literal(
-        `(SELECT COUNT(*) FROM analytics WHERE analytics.modal = 'detail' AND analytics.modal_id = "Product".id)`
+        `(SELECT COUNT(*) FROM analytics
+         WHERE analytics.modal = 'detail'
+        AND analytics.modal_id = "Product".id)`
       ),
       "view_count",
     ];
@@ -142,55 +145,16 @@ export class ProductResolver {
       sequelize.literal("view_count"),
       "DESC",
     ];
+
     const productKeys = Object.keys(await Product.describe()).map(toCamelCase);
 
-    // Get featured
-    if (numFeatured > offset + limit) {
-      found = await Product.findAll({
-        attributes: [...productKeys, viewCountAttribute],
-        where: { ...where, id: featuredProductIds },
-        limit,
-        offset,
-        order: [viewCountOrder, ["createdAt", "desc"]],
-      });
-    }
-    // Get non-featured
-    else if (numFeatured < offset) {
-      found = await Product.findAll({
-        attributes: [...productKeys, viewCountAttribute],
-        where: { ...where, id: { [Op.not]: featuredProductIds } },
-        limit,
-        offset: offset - numFeatured,
-        order: [viewCountOrder, ["createdAt", "desc"]],
-      });
-    }
-    // Merge at the seam
-    else {
-      const featured = await Product.findAll({
-        attributes: [...productKeys, viewCountAttribute],
-        where: { ...where, id: featuredProductIds },
-        limit,
-        offset,
-        order: [viewCountOrder, ["createdAt", "desc"]],
-      });
-      const nonFeatured = await Product.findAll({
-        attributes: [...productKeys, viewCountAttribute],
-        where: { ...where, id: { [Op.not]: featuredProductIds } },
-        limit: limit - featured.length,
-        offset: 0,
-        order: [viewCountOrder, ["createdAt", "desc"]],
-      });
-      found = [...featured, ...nonFeatured];
-    }
-
-    // const sql = (
-    //   await fs.readFile(path.join("sql", "products.sql"))
-    // ).toString();
-    // const found = await sequelize.query(sql, {
-    //   model: Product,
-    //   mapToModel: true,
-    //   replacements: [(perPage + 1).toString(), (page * perPage).toString()],
-    // });
+    const found = await Product.findAll({
+      attributes: [...productKeys, featuredCountAttribute, viewCountAttribute],
+      where,
+      limit,
+      offset,
+      order: [featureCountOrder, viewCountOrder, ["createdAt", "desc"]],
+    });
 
     found.forEach((product) => productLoader.prime(product.id, product));
 
