@@ -9,6 +9,16 @@
   <li>Address: {{address}}</li>
   <li>Products: {{productList}}</li>
   <li>Total: ${{totalCost}}</li>
+  <li>Customer Notes:</li>
+  <blockquote>{{notes}}</blockquote>
 </ul>
+
+<p>
+  You can view the order
+  <a
+    href="https://www.midwestdaisy.com/admin?modal=order-edit-form&modal-params=id&id={{orderId}}"
+    >here </a
+  >.
+</p>
 
 <p>Make sure to ship the order ASAP and mark it as shipped!</p>

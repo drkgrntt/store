@@ -40,6 +40,7 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
     template: ADMIN_NEW_ORDER,
     partials: { productList: "product-info" },
     variables: {
+      notes: "",
       email: "",
       orderId: "",
       stripePaymentUrl: "",
@@ -61,6 +62,7 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
     template: CUSTOMER_NEW_ORDER,
     partials: { productList: "product-info" },
     variables: {
+      notes: "",
       orderId: "",
       address: "",
       productList: [

@@ -184,12 +184,20 @@ const CheckoutFormWithStripe: FC<{
   const orderPlacedRef = useRef(false);
 
   useEffect(() => {
+    formState.setValues((prev) => ({
+      ...prev,
+      addressId: shippingAddresses[0].id,
+    }));
+  }, [shippingAddresses]);
+
+  useEffect(() => {
     if (!query.payment_intent_client_secret || orderPlacedRef.current) return;
     orderPlacedRef.current = true;
 
     placeOrder({
       variables: {
         addressId: query["address-id"],
+        notes: decodeURIComponent(query["notes"] as string),
         clientSecret: query.payment_intent_client_secret,
       },
       onCompleted() {
@@ -240,7 +248,9 @@ const CheckoutFormWithStripe: FC<{
             return_url:
               process.env.NEXT_PUBLIC_APP_URL +
               asPath +
-              `&modal-params=address-id&address-id=${formState.values.addressId}`,
+              `&modal-params=address-id&address-id=${
+                formState.values.addressId
+              }&notes=${encodeURIComponent(formState.values.notes)}`,
           },
         });
 

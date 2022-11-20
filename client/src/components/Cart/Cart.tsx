@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FC, MouseEvent } from "react";
+import { FC, MouseEvent, useEffect } from "react";
 import { useModal } from "../../hooks/useModal";
 import { useUser } from "../../hooks/useUser";
 import { useCart } from "../../providers/cart";
@@ -29,6 +29,12 @@ const Cart: FC<Props> = ({ isCheckout }) => {
   const { user } = useUser();
   const { openModal, modalHref } = useModal();
   const { asPath } = useRouter();
+
+  useEffect(() => {
+    if (user && lsCart.length && !uCart.length) {
+      addLsCartToUCart().then(() => clearLsCart());
+    }
+  }, [user, lsCart.length, uCart.length]);
 
   return (
     <div>
@@ -89,7 +95,7 @@ const Cart: FC<Props> = ({ isCheckout }) => {
 
           return (
             <li key={item.id}>
-              <details open>
+              <details open={!isCheckout}>
                 <summary>
                   {item.product.title} - x{item.count} -{" "}
                   {priceToCurrency(item.product.price * item.count)} -{" "}

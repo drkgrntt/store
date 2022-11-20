@@ -325,6 +325,7 @@ export class OrderResolver {
           orderId: order.id,
           stripePaymentUrl: `https://dashboard.stripe.com/payments/${order.paymentIntentId}`,
           address: addressToString(order.address),
+          notes: notes ?? "",
           productList: order.orderedProducts.map((op) => ({
             imageUrl: (
               op.product.images.find((image) => image.primary) ??
@@ -344,7 +345,7 @@ export class OrderResolver {
         };
 
         await sendEmail(ADMIN_NEW_ORDER, emailVariables);
-        await sendEmail(CUSTOMER_NEW_ORDER, emailVariables);
+        await sendEmail(CUSTOMER_NEW_ORDER, emailVariables, me.email);
       }
 
       return order;
