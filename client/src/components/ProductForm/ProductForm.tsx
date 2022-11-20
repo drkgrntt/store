@@ -23,6 +23,7 @@ import styles from "./ProductForm.module.scss";
 import categoryStyles from "../CategorySearch/CategorySearch.module.scss";
 import { ClickStateRef } from "../Button/Button";
 import Loader from "../Loader";
+import { FaTimes } from "react-icons/fa";
 
 interface Props {
   onSuccess?: () => void;
@@ -156,6 +157,12 @@ const DETACH_IMAGE = gql`
   }
 `;
 
+const DELETE_IMAGE = gql`
+  mutation DeleteImage($id: String!) {
+    deleteImage(id: $id)
+  }
+`;
+
 const ATTACH_CATEGORY = gql`
   mutation AttachCategory($productId: String!, $categoryId: String!) {
     attachCategory(productId: $productId, categoryId: $categoryId)
@@ -218,6 +225,7 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
   const [attachImage] = useMutation(ATTACH_IMAGE);
   const [detachImage] = useMutation(DETACH_IMAGE);
   const [getImageUploadSignature] = useLazyQuery(IMAGE_UPLOAD_SIGNATURE);
+  const [deleteImage] = useMutation(DELETE_IMAGE);
   const [attachCategory] = useMutation(ATTACH_CATEGORY);
   const [detachCategory] = useMutation(DETACH_CATEGORY);
 
@@ -396,6 +404,27 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
     }
   };
 
+  const handleDeleteImage = (imageId: string) => {
+    const confirm = window.confirm(
+      "Are you sure you want to delete this image?"
+    );
+    if (!confirm) return;
+
+    deleteImage({
+      variables: { id: imageId },
+      onCompleted() {
+        createToastNotification({ title: "Image successfully deleted" });
+        refetchImages();
+      },
+      onError(err) {
+        createErrorNotification({
+          title: "Error deleting the image",
+          body: err.message,
+        });
+      },
+    });
+  };
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -452,9 +481,12 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
         {loadingImages && <Loader />}
         {!loadingImages &&
           [
-            ...(product?.images.map((image) => image.url) ?? []),
-            ...(images?.map((image) => image.url) ?? []),
-          ].map((url) => {
+            ...(product?.images.map((image) => ({
+              url: image.url,
+              id: null,
+            })) ?? []),
+            ...(images ?? []),
+          ].map(({ id, url }) => {
             const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
               setUrls((prev) => {
                 if (event.target.checked) {
@@ -481,6 +513,14 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
                     )}
                     key={url}
                   >
+                    {id && (
+                      <Selectable
+                        onClick={() => handleDeleteImage(id)}
+                        className={styles.deleteImage}
+                      >
+                        <FaTimes />
+                      </Selectable>
+                    )}
                     <Image
                       alt="An image from the store folder of your Cloudinary account."
                       src={url}

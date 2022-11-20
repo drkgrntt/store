@@ -26,6 +26,20 @@
 
 .image {
   cursor: pointer;
+  position: relative;
+}
+
+.deleteImage {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+  z-index: var(--z-front);
+
+  &,
+  & > * {
+    color: var(--alert-color);
+    fill: var(--alert-color);
+  }
 }
 
 .imageCheckbox {

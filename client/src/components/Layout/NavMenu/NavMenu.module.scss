@@ -179,7 +179,8 @@
   &,
   & * {
     vertical-align: middle;
-    color: var(--grey);
+    color: var(--white) !important;
+    fill: var(--white);
   }
 }
 
