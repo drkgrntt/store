@@ -7,6 +7,14 @@ import { Analytic } from "../models";
 export class GeneralResolver {
   @Mutation(() => String)
   ping(@Ctx() { req, me, token }: Context, @Arg("path") path: string): "pong" {
+    const useragent = req.headers["user-agent"];
+    if (
+      useragent ===
+      "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.5249.119 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+    ) {
+      return "pong";
+    }
+
     const data = url.parse(`${req.headers.origin}${path}`);
     const query = new URLSearchParams(data.search as string);
 
@@ -14,7 +22,7 @@ export class GeneralResolver {
     // https://www.digitalocean.com/community/questions/server-receiving-hit-from-this-ip-address-ffff-127-0-0-1-why-is-that-and-how-to-resolve-this
     Analytic.create({
       ip: req.headers["x-forwarded-for"] || req.socket.remoteAddress,
-      useragent: req.headers["user-agent"],
+      useragent,
       page: data.pathname,
       modal: query.get("modal"),
       modalId: query.get("id"),
