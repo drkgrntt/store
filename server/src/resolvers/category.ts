@@ -75,4 +75,17 @@ export class CategoryResolver {
     }
     return quantity > 0;
   }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAdmin)
+  async clearFeatures() {
+    const pcs = await ProductCategory.findAll({
+      attributes: ["id"],
+      include: { model: Category, where: { name: "Feature" } },
+    });
+    const quantity = await ProductCategory.destroy({
+      where: { id: pcs.map((pc) => pc.id) },
+    });
+    return quantity > 0;
+  }
 }
