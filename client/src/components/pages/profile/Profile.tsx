@@ -9,6 +9,7 @@ import Button from "../../Button";
 import { gql, useMutation } from "@apollo/client";
 import { useNotification } from "../../../providers/notification";
 import dynamic from "next/dynamic";
+import ChangeEmail from "../../ChangeEmail";
 const AddressForm = dynamic(() => import("../../AddressForm"));
 
 const PROFILE_STATE = {
@@ -85,6 +86,7 @@ const Profile: FC = () => {
       <div>
         <h3>Orders</h3>
         <OrderList orders={user.orders} />
+        <ChangeEmail />
         <PasswordReset />
         <hr />
         <div>

@@ -160,6 +160,17 @@ export class UserResolver {
     }
   }
 
+  @Mutation(() => User)
+  @UseMiddleware(isAuth)
+  async changeEmail(
+    @Ctx() { me }: Context,
+    @Arg("email") email: string
+  ): Promise<User> {
+    me.email = email;
+    await me.save();
+    return me;
+  }
+
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async resetPassword(
