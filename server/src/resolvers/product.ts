@@ -59,13 +59,25 @@ export class ProductResolver {
 
   @Query(() => ProductPage)
   async products(
-    @Ctx() { me, productLoader, sequelize }: Context,
+    @Ctx() { req, me, productLoader, sequelize }: Context,
     @Arg("page", { nullable: true }) page: number = 0,
     @Arg("perPage", { nullable: true }) perPage: number = 20,
     @Arg("active", { nullable: true }) active?: boolean,
     @Arg("search", { nullable: true }) search?: string,
     @Arg("tagSearch", { nullable: true }) tagSearch?: boolean
   ): Promise<ProductPage> {
+    const useragent = req.headers["user-agent"];
+    if (
+      useragent?.includes(
+        "(compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+      )
+    ) {
+      return {
+        hasMore: false,
+        edges: [],
+      };
+    }
+
     let where: WhereOptions = {
       isActive: true,
       [Op.or]: [{ isMadeToOrder: true }, { quantity: { [Op.gt]: 0 } }],
