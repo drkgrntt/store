@@ -10,15 +10,5 @@ Disallow: /*modal=checkout
 User-agent: Googlebot
 Disallow: /*modal=forgot-password
 
-User-agent: Googlebot Desktop
-Disallow: /*modal=image
-
-User-agent: Googlebot Desktop
-Disallow: /*modal=cart
-
-User-agent: Googlebot Desktop
-Disallow: /*modal=checkout
-
-User-agent: Googlebot Desktop
-Disallow: /*modal=forgot-password
-
+User-agent: *
+Disallow: /
