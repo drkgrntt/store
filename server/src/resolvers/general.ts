@@ -14,7 +14,11 @@ export class GeneralResolver {
       )
     ) {
       console.log("bot ping");
-      console.log({ useragent, path });
+      console.log({
+        useragent,
+        path,
+        ip: req.headers["x-forwarded-for"] || req.socket.remoteAddress,
+      });
       return "pong";
     }
 
