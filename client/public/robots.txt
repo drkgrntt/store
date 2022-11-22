@@ -1,2 +1,6 @@
+
 User-agent: Googlebot
 Disallow: /*modal=image
+
+User-agent: Googlebot
+Disallow: /*modal=carts
