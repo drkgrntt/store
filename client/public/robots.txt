@@ -1,6 +1,11 @@
-
 User-agent: Googlebot
 Disallow: /*modal=image
 
 User-agent: Googlebot
 Disallow: /*modal=cart
+
+User-agent: Googlebot
+Disallow: /*modal=checkout
+
+User-agent: Googlebot
+Disallow: /*modal=forgot-password
