@@ -16,6 +16,7 @@ export class GeneralResolver {
       console.count("bot ping");
       console.log({
         useragent,
+        path,
       });
       return "pong";
     }
