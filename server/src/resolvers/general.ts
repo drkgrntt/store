@@ -13,6 +13,8 @@ export class GeneralResolver {
         "(compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
       )
     ) {
+      console.log("bot ping");
+      console.log(path);
       return "pong";
     }
 
