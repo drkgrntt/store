@@ -9,3 +9,9 @@ Disallow: /*modal=checkout
 
 User-agent: Googlebot
 Disallow: /*modal=forgot-password
+
+User-agent: Googlebot
+Disallow: /*src=
+
+User-agent: Googlebot
+Disallow: /*alt=
