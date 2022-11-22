@@ -9,6 +9,3 @@ Disallow: /*modal=checkout
 
 User-agent: Googlebot
 Disallow: /*modal=forgot-password
-
-User-agent: *
-Disallow: /
