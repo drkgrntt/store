@@ -1,2 +1,2 @@
-User-agent: APIs-Google
+User-agent: Googlebot
 Disallow: /*modal=image
