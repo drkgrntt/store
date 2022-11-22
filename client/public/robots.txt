@@ -15,3 +15,6 @@ Disallow: /*src=
 
 User-agent: Googlebot
 Disallow: /*alt=
+
+User-agent: Googlebot
+Disallow: /*prev=
