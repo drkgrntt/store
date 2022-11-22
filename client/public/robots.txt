@@ -1,1 +1,2 @@
-Disallow: /?alt=
+User-agent: *
+Disallow: /*modal=image
