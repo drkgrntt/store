@@ -13,11 +13,8 @@ export class GeneralResolver {
         "(compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
       )
     ) {
-      console.log("bot ping");
-      console.log({
+      console.log("bot ping", {
         useragent,
-        path,
-        ip: req.headers["x-forwarded-for"] || req.socket.remoteAddress,
       });
       return "pong";
     }
