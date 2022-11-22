@@ -14,7 +14,7 @@ export class GeneralResolver {
       )
     ) {
       console.log("bot ping");
-      console.log(path);
+      console.log({ useragent, path });
       return "pong";
     }
 
