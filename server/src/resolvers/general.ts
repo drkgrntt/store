@@ -7,6 +7,9 @@ import { Analytic } from "../models";
 export class GeneralResolver {
   @Mutation(() => String)
   ping(@Ctx() { req, me, token }: Context, @Arg("path") path: string): "pong" {
+    const data = url.parse(`${req.headers.origin}${path}`);
+    const query = new URLSearchParams(data.search as string);
+
     const useragent = req.headers["user-agent"];
     if (
       useragent?.includes(
@@ -16,13 +19,11 @@ export class GeneralResolver {
       console.count("bot ping");
       console.log({
         useragent,
-        path,
+        page: data.pathname,
+        modal: query.get("modal"),
       });
       return "pong";
     }
-
-    const data = url.parse(`${req.headers.origin}${path}`);
-    const query = new URLSearchParams(data.search as string);
 
     Analytic.create({
       ip: req.headers["x-forwarded-for"] || req.socket.remoteAddress,
