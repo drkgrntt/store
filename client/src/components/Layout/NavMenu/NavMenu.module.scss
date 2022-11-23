@@ -40,6 +40,11 @@
 
     & ~ .nav {
       right: 0 !important;
+
+      & ~ .outside {
+        opacity: 0.5;
+        z-index: calc(var(--z-nav) - 1);
+      }
     }
   }
 
@@ -120,13 +125,25 @@
   position: fixed;
   top: 0;
   right: -100%;
-  width: 18rem;
+  width: var(--nav-width);
   height: 100%;
   margin: 0;
   padding: 5rem 0 1rem;
   list-style: none;
   background-color: var(--primary-color);
   box-shadow: var(--light-shadow);
+  transition-duration: 0.3s;
+}
+
+.outside {
+  z-index: var(--z-back);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100%;
+  background-color: var(--black);
+  opacity: 0;
   transition-duration: 0.3s;
 }
 

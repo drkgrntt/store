@@ -259,6 +259,8 @@ const NavMenu: FC<Props> = () => {
           )}
         </footer>
       </nav>
+
+      <div className={styles.outside} onClick={closeMenu} />
     </>
   );
 };
