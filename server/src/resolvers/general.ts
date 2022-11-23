@@ -14,13 +14,15 @@ export class GeneralResolver {
     if (
       useragent?.includes(
         "(compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
-      )
+      ) ||
+      useragent?.includes("Vercelbot/0.1 (+https://vercel.com)")
     ) {
       console.count("bot ping");
       console.log({
         useragent,
         page: data.pathname,
         modal: query.get("modal"),
+        date: new Date().toISOString(),
       });
       return "pong";
     }
