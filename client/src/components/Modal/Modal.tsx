@@ -18,6 +18,12 @@ const Modal: FC<Props> = ({ name, children, wide, className = "" }) => {
   const { query } = useRouter();
   const { closeModal } = useModal();
 
+  useEffect(() => {
+    if (name !== query.modal) return;
+    document.body.style.setProperty("overflow-y", "hidden");
+    return () => document.body.style.setProperty("overflow-y", "scroll");
+  }, [name, query.modal]);
+
   const handleOutsideClick = () => {
     closeModal();
   };
