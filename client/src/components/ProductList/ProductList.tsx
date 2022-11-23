@@ -101,6 +101,7 @@ export const ProductList: FC<Props> = ({ adminView }) => {
   return (
     <>
       <Input
+        isClearable
         className={styles.search}
         value={query.search as string}
         onChange={(event) =>
@@ -108,6 +109,7 @@ export const ProductList: FC<Props> = ({ adminView }) => {
         }
         name="search"
         label="Search"
+        placeholder="Polymer Clay"
         options={categories.map((c) => ({ value: c.id, text: c.name }))}
       />
       <div className={styles.products}>

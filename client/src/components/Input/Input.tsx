@@ -5,8 +5,10 @@ import {
   ChangeEvent,
   ReactNode,
 } from "react";
+import { FaTimes } from "react-icons/fa";
 import { InputValueType } from "../../hooks/useForm";
 import { combineClasses } from "../../utils";
+import Selectable from "../Selectable";
 import styles from "./Input.module.scss";
 
 type ElementTypes = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
@@ -30,6 +32,7 @@ interface Props {
   onFocus?: (event: ChangeEvent<ElementTypes>) => void;
   onBlur?: (event: ChangeEvent<ElementTypes>) => void;
   validation?: string;
+  isClearable?: boolean;
   ref?: MutableRefObject<ElementTypes>;
   children?: ReactNode;
   formState?: Record<string, any>; // ReturnType<typeof useForm>; <- Not quite type safe for some reason
@@ -45,6 +48,7 @@ const Input: FC<Props> = ({
   value = "",
   step,
   min,
+  isClearable,
   max,
   options = [],
   disabled,
@@ -68,6 +72,19 @@ const Input: FC<Props> = ({
   // Set defaults now that they need to be set
   if (!onChange) onChange = () => null;
   if (!onBlur) onBlur = () => null;
+
+  const handleClear = () => {
+    if (formState) {
+      formState.setValues((prev: Record<string, any>) => ({
+        ...prev,
+        [name]: "",
+      }));
+    } else {
+      onChange?.({
+        target: { name, type, value: "" },
+      } as ChangeEvent<ElementTypes>);
+    }
+  };
 
   // Render label if present
   const renderLabel = () => {
@@ -162,44 +179,52 @@ const Input: FC<Props> = ({
     return (
       <>
         {renderLabel()}
-        <input
-          ref={ref as MutableRefObject<HTMLInputElement>}
-          key={id}
-          type={type}
-          placeholder={placeholder}
-          name={name}
-          step={step}
-          min={min}
-          max={max}
-          id={id}
-          disabled={disabled}
-          className={combineClasses(
-            styles.input,
-            validation ? styles.invalid : ""
-          )}
-          value={
-            type === "date"
-              ? (value as Date)?.toISOString().split("T")[0]
-              : value?.toString() || ""
-          }
-          required={!!required}
-          onChange={onChange}
-          onBlur={onBlur}
-          onFocus={onFocus}
-          list={options ? `${id}-options` : undefined}
-        />
+        <div className={styles.inputWrapper}>
+          <input
+            ref={ref as MutableRefObject<HTMLInputElement>}
+            key={id}
+            type={type}
+            placeholder={placeholder}
+            name={name}
+            step={step}
+            min={min}
+            max={max}
+            id={id}
+            disabled={disabled}
+            className={combineClasses(
+              styles.input,
+              validation ? styles.invalid : ""
+            )}
+            value={
+              type === "date"
+                ? (value as Date)?.toISOString().split("T")[0]
+                : value?.toString() || ""
+            }
+            required={!!required}
+            onChange={onChange}
+            onBlur={onBlur}
+            onFocus={onFocus}
+            list={options ? `${id}-options` : undefined}
+          />
 
-        {options && (
-          <datalist id={`${id}-options`}>
-            {options.map((option) => (
-              <option
-                key={option.value}
-                value={option.text}
-                onClick={(e) => console.log(e)}
-              />
-            ))}
-          </datalist>
-        )}
+          {options && (
+            <datalist id={`${id}-options`}>
+              {options.map((option) => (
+                <option
+                  key={option.value}
+                  value={option.text}
+                  onClick={(e) => console.log(e)}
+                />
+              ))}
+            </datalist>
+          )}
+
+          {isClearable && (
+            <Selectable className={styles.clear} onClick={handleClear}>
+              <FaTimes />
+            </Selectable>
+          )}
+        </div>
       </>
     );
   };
