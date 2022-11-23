@@ -1,7 +1,7 @@
 import { FC, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { gql, useQuery } from "@apollo/client";
-import { Product } from "../../types/Product";
+import { Category, Product } from "../../types/Product";
 import Loader from "../Loader";
 import { combineClasses, priceToCurrency, substring } from "../../utils";
 import Selectable from "../Selectable";
@@ -56,6 +56,15 @@ const PRODUCTS = gql`
   }
 `;
 
+const CATEGORIES = gql`
+  query Categories {
+    categories(list: true) {
+      id
+      name
+    }
+  }
+`;
+
 export const ProductList: FC<Props> = ({ adminView }) => {
   const { query, replace } = useRouter();
 
@@ -68,6 +77,9 @@ export const ProductList: FC<Props> = ({ adminView }) => {
       active: !adminView ? true : undefined,
     },
   });
+  const { data: { categories = [] } = {} } = useQuery<{
+    categories: Category[];
+  }>(CATEGORIES);
 
   const enableButtonRef = useRef<ClickStateRef>();
 
@@ -96,6 +108,7 @@ export const ProductList: FC<Props> = ({ adminView }) => {
         }
         name="search"
         label="Search"
+        options={categories.map((c) => ({ value: c.id, text: c.name }))}
       />
       <div className={styles.products}>
         {data?.products.edges.map((product) => (

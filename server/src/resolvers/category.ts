@@ -9,7 +9,7 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { isAdmin } from "../middleware/isAdmin";
-import { Op } from "sequelize";
+import { FindOptions, Op } from "sequelize";
 
 @Resolver(Category)
 export class CategoryResolver {
@@ -25,11 +25,29 @@ export class CategoryResolver {
 
   @Query(() => [Category])
   async categories(
-    @Arg("search", { nullable: true }) search: string
+    @Arg("search", { nullable: true }) search: string,
+    @Arg("list", { nullable: true }) list: boolean
   ): Promise<Category[]> {
-    const categories = await Category.findAll({
-      where: { name: { [Op.iLike]: `%${search}%` } },
-    });
+    const query: FindOptions = {
+      order: [["name", "ASC"]],
+    };
+
+    if (search) query.where = { name: { [Op.iLike]: `%${search}%` } };
+
+    if (list) {
+      query.include = {
+        model: Product,
+        attributes: ["id"],
+        where: { isActive: true },
+      };
+    }
+
+    let categories = await Category.findAll(query);
+
+    if (list) {
+      categories = categories.filter((c) => c.products.length);
+    }
+
     return categories;
   }
 
