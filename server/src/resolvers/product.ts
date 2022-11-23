@@ -59,7 +59,7 @@ export class ProductResolver {
 
   @Query(() => ProductPage)
   async products(
-    @Ctx() { req, me, productLoader, sequelize }: Context,
+    @Ctx() { me, productLoader, sequelize }: Context,
     @Arg("page", { nullable: true }) page: number = 0,
     @Arg("perPage", { nullable: true }) perPage: number = 20,
     @Arg("active", { nullable: true }) active?: boolean,
