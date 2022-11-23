@@ -66,17 +66,17 @@ export class ProductResolver {
     @Arg("search", { nullable: true }) search?: string,
     @Arg("tagSearch", { nullable: true }) tagSearch?: boolean
   ): Promise<ProductPage> {
-    const useragent = req.headers["user-agent"];
-    if (
-      useragent?.includes(
-        "(compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
-      )
-    ) {
-      return {
-        hasMore: false,
-        edges: [],
-      };
-    }
+    // const useragent = req.headers["user-agent"];
+    // if (
+    //   useragent?.includes(
+    //     "(compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+    //   )
+    // ) {
+    //   return {
+    //     hasMore: false,
+    //     edges: [],
+    //   };
+    // }
 
     let where: WhereOptions = {
       isActive: true,
