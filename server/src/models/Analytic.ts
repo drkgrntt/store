@@ -41,4 +41,7 @@ export class Analytic extends Model {
   @IsUUID(4)
   @Column
   userId: string;
+
+  @Column(DataType.JSONB)
+  query: Record<string, string | string[]>;
 }

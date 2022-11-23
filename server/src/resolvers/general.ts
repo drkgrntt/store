@@ -35,6 +35,7 @@ export class GeneralResolver {
       modalId: query.get("id"),
       token,
       userId: me?.id,
+      query: Object.fromEntries(query),
     });
 
     return "pong";
