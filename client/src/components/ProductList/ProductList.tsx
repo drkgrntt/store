@@ -86,6 +86,8 @@ export const ProductList: FC<Props> = ({ adminView }) => {
   const debouncedSearch = useDebounce(refetch);
   useEffect(debouncedSearch, [query.search]);
 
+  const [isDropdown, setIsDropdown] = useState(false);
+
   const loadMore = async () => {
     await fetchMore({
       variables: {
@@ -110,7 +112,16 @@ export const ProductList: FC<Props> = ({ adminView }) => {
         name="search"
         label="Search"
         placeholder="Polymer Clay"
-        options={categories.map((c) => ({ value: c.id, text: c.name }))}
+        type={isDropdown ? "select" : "text"}
+        options={
+          isDropdown
+            ? categories.map((c) => ({ value: c.name, text: c.name }))
+            : undefined
+        }
+        action={{
+          text: isDropdown ? "Custom Search" : "View Categories",
+          handler: () => setIsDropdown((prev) => !prev),
+        }}
       />
       <div className={styles.products}>
         {data?.products.edges.map((product) => (

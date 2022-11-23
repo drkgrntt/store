@@ -34,6 +34,7 @@ interface Props {
   validation?: string;
   isClearable?: boolean;
   ref?: MutableRefObject<ElementTypes>;
+  action?: { text: string; handler: () => void };
   children?: ReactNode;
   formState?: Record<string, any>; // ReturnType<typeof useForm>; <- Not quite type safe for some reason
 }
@@ -57,6 +58,7 @@ const Input: FC<Props> = ({
   onFocus = () => null,
   onBlur,
   children,
+  action,
   validation,
   formState,
   ref,
@@ -95,6 +97,11 @@ const Input: FC<Props> = ({
             {label}
             {required && " *"}
           </label>
+          {action && (
+            <Selectable title="Clear" onClick={action.handler}>
+              {action.text}
+            </Selectable>
+          )}
         </div>
       );
     }
