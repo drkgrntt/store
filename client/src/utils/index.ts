@@ -47,3 +47,50 @@ export const debounce = <Args extends unknown[]>(
     timeout = setTimeout(later, wait);
   };
 };
+
+type Browser = "chrome" | "firefox" | "edge" | "safari" | "opera";
+export const getBrowser = (): Browser | null => {
+  // Currently supporting browsers with Push API support
+  const { userAgent } = navigator;
+  const chrome = /chrome|chromium|crios/i;
+  const firefox = /firefox|fxios/i;
+  const safari = /safari/i;
+  const opera = /opr\//i;
+  const edge = /edg/i;
+
+  switch (true) {
+    case chrome.test(userAgent):
+      return "chrome";
+    case firefox.test(userAgent):
+      return "firefox";
+    case edge.test(userAgent):
+      return "edge";
+    case safari.test(userAgent):
+      return "safari";
+    case opera.test(userAgent):
+      return "opera";
+    default:
+      return null;
+  }
+};
+
+type MobileOS = "windows" | "android" | "ios";
+export const getMobileOperatingSystem = (): MobileOS | null => {
+  var userAgent = navigator.userAgent || navigator.vendor;
+
+  const windows = /windows phone/i;
+  const android = /android/i;
+  const ios = /iPad|iPhone|iPod/;
+
+  switch (true) {
+    // Windows Phone must come first because its UA also contains "Android"
+    case windows.test(userAgent):
+      return "windows";
+    case android.test(userAgent):
+      return "android";
+    case ios.test(userAgent):
+      return "ios";
+    default:
+      return null;
+  }
+};

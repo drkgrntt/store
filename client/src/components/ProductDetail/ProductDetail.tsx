@@ -1,19 +1,21 @@
 import { gql, useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
-import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Product, ProductImage } from "../../types/Product";
 import Error from "next/error";
 import Loader from "../Loader";
 import styles from "./ProductDetail.module.scss";
 import Image from "next/image";
 import Selectable from "../Selectable";
-import { priceToCurrency, range } from "../../utils";
+import { getMobileOperatingSystem, priceToCurrency, range } from "../../utils";
 import { useModal } from "../../hooks/useModal";
 import { useCart } from "../../providers/cart";
 import Button from "../Button";
 import Link from "next/link";
 import PageHead from "../PageHead";
 import { Paginated } from "../../types/util";
+import { FaShareAlt } from "react-icons/fa";
+import { useNotification } from "../../providers/notification";
 
 interface Props {}
 
@@ -88,6 +90,7 @@ const ProductDetail: FC<Props> = () => {
   const { openModal, modalHref } = useModal();
   const { addToCart, quantityInCart } = useCart();
   const { query, asPath } = useRouter();
+  const { createToastNotification } = useNotification();
 
   const { data: { product } = {}, loading } = useQuery<{ product: Product }>(
     PRODUCT,
@@ -131,6 +134,22 @@ const ProductDetail: FC<Props> = () => {
 
   const availableQuantity = product.quantity - quantityInCart(product.id);
 
+  const share = () => {
+    if (!!window.navigator.canShare && getMobileOperatingSystem()) {
+      navigator.share({
+        title: "Midwest Daisy",
+        text: product.title,
+        url: window.location.href,
+      });
+    } else {
+      window.navigator.clipboard.writeText(window.location.href);
+      createToastNotification({
+        title: "Sharable link copied to clipboard!",
+        body: window.location.href,
+      });
+    }
+  };
+
   return (
     <>
       <PageHead
@@ -146,6 +165,9 @@ const ProductDetail: FC<Props> = () => {
       />
       <div className={styles.container}>
         <div className={styles.images}>
+          <Selectable onClick={share} className={styles.share}>
+            <FaShareAlt />
+          </Selectable>
           {selectedImage && (
             <Link
               href={modalHref("image", {
