@@ -10,6 +10,7 @@ export interface Product {
   updatedAt: Date;
   images: ProductImage[];
   categories: Category[];
+  relatedProducts: Product[];
 }
 
 export interface ProductImage {

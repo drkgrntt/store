@@ -57,6 +57,32 @@ export class ProductResolver {
     return images;
   }
 
+  @FieldResolver(() => [Product])
+  async relatedProducts(
+    @Root() product: Product,
+    @Ctx() context: Context
+  ): Promise<Product[]> {
+    const categories = await this.categories(product, context);
+    const search = categories.map((c) => c.name).join(" ");
+
+    const { edges: products } = await this.products(
+      context,
+      0,
+      20,
+      true,
+      search,
+      true
+    );
+
+    return products
+      .sort(() => Math.random() - Math.random())
+      .reduce<Product[]>(
+        (curr, p) =>
+          curr.length < 7 && p.id !== product.id ? [...curr, p] : curr,
+        []
+      );
+  }
+
   @Query(() => ProductPage)
   async products(
     @Ctx() { me, productLoader, sequelize }: Context,

@@ -1,19 +1,18 @@
 import { gql, useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Product, ProductImage } from "../../types/Product";
 import Error from "next/error";
 import Loader from "../Loader";
 import styles from "./ProductDetail.module.scss";
 import Image from "next/image";
 import Selectable from "../Selectable";
-import { getMobileOperatingSystem, priceToCurrency, range } from "../../utils";
+import { getMobileOperatingSystem, priceToCurrency } from "../../utils";
 import { useModal } from "../../hooks/useModal";
 import { useCart } from "../../providers/cart";
 import Button from "../Button";
 import Link from "next/link";
 import PageHead from "../PageHead";
-import { Paginated } from "../../types/util";
 import { FaShareAlt } from "react-icons/fa";
 import { useNotification } from "../../providers/notification";
 
@@ -28,39 +27,7 @@ const PRODUCT = gql`
       price
       quantity
       isMadeToOrder
-      categories {
-        id
-        name
-      }
-      images {
-        id
-        url
-        title
-        description
-        primary
-      }
-    }
-  }
-`;
-
-const PRODUCTS = gql`
-  query RelatedProducts(
-    $active: Boolean
-    $page: Float
-    $perPage: Float
-    $search: String
-    $tagSearch: Boolean
-  ) {
-    products(
-      active: $active
-      page: $page
-      perPage: $perPage
-      search: $search
-      tagSearch: $tagSearch
-    ) {
-      hasMore
-      nextPage
-      edges {
+      relatedProducts {
         id
         title
         description
@@ -80,11 +47,20 @@ const PRODUCTS = gql`
           updatedAt
         }
       }
+      categories {
+        id
+        name
+      }
+      images {
+        id
+        url
+        title
+        description
+        primary
+      }
     }
   }
 `;
-
-const NUM_RELATED_PRODUCTS = 20;
 
 const ProductDetail: FC<Props> = () => {
   const { openModal, modalHref } = useModal();
@@ -98,26 +74,6 @@ const ProductDetail: FC<Props> = () => {
       variables: { id: query.id },
       skip: !query.id,
     }
-  );
-  const { data: { products } = {} } = useQuery<{
-    products: Paginated<Product>;
-  }>(PRODUCTS, {
-    variables: {
-      active: true,
-      perPage: NUM_RELATED_PRODUCTS,
-      search: product?.categories.map(({ name }) => name).join(" "),
-      tagSearch: true,
-    },
-    skip: !product,
-    fetchPolicy: "no-cache",
-  });
-
-  const filteredSortedRelatedProducts = useMemo(
-    () =>
-      [...(products?.edges ?? [])]
-        .filter((rp) => rp.id !== product?.id)
-        .sort(() => Math.random() - Math.random()),
-    [products]
   );
 
   const [selectedImage, setSelectedImage] = useState<ProductImage>();
@@ -222,12 +178,11 @@ const ProductDetail: FC<Props> = () => {
           </div>
         </div>
       </div>
-      {!!filteredSortedRelatedProducts.length && (
+      {!!product.relatedProducts.length && (
         <div>
           <h3>You might also like</h3>
           <div className={styles.relatedProducts}>
-            {filteredSortedRelatedProducts.map((relatedProduct, i) => {
-              if (i >= 6) return null;
+            {product.relatedProducts.map((relatedProduct, i) => {
               return (
                 <Link
                   title={relatedProduct.title}
