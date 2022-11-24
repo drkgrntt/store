@@ -214,7 +214,7 @@ const Input: FC<Props> = ({
             list={options ? `${id}-options` : undefined}
           />
 
-          {options && (
+          {!!options?.length && (
             <datalist id={`${id}-options`}>
               {options.map((option) => (
                 <option
