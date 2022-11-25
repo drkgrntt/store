@@ -90,6 +90,33 @@ const ProductDetail: FC<Props> = () => {
 
   const availableQuantity = product.quantity - quantityInCart(product.id);
 
+  const jsonld = {
+    "@context": "http://schema.org",
+    "@type": "Product",
+    brand: {
+      "@type": "Brand",
+      name: "Midwest Daisy Collective",
+    },
+    sku: null,
+    description: product.description,
+    url: `${process.env.NEXT_PUBLIC_APP_URL}${asPath}`,
+    name: product.title,
+    image: (product.images.find((image) => image.primary) ?? product.images[0])
+      ?.url,
+    itemCondition: "https://schema.org/NewCondition",
+    offers: [
+      {
+        "@type": "Offer",
+        price: (product.price / 100).toFixed(2),
+        priceCurrency: "USD",
+        itemCondition: "http://schema.org/NewCondition",
+        url: `${process.env.NEXT_PUBLIC_APP_URL}${asPath}`,
+        sku: null,
+        availability: "InStock",
+      },
+    ],
+  };
+
   const share = () => {
     if (!!window.navigator.canShare && getMobileOperatingSystem()) {
       navigator.share({
@@ -211,6 +238,10 @@ const ProductDetail: FC<Props> = () => {
           </div>
         </div>
       )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonld) }}
+      />
     </>
   );
 };

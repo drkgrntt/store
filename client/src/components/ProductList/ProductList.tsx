@@ -66,7 +66,7 @@ const CATEGORIES = gql`
 `;
 
 export const ProductList: FC<Props> = ({ adminView }) => {
-  const { query, replace } = useRouter();
+  const { query, replace, asPath } = useRouter();
 
   const { data, loading, fetchMore, variables, refetch } = useQuery<{
     products: Paginated<Product>;
@@ -98,6 +98,23 @@ export const ProductList: FC<Props> = ({ adminView }) => {
       },
     });
     enableButtonRef.current?.();
+  };
+
+  const jsonld = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    url: `${process.env.NEXT_PUBLIC_APP_URL}${asPath}`,
+    numberOfItems: (data?.products.edges.length ?? 0).toString(),
+    itemListElement: data?.products.edges.map((product) => ({
+      "@type": "Product",
+      image: (product.images.find((i) => i.primary) ?? product.images[0]).url,
+      url: `${process.env.NEXT_PUBLIC_APP_URL}?modal=detail&modal-params=id&id=${product.id}`,
+      name: product.title,
+      offers: {
+        "@type": "Offer",
+        price: (product.price / 100).toFixed(2),
+      },
+    })),
   };
 
   return (
@@ -136,6 +153,12 @@ export const ProductList: FC<Props> = ({ adminView }) => {
           </Button>
         )}
       </div>
+      {!query.modal && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonld) }}
+        />
+      )}
     </>
   );
 };
