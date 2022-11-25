@@ -22,7 +22,7 @@ export class Analytic extends Model {
   @Column
   ip: string;
 
-  @Column
+  @Column(DataType.STRING(510))
   useragent: string;
 
   @Column

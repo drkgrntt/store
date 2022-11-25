@@ -27,16 +27,20 @@ export class GeneralResolver {
       return "pong";
     }
 
-    Analytic.create({
-      ip: req.headers["x-forwarded-for"] || req.socket.remoteAddress,
-      useragent,
-      page: data.pathname,
-      modal: query.get("modal"),
-      modalId: query.get("id"),
-      token,
-      userId: me?.id,
-      query: Object.fromEntries(query),
-    });
+    try {
+      Analytic.create({
+        ip: req.headers["x-forwarded-for"] || req.socket.remoteAddress,
+        useragent,
+        page: data.pathname,
+        modal: query.get("modal"),
+        modalId: query.get("id"),
+        token,
+        userId: me?.id,
+        query: Object.fromEntries(query),
+      });
+    } catch (err) {
+      console.error(err);
+    }
 
     return "pong";
   }
