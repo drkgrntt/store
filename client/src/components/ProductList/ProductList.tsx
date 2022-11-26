@@ -103,6 +103,12 @@ export const ProductList: FC<Props> = ({ adminView }) => {
   const jsonld = {
     "@context": "https://schema.org",
     "@type": "ItemList",
+    brand: {
+      "@type": "Brand",
+      name: "Midwest Daisy Collective",
+    },
+    description:
+      "Small-batch colorful and quirky earrings (and a few things in between)",
     url: `${process.env.NEXT_PUBLIC_APP_URL}${asPath}`,
     numberOfItems: (data?.products.edges.length ?? 0).toString(),
     itemListElement: data?.products.edges.map((product) => ({
@@ -111,8 +117,10 @@ export const ProductList: FC<Props> = ({ adminView }) => {
       url: `${process.env.NEXT_PUBLIC_APP_URL}?modal=detail&modal-params=id&id=${product.id}`,
       name: product.title,
       offers: {
+        priceCurrency: "USD",
         "@type": "Offer",
         price: (product.price / 100).toFixed(2),
+        availability: "InStock",
       },
     })),
   };
