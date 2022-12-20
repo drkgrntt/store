@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { UrlObject } from "url";
 
 export const useModal = () => {
-  const { push, query } = useRouter();
+  const { push, query, replace } = useRouter();
 
   const closeModal = () => {
     if (query.prev)
@@ -39,8 +39,17 @@ export const useModal = () => {
     };
   };
 
-  const openModal = (name: string, additionalParams?: ParsedUrlQuery) => {
-    push(modalHref(name, additionalParams), undefined, { scroll: false });
+  const openModal = (
+    name: string,
+    additionalParams?: ParsedUrlQuery,
+    useReplace?: boolean
+  ) => {
+    const href = modalHref(name, additionalParams);
+    if (useReplace) {
+      replace(href, undefined, { scroll: false });
+    } else {
+      push(href, undefined, { scroll: false });
+    }
   };
 
   useEffect(() => {
