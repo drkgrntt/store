@@ -86,7 +86,7 @@ export const ProductList: FC<Props> = ({ adminView }) => {
   const debouncedSearch = useDebounce(refetch);
   useEffect(debouncedSearch, [query.search]);
 
-  const [isDropdown, setIsDropdown] = useState(false);
+  const [isDropdown, setIsDropdown] = useState(true);
 
   const loadMore = async () => {
     await fetchMore({
@@ -136,7 +136,7 @@ export const ProductList: FC<Props> = ({ adminView }) => {
         }
         name="search"
         label="Search"
-        placeholder="Polymer Clay"
+        placeholder={isDropdown ? "Categories" : "Polymer Clay"}
         type={isDropdown ? "select" : "text"}
         options={
           isDropdown

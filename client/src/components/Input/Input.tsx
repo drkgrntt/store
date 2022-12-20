@@ -172,7 +172,7 @@ const Input: FC<Props> = ({
             onBlur={onBlur}
             onFocus={onFocus}
           >
-            <option value="">Pick one...</option>
+            <option value="">{placeholder || "Pick one..."}</option>
             {options.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.text}
