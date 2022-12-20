@@ -20,6 +20,7 @@ import Faq from "../Faq";
 import ContactForm from "../ContactForm";
 import ProductDetail from "../ProductDetail";
 import ImageDisplay from "../ImageDisplay";
+import { useRouter } from "next/router";
 
 interface Props {
   children?: ReactNode;
@@ -29,6 +30,7 @@ const Layout: FC<Props> = ({ children }) => {
   const { closeModal } = useModal();
   const { reFetchObservableQueries } = useApolloClient();
   const { user } = useUser();
+  const { query } = useRouter();
 
   return (
     <div>
@@ -121,9 +123,12 @@ const Layout: FC<Props> = ({ children }) => {
         <Checkout />
       </Modal>
 
-      <Modal className={styles.loginContainer} name="login">
-        <RegisterForm />
-        <LoginForm />
+      <Modal name="login">
+        {query.message && <p>{query.message}</p>}
+        <div className={styles.loginContainer}>
+          <RegisterForm />
+          <LoginForm />
+        </div>
       </Modal>
 
       <Modal name="forgot-password">

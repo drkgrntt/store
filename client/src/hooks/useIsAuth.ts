@@ -15,6 +15,7 @@ export const useIsAuth = (skip?: boolean) => {
           modal: "login",
           next: asPath,
           ["modal-params"]: ["next"],
+          message: "Please login or create an account to continue!",
         },
       });
     }
