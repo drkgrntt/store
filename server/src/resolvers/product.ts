@@ -118,7 +118,7 @@ export class ProductResolver {
     }
 
     if (search) {
-      const searchItems = search.split(" ");
+      const searchItems = tagSearch ? [search] : search.split(" ");
 
       const categories = await Category.findAll({
         attributes: ["id"],

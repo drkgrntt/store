@@ -28,8 +28,15 @@ const PRODUCTS = gql`
     $page: Float
     $perPage: Float
     $search: String
+    $tagSearch: Boolean
   ) {
-    products(active: $active, page: $page, perPage: $perPage, search: $search) {
+    products(
+      active: $active
+      page: $page
+      perPage: $perPage
+      search: $search
+      tagSearch: $tagSearch
+    ) {
       hasMore
       nextPage
       edges {
@@ -67,6 +74,7 @@ const CATEGORIES = gql`
 
 export const ProductList: FC<Props> = ({ adminView }) => {
   const { query, replace, asPath } = useRouter();
+  const [isDropdown, setIsDropdown] = useState(true);
 
   const { data, loading, fetchMore, variables, refetch } = useQuery<{
     products: Paginated<Product>;
@@ -75,6 +83,7 @@ export const ProductList: FC<Props> = ({ adminView }) => {
       // perPage: 1,
       search: query.search,
       active: !adminView ? true : undefined,
+      tagSearch: isDropdown,
     },
   });
   const { data: { categories = [] } = {} } = useQuery<{
@@ -85,8 +94,6 @@ export const ProductList: FC<Props> = ({ adminView }) => {
 
   const debouncedSearch = useDebounce(refetch);
   useEffect(debouncedSearch, [query.search]);
-
-  const [isDropdown, setIsDropdown] = useState(true);
 
   const loadMore = async () => {
     await fetchMore({
