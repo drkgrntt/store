@@ -158,7 +158,8 @@ const Checkout: FC<Props> = () => {
         >
           <CheckoutFormWithStripe
             clientSecret={clientSecret as string}
-            showAddressForm={() => setShowAddressForm(true)}
+            setShowAddressForm={() => setShowAddressForm(true)}
+            showAddressForm={showAddressForm}
           />
         </Elements>
       ) : (
@@ -169,9 +170,10 @@ const Checkout: FC<Props> = () => {
 };
 
 const CheckoutFormWithStripe: FC<{
-  showAddressForm: () => void;
+  setShowAddressForm: () => void;
+  showAddressForm: boolean;
   clientSecret: string;
-}> = ({ showAddressForm, clientSecret }) => {
+}> = ({ showAddressForm, setShowAddressForm, clientSecret }) => {
   const stripe = useStripe();
   const elements = useElements();
   const formState = useForm(INITIAL_STATE);
@@ -184,9 +186,13 @@ const CheckoutFormWithStripe: FC<{
   const orderPlacedRef = useRef(false);
 
   useEffect(() => {
+    if (!showAddressForm) setTimeout(() => formState.validate(), 1000);
+  }, [showAddressForm]);
+
+  useEffect(() => {
     formState.setValues((prev) => ({
       ...prev,
-      addressId: shippingAddresses[0].id,
+      addressId: shippingAddresses[0]?.id,
     }));
   }, [shippingAddresses]);
 
@@ -306,7 +312,7 @@ const CheckoutFormWithStripe: FC<{
           required
           formState={formState}
         />
-        <Selectable onClick={showAddressForm}>New address</Selectable>
+        <Selectable onClick={setShowAddressForm}>New address</Selectable>
         <Input
           type="textarea"
           name="notes"
