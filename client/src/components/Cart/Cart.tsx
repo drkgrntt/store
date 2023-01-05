@@ -18,6 +18,9 @@ const Cart: FC<Props> = ({ isCheckout }) => {
   const {
     cart,
     removeFromCart,
+    subTotal,
+    shipping,
+    tax,
     totalCost,
     uCart,
     lsCart,
@@ -134,7 +137,12 @@ const Cart: FC<Props> = ({ isCheckout }) => {
             </li>
           );
         })}
-        Total: {priceToCurrency(totalCost)}
+        <ul>
+          <li>Subtotal: {priceToCurrency(subTotal)}</li>
+          <li>Shipping: {priceToCurrency(shipping)}</li>
+          <li>Tax: {priceToCurrency(tax)}</li>
+        </ul>
+        <p>Total: {priceToCurrency(totalCost)}</p>
       </ul>
       {!isCheckout && !!totalQuantity && (
         <Button onClick={() => openModal("checkout")}>Checkout</Button>

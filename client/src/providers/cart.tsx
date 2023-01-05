@@ -52,6 +52,9 @@ type CartContext = {
   removeFromCart: (product: Product) => Promise<void> | void;
   quantityInCart: (productId: string) => number;
   totalCost: number;
+  subTotal: number;
+  tax: number;
+  shipping: number;
   totalQuantity: number;
   uCart: UserProduct[];
   lsCart: UserProduct[];
@@ -66,6 +69,9 @@ export const cartContext = createContext<CartContext>({
   removeFromCart: async () => {},
   quantityInCart: () => 0,
   totalCost: 0,
+  subTotal: 0,
+  tax: 0,
+  shipping: 0,
   totalQuantity: 0,
   uCart: [],
   lsCart: [],
@@ -158,10 +164,16 @@ const CartProvider: FC<Props> = ({ children }) => {
   const quantityInCart = (productId: string) =>
     cart.find((item) => item.product.id === productId)?.count ?? 0;
 
-  const totalCost = cart.reduce(
+  const subTotal = cart.reduce(
     (total, item) => total + item.product.price * item.count,
     0
   );
+
+  const shipping = 0;
+
+  const tax = Math.floor(subTotal * 0.086);
+
+  const totalCost = subTotal + shipping + tax;
 
   const totalQuantity = cart.reduce((total, item) => total + item.count, 0);
 
@@ -196,6 +208,9 @@ const CartProvider: FC<Props> = ({ children }) => {
         removeFromCart,
         quantityInCart,
         totalCost,
+        subTotal,
+        tax,
+        shipping,
         totalQuantity,
         uCart,
         lsCart,

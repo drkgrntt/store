@@ -78,6 +78,24 @@ export class Order extends Model {
   notes: string;
 
   @Field()
+  @AllowNull(false)
+  @Default(0)
+  @Column
+  taxRate: number;
+
+  static currentTaxRate = 0.086;
+
+  @Field()
+  @AllowNull(false)
+  @Default(0)
+  @Column
+  shippingCost: number;
+
+  static currentShippingCost = 0;
+
+  @Field()
+  @Column
+  @Field()
   createdAt: Date;
 
   @Field()

@@ -55,6 +55,9 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
           quantity: "",
         },
       ],
+      subTotal: "",
+      shippingCost: "",
+      tax: "",
       totalCost: "",
     },
   },
@@ -75,6 +78,9 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
           quantity: "",
         },
       ],
+      subTotal: "",
+      shippingCost: "",
+      tax: "",
       totalCost: "",
     },
   },
@@ -97,6 +103,9 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
           quantity: "",
         },
       ],
+      subTotal: "",
+      shippingCost: "",
+      tax: "",
       totalCost: "",
     },
   },
@@ -130,13 +139,15 @@ export const parseEmail = <Variables extends EmailTemplateVariables>(
         return (
           current +
           Object.keys(vars).reduce((curr, k) => {
-            return curr.replace("{{" + k + "}}", vars[k]);
+            const replace = new RegExp("{{" + k + "}}", "g");
+            return curr.replace(replace, vars[k]);
           }, partial)
         );
       }, "");
     }
 
-    return currentHtml.replace("{{" + key + "}}", value);
+    const replace = new RegExp("{{" + key + "}}", "g");
+    return currentHtml.replace(replace, value);
   }, html);
 
   return parsedHtml;

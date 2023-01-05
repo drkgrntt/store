@@ -103,7 +103,7 @@ export class OrderResolver {
   }
 
   @FieldResolver(() => Number)
-  async totalCost(@Root() order: Order): Promise<number> {
+  async subTotal(@Root() order: Order): Promise<number> {
     if (!order.orderedProducts?.length) {
       order.orderedProducts = await OrderProduct.findAll({
         where: { orderId: order.id },
@@ -113,6 +113,14 @@ export class OrderResolver {
     return order.orderedProducts.reduce((total, orderedProduct) => {
       return total + orderedProduct.price * orderedProduct.count;
     }, 0);
+  }
+
+  @FieldResolver(() => Number)
+  async totalCost(@Root() order: Order): Promise<number> {
+    const subTotal = await this.subTotal(order);
+    const { shippingCost, taxRate } = order;
+    const tax = Math.floor(subTotal * taxRate);
+    return subTotal + shippingCost + tax;
   }
 
   @Query(() => OrderPage)
@@ -187,7 +195,7 @@ export class OrderResolver {
       where: { userId: me.id },
       include: Product,
     });
-    const description = cart.reduce((current, item) => {
+    let description = cart.reduce((current, item) => {
       return (
         current +
         `${item.product.title} - $${(item.product.price / 100).toFixed(2)} x${
@@ -195,6 +203,16 @@ export class OrderResolver {
         } \n`
       );
     }, "");
+    description += `Shipping - $${(Order.currentShippingCost / 100).toFixed(
+      2
+    )} \n`;
+    const subTotal = cart.reduce(
+      (st, item) => st + item.product.price * item.count,
+      0
+    );
+    description += `Tax - $${(
+      Math.floor(Order.currentTaxRate * subTotal) / 100
+    ).toFixed(2)} \n`;
 
     const config: Stripe.StripeConfig = { apiVersion: "2022-08-01" };
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, config);
@@ -267,7 +285,14 @@ export class OrderResolver {
       const [paymentIntentId] = clientSecret.split("_secret");
 
       let order = await Order.create(
-        { addressId, userId: me.id, paymentIntentId, notes },
+        {
+          addressId,
+          userId: me.id,
+          paymentIntentId,
+          notes,
+          taxRate: Order.currentTaxRate,
+          shippingCost: Order.currentShippingCost,
+        },
         { transaction }
       );
 
@@ -337,12 +362,12 @@ export class OrderResolver {
             cost: "$" + (op.price / 100).toFixed(2),
             quantity: op.count.toString(),
           })),
-          totalCost: (
-            order.orderedProducts.reduce(
-              (total, op) => total + op.price * op.count,
-              0
-            ) / 100
+          subTotal: ((await this.subTotal(order)) / 100).toFixed(2),
+          shippingCost: (order.shippingCost / 100).toFixed(2),
+          tax: (
+            Math.floor((await this.subTotal(order)) * order.taxRate) / 100
           ).toFixed(2),
+          totalCost: ((await this.totalCost(order)) / 100).toFixed(2),
         };
 
         await sendEmail(ADMIN_NEW_ORDER, emailVariables);
@@ -398,7 +423,11 @@ export class OrderResolver {
 
     if (shouldSendShippedEmail) {
       const emailVariables = {
-        shippedDate: new Date(shippedOn as Date).toLocaleDateString(),
+        shippedDate: new Date(
+          new Date(shippedOn as Date).setMinutes(
+            (shippedOn as Date).getTimezoneOffset()
+          )
+        ).toLocaleDateString(), // new Date(shippedOn as Date).toLocaleDateString(),
         trackingNumber: trackingNumber as string,
         orderId: order.id,
         address: addressToString(order.address),
@@ -413,12 +442,12 @@ export class OrderResolver {
           cost: "$" + (op.price / 100).toFixed(2),
           quantity: op.count.toString(),
         })),
-        totalCost: (
-          order.orderedProducts.reduce(
-            (total, op) => total + op.price * op.count,
-            0
-          ) / 100
+        subTotal: ((await this.subTotal(order)) / 100).toFixed(2),
+        shippingCost: (order.shippingCost / 100).toFixed(2),
+        tax: (
+          Math.floor((await this.subTotal(order)) * order.taxRate) / 100
         ).toFixed(2),
+        totalCost: ((await this.totalCost(order)) / 100).toFixed(2),
       };
 
       await sendEmail(ORDER_HAS_SHIPPED, emailVariables, order.user.email);

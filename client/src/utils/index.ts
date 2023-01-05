@@ -94,3 +94,9 @@ export const getMobileOperatingSystem = (): MobileOS | null => {
       return null;
   }
 };
+
+export const getLocalDateString = (date: Date) => {
+  return new Date(
+    new Date(date).setMinutes(date.getTimezoneOffset())
+  ).toLocaleDateString();
+};

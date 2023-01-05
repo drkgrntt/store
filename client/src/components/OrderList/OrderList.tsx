@@ -5,7 +5,7 @@ import { useAddresses } from "../../hooks/useAddresses";
 import { useModal } from "../../hooks/useModal";
 import { useUser } from "../../hooks/useUser";
 import { Order } from "../../types/Order";
-import { priceToCurrency } from "../../utils";
+import { getLocalDateString, priceToCurrency } from "../../utils";
 import styles from "./OrderList.module.scss";
 
 interface Props {
@@ -21,6 +21,14 @@ const OrderList: FC<Props> = ({ orders, isEditable }) => {
   return (
     <div className={styles.container}>
       {orders.map((order) => {
+        const shippedOn = order.shippedOn?.toLocaleDateString
+          ? order.shippedOn
+          : new Date(order.shippedOn as Date);
+
+        const completedOn = order.completedOn?.toLocaleDateString
+          ? order.completedOn
+          : new Date(order.completedOn as Date);
+
         return (
           <details key={order.id} className={styles.item}>
             <summary>
@@ -55,24 +63,23 @@ const OrderList: FC<Props> = ({ orders, isEditable }) => {
               )}
               <li>
                 {!order.isShipped && "Not "}Shipped
-                {order.isShipped &&
-                  ` ${
-                    order.shippedOn?.toLocaleDateString
-                      ? order.shippedOn?.toLocaleDateString()
-                      : new Date(order.shippedOn as Date).toLocaleDateString()
-                  }`}
+                {order.isShipped && ` ${getLocalDateString(shippedOn)}`}
               </li>
               {order.trackingNumber && (
-                <li>Tracking Number: {order.trackingNumber}</li>
+                <li>
+                  Tracking Number:{" "}
+                  <a
+                    title="USPS Tracking"
+                    target="_blank"
+                    href={`https://tools.usps.com/go/TrackConfirmAction?tRef=fullpage&tLc=2&text28777=&tLabels=${order.trackingNumber}%2C&tABt=false`}
+                  >
+                    {order.trackingNumber}
+                  </a>
+                </li>
               )}
               <li>
                 {!order.isComplete && "Not "}Completed
-                {order.isComplete &&
-                  ` ${
-                    order.completedOn?.toLocaleDateString
-                      ? order.completedOn?.toLocaleDateString()
-                      : new Date(order.completedOn as Date).toLocaleDateString()
-                  }`}
+                {order.isComplete && ` ${getLocalDateString(completedOn)}`}
               </li>
               {order.orderedProducts.map((orderedProduct) => {
                 return (

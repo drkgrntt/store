@@ -2,17 +2,23 @@
 
 <p>
   Your order with order id {{orderId}} was shipped on {{shippedDate}}. You can
-  track it with USPS using the tracking number {{trackingNumber}}. You can view
-  your order on your
+  track it with USPS using the tracking number
+  <a
+    href="https://tools.usps.com/go/TrackConfirmAction?tRef=fullpage&tLc=2&text28777=&tLabels={{trackingNumber}}%2C&tABt=false"
+    >{{trackingNumber}}</a
+  >. You can view your order on your
   <a href="https://www.midwestdaisy.com/profile">profile page</a>.
 </p>
 
 <p>Below is a summary of your order:</p>
 {{productList}}
 
+<p>Subtotal: ${{subTotal}}</p>
+<p>Shipping: ${{shippingCost}}</p>
+<p>Tax: ${{tax}}</p>
 <p>Total: ${{totalCost}}</p>
 
-<p>Your Notes:</p>
+<p>Order Notes:</p>
 <blockquote>{{notes}}</blockquote>
 
 <p>
