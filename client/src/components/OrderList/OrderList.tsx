@@ -71,6 +71,7 @@ const OrderList: FC<Props> = ({ orders, isEditable }) => {
                   <a
                     title="USPS Tracking"
                     target="_blank"
+                    rel="noreferrer"
                     href={`https://tools.usps.com/go/TrackConfirmAction?tRef=fullpage&tLc=2&text28777=&tLabels=${order.trackingNumber}%2C&tABt=false`}
                   >
                     {order.trackingNumber}
