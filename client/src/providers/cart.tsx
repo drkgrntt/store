@@ -171,7 +171,7 @@ const CartProvider: FC<Props> = ({ children }) => {
 
   const shipping = 0;
 
-  const tax = Math.floor(subTotal * 0.086);
+  const tax = Math.floor(subTotal * 0.08725);
 
   const totalCost = subTotal + shipping + tax;
 

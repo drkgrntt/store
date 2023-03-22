@@ -83,7 +83,7 @@ export class Order extends Model {
   @Column
   taxRate: number;
 
-  static currentTaxRate = 0.086;
+  static currentTaxRate = 0.08725;
 
   @Field()
   @AllowNull(false)
