@@ -76,16 +76,17 @@ export const ProductList: FC<Props> = ({ adminView }) => {
   const { query, replace, asPath } = useRouter();
   const [isDropdown, setIsDropdown] = useState(true);
 
-  const { data, loading, fetchMore, variables, refetch } = useQuery<{
-    products: Paginated<Product>;
-  }>(PRODUCTS, {
-    variables: {
-      // perPage: 1,
-      search: query.search,
-      active: !adminView ? true : undefined,
-      tagSearch: isDropdown,
-    },
-  });
+  const { data, loading, fetchMore, variables, refetch, previousData } =
+    useQuery<{
+      products: Paginated<Product>;
+    }>(PRODUCTS, {
+      variables: {
+        // perPage: 1,
+        search: query.search,
+        active: !adminView ? true : undefined,
+        tagSearch: isDropdown,
+      },
+    });
   const { data: { categories = [] } = {} } = useQuery<{
     categories: Category[];
   }>(CATEGORIES);
@@ -139,7 +140,11 @@ export const ProductList: FC<Props> = ({ adminView }) => {
         className={styles.search}
         value={query.search as string}
         onChange={(event) =>
-          replace({ query: { ...query, search: event.target.value || [] } })
+          replace(
+            { query: { ...query, search: event.target.value || [] } },
+            undefined,
+            { scroll: false }
+          )
         }
         name="search"
         label="Search"
@@ -156,7 +161,7 @@ export const ProductList: FC<Props> = ({ adminView }) => {
         }}
       />
       <div className={styles.products}>
-        {data?.products.edges.map((product) => (
+        {(data || previousData)?.products.edges.map((product) => (
           <ProductListItem key={product.id} product={product} />
         ))}
       </div>
