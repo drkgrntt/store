@@ -120,7 +120,7 @@ export const ProductList: FC<Props> = ({ adminView }) => {
     numberOfItems: (data?.products.edges.length ?? 0).toString(),
     itemListElement: data?.products.edges.map((product) => ({
       "@type": "Product",
-      image: (product.images.find((i) => i.primary) ?? product.images[0]).url,
+      image: (product.images.find((i) => i.primary) ?? product.images[0])?.url,
       url: `${process.env.NEXT_PUBLIC_APP_URL}?modal=detail&modal-params=id&id=${product.id}`,
       name: product.title,
       offers: {
