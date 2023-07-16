@@ -7,13 +7,12 @@ import { useUser } from "../../hooks/useUser";
 import { useNotification } from "../../providers/notification";
 import { Content } from "../../types/Content";
 import { Category } from "../../types/Product";
-import Button from "../Button";
+import Button, { ClickStateRef } from "../Button";
 import CategorySearch from "../CategorySearch";
 import Input from "../Input";
 import styles from "./ContentForm.module.scss";
 import categoryStyles from "../CategorySearch/CategorySearch.module.scss";
 import Selectable from "../Selectable";
-import { ClickStateRef } from "../Button/Button";
 
 interface Props {}
 

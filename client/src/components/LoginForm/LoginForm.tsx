@@ -1,14 +1,13 @@
 import { gql, useMutation } from "@apollo/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FC, FormEvent, useRef, useState } from "react";
+import { FC, FormEvent, useRef } from "react";
 import { useForm } from "../../hooks/useForm";
 import { useModal } from "../../hooks/useModal";
 import { useUser } from "../../hooks/useUser";
 import { useNotification } from "../../providers/notification";
 import { User } from "../../types/User";
-import Button from "../Button";
-import { ClickStateRef } from "../Button/Button";
+import Button, { ClickStateRef } from "../Button";
 import Input from "../Input";
 import styles from "./LoginForm.module.scss";
 

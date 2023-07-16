@@ -2,14 +2,13 @@ import { gql, useMutation } from "@apollo/client";
 import { FC, FormEvent, useRef } from "react";
 import { useForm } from "../../hooks/useForm";
 import { Address, AddressType } from "../../types/Address";
-import Button from "../Button";
+import Button, { ClickStateRef } from "../Button";
 import Input from "../Input";
 import Selectable from "../Selectable";
 import { State, City } from "country-state-city";
 import styles from "./AddressForm.module.scss";
 import { useNotification } from "../../providers/notification";
 import { useAddresses } from "../../hooks/useAddresses";
-import { ClickStateRef } from "../Button/Button";
 
 interface Props {
   address?: Address;

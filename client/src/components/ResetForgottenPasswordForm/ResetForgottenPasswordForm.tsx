@@ -4,8 +4,7 @@ import { FC, FormEvent, useRef } from "react";
 import { useForm, Validations } from "../../hooks/useForm";
 import { useModal } from "../../hooks/useModal";
 import { useNotification } from "../../providers/notification";
-import Button from "../Button";
-import { ClickStateRef } from "../Button/Button";
+import Button, { ClickStateRef } from "../Button";
 import Input from "../Input";
 import styles from "./ResetForgottenPasswordForm.module.scss";
 

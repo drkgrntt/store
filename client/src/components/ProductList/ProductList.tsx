@@ -13,10 +13,9 @@ import { useModal } from "../../hooks/useModal";
 import { useCart } from "../../providers/cart";
 import { useRouter } from "next/router";
 import { Paginated } from "../../types/util";
-import Button from "../Button";
+import Button, { ClickStateRef } from "../Button";
 import Input from "../Input";
 import { useDebounce } from "../../hooks/useDebounce";
-import { ClickStateRef } from "../Button/Button";
 
 interface Props {
   adminView?: boolean;

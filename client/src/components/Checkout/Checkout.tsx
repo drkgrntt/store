@@ -5,7 +5,7 @@ import { useAddresses } from "../../hooks/useAddresses";
 import { useForm } from "../../hooks/useForm";
 import { useIsAuth } from "../../hooks/useIsAuth";
 import { useUser } from "../../hooks/useUser";
-import Button from "../Button";
+import Button, { ClickStateRef } from "../Button";
 import Cart from "../Cart";
 import Input from "../Input";
 import Selectable from "../Selectable";
@@ -20,7 +20,6 @@ import Loader from "../Loader";
 import { useCart } from "../../providers/cart";
 import { useNotification } from "../../providers/notification";
 import styles from "./Checkout.module.scss";
-import { ClickStateRef } from "../Button/Button";
 import dynamic from "next/dynamic";
 const AddressForm = dynamic(() => import("../AddressForm"));
 

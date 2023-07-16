@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { useForm } from "../../hooks/useForm";
-import Button from "../Button";
+import Button, { ClickStateRef } from "../Button";
 import Input from "../Input";
 import Image from "next/image";
 import { useUser } from "../../hooks/useUser";
@@ -21,7 +21,6 @@ import CategorySearch from "../CategorySearch";
 import Selectable from "../Selectable";
 import styles from "./ProductForm.module.scss";
 import categoryStyles from "../CategorySearch/CategorySearch.module.scss";
-import { ClickStateRef } from "../Button/Button";
 import Loader from "../Loader";
 import { FaTimes } from "react-icons/fa";
 
