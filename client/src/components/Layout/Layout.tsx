@@ -28,7 +28,6 @@ interface Props {
 
 const Layout: FC<Props> = ({ children }) => {
   const { closeModal } = useModal();
-  const { reFetchObservableQueries } = useApolloClient();
   const { user } = useUser();
   const { query } = useRouter();
 
@@ -109,7 +108,6 @@ const Layout: FC<Props> = ({ children }) => {
           <ProductForm
             onSuccess={() => {
               closeModal();
-              reFetchObservableQueries();
             }}
           />
         </Modal>
