@@ -12,7 +12,6 @@ import LoginForm from "../LoginForm";
 import RegisterForm from "../RegisterForm";
 import ForgotPasswordForm from "../ForgotPasswordForm";
 import Checkout from "../Checkout";
-import { useApolloClient } from "@apollo/client";
 import { useUser } from "../../hooks/useUser";
 import ResetForgottenPasswordForm from "../ResetForgottenPasswordForm";
 import About from "../About";
