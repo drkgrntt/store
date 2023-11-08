@@ -41,7 +41,7 @@ const About: FC<Props> = () => {
         width={500}
         className={styles.image}
         alt="Ceanne"
-        src="/images/ceanne.jpg"
+        src="/images/ceanne-headshot-2023.jpg"
       />
       <div className={styles.body}>{content.detail}</div>
     </div>
