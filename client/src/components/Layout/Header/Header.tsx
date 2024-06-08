@@ -4,7 +4,7 @@ import styles from "./Header.module.scss";
 import Link from "next/link";
 import { combineClasses } from "../../../utils";
 
-interface Props {}
+interface Props { }
 
 const Header: FC<Props> = () => {
   const headerRef = useRef<HTMLElement>();
@@ -35,7 +35,7 @@ const Header: FC<Props> = () => {
       className={styles.header}
     >
       <Image
-        src="/images/st-pats-banner.jpg"
+        src="/images/summer-banner.jpg"
         width={2000}
         height={800}
         alt="Banner image"
