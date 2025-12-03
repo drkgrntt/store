@@ -7,7 +7,7 @@ import Button, { ClickStateRef } from "../Button";
 import Input from "../Input";
 import styles from "./ContactForm.module.scss";
 
-interface Props {}
+interface Props { }
 
 const SEND_MESSAGE = gql`
   mutation SendMessage($email: String!, $message: String!) {
@@ -18,10 +18,16 @@ const SEND_MESSAGE = gql`
 const INITIAL_STATE = {
   email: "",
   message: "",
+  hp: "",
 };
 
 const ContactForm: FC<Props> = () => {
-  const formState = useForm(INITIAL_STATE);
+  const formState = useForm(INITIAL_STATE, {
+    hp: {
+      test: (value) => !value,
+      message: "No spam.",
+    }
+  });
   const [sendMessage] = useMutation(SEND_MESSAGE);
   const { closeModal } = useModal();
   const { createToastNotification, createErrorNotification } =
@@ -36,7 +42,7 @@ const ContactForm: FC<Props> = () => {
       return;
     }
 
-    const { email, message } = formState.values;
+    const { email, message, hp } = formState.values;
     sendMessage({
       variables: { email, message },
       onCompleted({ sendMessage }) {
@@ -86,6 +92,11 @@ const ContactForm: FC<Props> = () => {
         label="Message"
         name="message"
         required
+      />
+      <Input
+        formState={formState}
+        type="hidden"
+        name="hp"
       />
       <Button
         type="submit"
