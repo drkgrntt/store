@@ -1,4 +1,5 @@
 import { gql, useMutation } from "@apollo/client";
+import { isbot } from "isbot";
 import { FC, FormEvent, useRef } from "react";
 import { useForm } from "../../hooks/useForm";
 import { useModal } from "../../hooks/useModal";
@@ -36,13 +37,18 @@ const ContactForm: FC<Props> = () => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (isbot(navigator.userAgent)) {
+      return;
+    }
+
     const isValid = formState.validate();
     if (!isValid) {
       enableButtonRef.current?.();
       return;
     }
 
-    const { email, message, hp } = formState.values;
+    const { email, message } = formState.values;
     sendMessage({
       variables: { email, message },
       onCompleted({ sendMessage }) {
