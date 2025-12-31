@@ -5,7 +5,7 @@ import { Content } from "../../types/Content";
 import Loader from "../Loader";
 import styles from "./About.module.scss";
 
-interface Props {}
+interface Props { }
 
 const CONTENTS = gql`
   query Contents($search: String) {
@@ -41,7 +41,7 @@ const About: FC<Props> = () => {
         width={500}
         className={styles.image}
         alt="Ceanne"
-        src="/images/ceanne-headshot-2023.jpg"
+        src="/images/ceanne-headshot-2025.jpg"
       />
       <div className={styles.body}>{content.detail}</div>
     </div>
