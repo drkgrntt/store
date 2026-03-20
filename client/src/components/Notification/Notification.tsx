@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ToastNotification } from "../../providers/notification";
 import styles from "./Notification.module.scss";
 import { combineClasses } from "../../utils";
+import { optimizeImage } from '../../utils/optimizeImage'
 
 interface Props {
   notification?: ToastNotification;
@@ -20,7 +21,7 @@ const Notification: FC<Props> = ({ notification }) => {
       {notification?.icon && (
         <Image
           className={styles.image}
-          src={notification.icon}
+          src={optimizeImage(notification.icon)}
           alt={notification.title}
           height={100}
           width={100}

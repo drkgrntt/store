@@ -9,6 +9,20 @@
   border: none;
 }
 
+.foreground {
+  width: 95vw;
+  max-width: 50rem;
+  &.wide {
+    max-width: 80rem;
+  }
+  max-height: 95vh;
+  min-height: 35rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .container {
   background-color: var(--white);
   width: 90vw;
@@ -18,12 +32,14 @@
   }
   max-height: 90vh;
   min-height: 25rem;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   overflow-y: scroll;
   padding: 1rem;
+
+  /* position: absolute; */
+  /* top: 50%; */
+  /* left: 50%; */
+  /* transform: translate(-50%, -50%); */
+  margin: 0 auto;
 
   padding-bottom: 4rem;
   @media (min-width: 40rem) {
@@ -33,6 +49,6 @@
 
 .close {
   position: absolute;
-  right: 1rem;
+  right: calc(1rem + 5vw);
   z-index: var(--z-front);
 }

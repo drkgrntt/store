@@ -40,14 +40,18 @@ const Modal: FC<Props> = ({ name, children, wide, className = "" }) => {
       open={query.modal === name}
       onMouseDown={handleOutsideClick}
     >
-      <div
-        className={combineClasses(styles.container, wide ? styles.wide : "")}
+      <div 
         onMouseDown={handleInsideClick}
+        className={combineClasses(styles.foreground, wide ? styles.wide : "")}
       >
-        <Selectable onClick={closeModal} className={styles.close}>
-          <FaTimes />
-        </Selectable>
-        <div className={className}>{children}</div>
+        <div
+          className={combineClasses(styles.container, wide ? styles.wide : "")}
+        >
+          <Selectable onClick={closeModal} className={styles.close}>
+            <FaTimes />
+          </Selectable>
+          <div className={className}>{children}</div>
+        </div>
       </div>
     </dialog>
   );

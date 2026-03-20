@@ -23,6 +23,7 @@ import styles from "./ProductForm.module.scss";
 import categoryStyles from "../CategorySearch/CategorySearch.module.scss";
 import Loader from "../Loader";
 import { FaTimes } from "react-icons/fa";
+import { optimizeImage } from '../../utils/optimizeImage'
 
 interface Props {
   onSuccess?: () => void;
@@ -522,7 +523,7 @@ const ProductForm: FC<Props> = ({ onSuccess = () => {} }) => {
                     )}
                     <Image
                       alt="An image from the store folder of your Cloudinary account."
-                      src={url}
+                      src={optimizeImage(url)}
                       height={120}
                       width={120}
                       className={styles.image}

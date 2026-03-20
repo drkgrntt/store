@@ -9,6 +9,7 @@ import { priceToCurrency, range } from "../../utils";
 import Button from "../Button";
 import Selectable from "../Selectable";
 import styles from "./Cart.module.scss";
+import { optimizeImage } from '../../utils/optimizeImage'
 
 interface Props {
   isCheckout?: boolean;
@@ -121,7 +122,7 @@ const Cart: FC<Props> = ({ isCheckout }) => {
                       <Image
                         height={120}
                         width={120}
-                        src={image.url}
+                        src={optimizeImage(image.url)}
                         alt={image.title ?? item.product.title}
                         className={styles.image}
                       />

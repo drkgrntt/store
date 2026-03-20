@@ -15,6 +15,7 @@ import Link from "next/link";
 import PageHead from "../PageHead";
 import { FaShareAlt } from "react-icons/fa";
 import { useNotification } from "../../providers/notification";
+import { optimizeImage } from '../../utils/optimizeImage'
 
 interface Props {}
 
@@ -163,7 +164,7 @@ const ProductDetail: FC<Props> = () => {
               scroll={false}
             >
               <Image
-                src={selectedImage.url}
+                src={optimizeImage(selectedImage.url)}
                 alt="Selected product image"
                 height={500}
                 width={500}
@@ -178,7 +179,7 @@ const ProductDetail: FC<Props> = () => {
                 onClick={() => setSelectedImage(image)}
               >
                 <Image
-                  src={image.url}
+                  src={optimizeImage(image.url)}
                   alt="Other product image"
                   height={100}
                   width={100}
@@ -224,12 +225,12 @@ const ProductDetail: FC<Props> = () => {
                     width={100}
                     height={100}
                     className={styles.relatedProductImage}
-                    src={
+                    src={optimizeImage(
                       (
                         relatedProduct.images.find((image) => image.primary) ??
                         relatedProduct.images[0]
                       )?.url
-                    }
+                    )}
                     alt={relatedProduct.title}
                   />
                 </Link>

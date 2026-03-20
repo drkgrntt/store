@@ -4,6 +4,7 @@ import Image from "next/image";
 import styles from "./ImageDisplay.module.scss";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import Link from "next/link";
+import { optimizeImage } from '../../utils/optimizeImage'
 
 interface Props {}
 
@@ -16,7 +17,7 @@ const ImageDisplay: FC<Props> = () => {
         <FaExternalLinkAlt className={styles.icon} />
       </Link>
       <Image
-        src={query.src as string}
+        src={optimizeImage(query.src as string)}
         alt={query.alt as string}
         height={600}
         width={1200}

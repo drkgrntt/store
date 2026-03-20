@@ -16,6 +16,7 @@ import { Paginated } from "../../types/util";
 import Button, { ClickStateRef } from "../Button";
 import Input from "../Input";
 import { useDebounce } from "../../hooks/useDebounce";
+import { optimizeImage } from '../../utils/optimizeImage'
 
 interface Props {
   adminView?: boolean;
@@ -249,7 +250,7 @@ const ProductListItem: FC<{ product: Product }> = ({ product }) => {
                 }
                 width={600}
                 height={600}
-                src={selectedImage.url}
+                src={optimizeImage(selectedImage.url)}
                 className={combineClasses(
                   styles.selectedImage,
                   selectedImage.id === image.id ? "" : styles.hidden
