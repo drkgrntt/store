@@ -35,7 +35,7 @@ const Header: FC<Props> = () => {
       className={styles.header}
     >
       <Image
-        src="/images/spring-banner.jpg"
+        src="/images/summer-banner.jpg"
         width={2000}
         height={800}
         alt="Banner image"
