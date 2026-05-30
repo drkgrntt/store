@@ -59,6 +59,7 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
       shippingCost: "",
       tax: "",
       totalCost: "",
+      localDelivery: "",
     },
   },
   [CUSTOMER_NEW_ORDER]: {
@@ -82,6 +83,7 @@ const EMAIL_TEMPLATES: Record<string, EmailTemplate> = {
       shippingCost: "",
       tax: "",
       totalCost: "",
+      localDelivery: false,
     },
   },
   [ORDER_HAS_SHIPPED]: {

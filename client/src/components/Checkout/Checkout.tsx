@@ -23,7 +23,7 @@ import styles from "./Checkout.module.scss";
 import dynamic from "next/dynamic";
 const AddressForm = dynamic(() => import("../AddressForm"));
 
-interface Props {}
+interface Props { }
 
 const INITIAL_STATE = {
   addressId: "",
@@ -36,12 +36,14 @@ const PLACE_ORDER = gql`
     $clientSecret: String!
     $dryRun: Boolean
     $notes: String
+    $localDelivery: Boolean
   ) {
     placeOrder(
       addressId: $addressId
       clientSecret: $clientSecret
       dryRun: $dryRun
       notes: $notes
+      localDelivery: $localDelivery
     ) {
       id
       userId
@@ -183,6 +185,7 @@ const CheckoutFormWithStripe: FC<{
     useNotification();
   const enableButtonRef = useRef<ClickStateRef>();
   const orderPlacedRef = useRef(false);
+  const { isLocalDelivery } = useCart();
 
   useEffect(() => {
     if (!showAddressForm) setTimeout(() => formState.validate(), 1000);
@@ -204,6 +207,7 @@ const CheckoutFormWithStripe: FC<{
         addressId: query["address-id"],
         notes: decodeURIComponent(query["notes"] as string),
         clientSecret: query.payment_intent_client_secret,
+        localDelivery: isLocalDelivery,
       },
       onCompleted() {
         createToastNotification({
@@ -245,6 +249,7 @@ const CheckoutFormWithStripe: FC<{
         addressId: formState.values.addressId,
         clientSecret,
         dryRun: true,
+        localDelivery: isLocalDelivery,
       },
       async onCompleted() {
         const result = await stripe.confirmPayment({
@@ -253,8 +258,7 @@ const CheckoutFormWithStripe: FC<{
             return_url:
               process.env.NEXT_PUBLIC_APP_URL +
               asPath +
-              `&modal-params=address-id&address-id=${
-                formState.values.addressId
+              `&modal-params=address-id&address-id=${formState.values.addressId
               }&notes=${encodeURIComponent(formState.values.notes)}`,
           },
         });

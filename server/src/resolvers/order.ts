@@ -198,8 +198,7 @@ export class OrderResolver {
     let description = cart.reduce((current, item) => {
       return (
         current +
-        `${item.product.title} - $${(item.product.price / 100).toFixed(2)} x${
-          item.count
+        `${item.product.title} - $${(item.product.price / 100).toFixed(2)} x${item.count
         } \n`
       );
     }, "");
@@ -268,7 +267,8 @@ export class OrderResolver {
     @Arg("addressId") addressId: string,
     @Arg("clientSecret") clientSecret: string,
     @Arg("notes", { nullable: true }) notes?: string,
-    @Arg("dryRun", { nullable: true }) dryRun?: boolean
+    @Arg("dryRun", { nullable: true }) dryRun?: boolean,
+    @Arg("localDelivery", { nullable: true }) localDelivery?: boolean
   ): Promise<Order> {
     const transaction = await sequelize.transaction();
 
@@ -284,6 +284,8 @@ export class OrderResolver {
 
       const [paymentIntentId] = clientSecret.split("_secret");
 
+      const shippingCost = localDelivery ? 0 : Order.currentShippingCost;
+
       let order = await Order.create(
         {
           addressId,
@@ -291,7 +293,7 @@ export class OrderResolver {
           paymentIntentId,
           notes,
           taxRate: Order.currentTaxRate,
-          shippingCost: Order.currentShippingCost,
+          shippingCost,
         },
         { transaction }
       );
@@ -364,6 +366,7 @@ export class OrderResolver {
           })),
           subTotal: ((await this.subTotal(order)) / 100).toFixed(2),
           shippingCost: (order.shippingCost / 100).toFixed(2),
+          localDelivery: localDelivery ? "yes" : "no",
           tax: (
             Math.floor((await this.subTotal(order)) * order.taxRate) / 100
           ).toFixed(2),
@@ -378,7 +381,7 @@ export class OrderResolver {
     } catch (err) {
       try {
         await transaction.rollback();
-      } catch {}
+      } catch { }
       throw err;
     }
   }

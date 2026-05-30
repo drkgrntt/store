@@ -10,6 +10,7 @@ import Button from "../Button";
 import Selectable from "../Selectable";
 import styles from "./Cart.module.scss";
 import { optimizeImage } from '../../utils/optimizeImage'
+import Input from "../Input";
 
 interface Props {
   isCheckout?: boolean;
@@ -29,6 +30,8 @@ const Cart: FC<Props> = ({ isCheckout }) => {
     clearUCart,
     addLsCartToUCart,
     totalQuantity,
+    isLocalDelivery,
+    setIsLocalDelivery,
   } = useCart();
   const { user } = useUser();
   const { openModal, modalHref } = useModal();
@@ -140,7 +143,19 @@ const Cart: FC<Props> = ({ isCheckout }) => {
         })}
         <ul>
           <li>Subtotal: {priceToCurrency(subTotal)}</li>
-          <li>Shipping: {priceToCurrency(shipping)}</li>
+          <li>
+            Shipping: {priceToCurrency(shipping)} (flat)
+            <br />
+            <span className={styles.localDelivery}>
+              <input
+                type="checkbox"
+                onChange={(e) => setIsLocalDelivery(e.target.checked)}
+                checked={isLocalDelivery}
+                id="local-delivery"
+              />
+              <label htmlFor="local-delivery">Local Delivery</label>
+            </span>
+          </li>
           <li>Tax: {priceToCurrency(tax)}</li>
         </ul>
         <p>Total: {priceToCurrency(totalCost)}</p>

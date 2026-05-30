@@ -91,7 +91,7 @@ export class Order extends Model {
   @Column
   shippingCost: number;
 
-  static currentShippingCost = 0;
+  static currentShippingCost = 500;
 
   @Field()
   @Column

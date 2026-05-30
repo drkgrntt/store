@@ -1,4 +1,4 @@
-import { createContext, FC, ReactNode, useContext } from "react";
+import { createContext, FC, ReactNode, useContext, useState } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { Product } from "../types/Product";
 import { UserProduct } from "../types/User";
@@ -61,12 +61,14 @@ type CartContext = {
   addLsCartToUCart: () => Promise<void>;
   clearUCart: () => Promise<void>;
   clearLsCart: () => void;
+  isLocalDelivery: boolean;
+  setIsLocalDelivery: (value: boolean) => void;
 };
 
 export const cartContext = createContext<CartContext>({
   cart: [],
-  addToCart: async () => {},
-  removeFromCart: async () => {},
+  addToCart: async () => { },
+  removeFromCart: async () => { },
   quantityInCart: () => 0,
   totalCost: 0,
   subTotal: 0,
@@ -75,9 +77,11 @@ export const cartContext = createContext<CartContext>({
   totalQuantity: 0,
   uCart: [],
   lsCart: [],
-  addLsCartToUCart: async () => {},
-  clearUCart: async () => {},
-  clearLsCart: () => {},
+  addLsCartToUCart: async () => { },
+  clearUCart: async () => { },
+  clearLsCart: () => { },
+  isLocalDelivery: false,
+  setIsLocalDelivery: () => { },
 });
 
 interface Props {
@@ -169,7 +173,9 @@ const CartProvider: FC<Props> = ({ children }) => {
     0
   );
 
-  const shipping = 0;
+  const [isLocalDelivery, setIsLocalDelivery] = useState(false);
+  const staticShippingCost = 500
+  const shipping = isLocalDelivery ? 0 : staticShippingCost;
 
   const tax = Math.floor(subTotal * 0.08725);
 
@@ -211,6 +217,8 @@ const CartProvider: FC<Props> = ({ children }) => {
         subTotal,
         tax,
         shipping,
+        isLocalDelivery,
+        setIsLocalDelivery,
         totalQuantity,
         uCart,
         lsCart,
