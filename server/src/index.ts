@@ -85,7 +85,7 @@ const main = async () => {
   app.use(handleTokens);
 
   const server = new ApolloServer({
-    cache: "bounded",
+    persistedQueries: false,
     schema: await buildSchema({
       resolvers: [
         GeneralResolver,
