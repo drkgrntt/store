@@ -1,0 +1,13 @@
+services:
+  web:
+    build: .
+    container_name: store-server
+    restart: unless-stopped
+    # Postgres stays native on the host, so the container shares the host's
+    # network namespace instead of a bridge network. This means
+    # DATABASE_URL=postgres://...@localhost:5432/... keeps working
+    # unchanged, and nginx keeps proxying api.midwestdaisy.com to
+    # 127.0.0.1:5555.
+    network_mode: host
+    env_file:
+      - .env

@@ -1,0 +1,20 @@
+services:
+  web:
+    build:
+      context: .
+      # docker compose auto-loads ./.env in this directory for ${...}
+      # substitution below - that's the same .env the app already has,
+      # no new file needed. These become baked into the built JS bundle
+      # (see Dockerfile), unlike every other service's env_file: pattern.
+      args:
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_STRIPE_KEY: ${NEXT_PUBLIC_STRIPE_KEY}
+    container_name: store-client
+    restart: unless-stopped
+    # Host networking to match the rest of the fleet and nginx's
+    # proxy_pass expectation of a fixed host port (3000). This app has no
+    # native DB access to preserve (Next.js SSR calls the public
+    # api.midwestdaisy.com over HTTPS, not a localhost service), but
+    # staying consistent keeps the deploy pattern uniform.
+    network_mode: host
