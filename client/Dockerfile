@@ -1,5 +1,6 @@
 # ---- build stage ----
-FROM node:18-alpine AS build
+# node:20 (not 18, like the rest of the fleet): sharp requires Node >=20.9
+FROM node:20-alpine AS build
 WORKDIR /src
 
 COPY package.json yarn.lock ./
@@ -20,7 +21,7 @@ ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL \
 RUN yarn build
 
 # ---- runtime stage ----
-FROM node:18-alpine
+FROM node:20-alpine
 WORKDIR /app
 
 COPY --from=build /src/node_modules ./node_modules
