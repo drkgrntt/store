@@ -1,0 +1,74 @@
+# Ported from server/src/models/Product.ts, ProductImage.ts +
+# server/src/resolvers/product.ts.
+#
+# price/quantity are Float here, matching what an un-annotated `@Field()`
+# on a TS `number` actually infers to on the Node side (type-graphql's
+# default Number scalar is Float, never Int, unless explicitly annotated
+# `@Field(() => Int)`, which nothing here does) — the real client sends
+# `Float!` variables into these positions, and GraphQL requires an exact
+# scalar-type match for variables, so Int would reject every such request.
+# See internal/models/product.go for how this maps back to a plain Go int
+# at the resolver boundary.
+type ProductImage {
+  id: String!
+  url: String!
+  title: String
+  description: String
+  primary: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Product {
+  id: String!
+  title: String!
+  description: String!
+  price: Float!
+  quantity: Float!
+  isMadeToOrder: Boolean!
+  isActive: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  categories: [Category!]!
+  images: [ProductImage!]!
+  relatedProducts: [Product!]!
+}
+
+type ProductPage {
+  hasMore: Boolean!
+  nextPage: Float
+  edges: [Product!]!
+}
+
+extend type Query {
+  products(
+    page: Float
+    perPage: Float
+    active: Boolean
+    search: String
+    tagSearch: Boolean
+  ): ProductPage!
+  product(id: String!, active: Boolean): Product
+}
+
+extend type Mutation {
+  createProduct(
+    title: String!
+    description: String!
+    price: Float!
+    quantity: Float!
+    isMadeToOrder: Boolean!
+    isActive: Boolean!
+  ): Product!
+  updateProduct(
+    id: String!
+    title: String
+    description: String
+    price: Float
+    quantity: Float
+    isMadeToOrder: Boolean
+    isActive: Boolean
+  ): Product!
+  deleteProduct(id: String!): Boolean!
+}

@@ -1,0 +1,61 @@
+schema:
+  - internal/graph/schema/*.graphqls
+
+exec:
+  filename: internal/graph/generated.go
+  package: graph
+
+model:
+  filename: internal/graph/models_gen.go
+  package: graph
+
+resolver:
+  layout: follow-schema
+  dir: internal/graph
+  package: graph
+  filename_template: "{name}.resolvers.go"
+
+# We hand-write our own DB models (internal/models) and bind gqlgen's
+# generated GraphQL types directly to them wherever the shapes match,
+# instead of generating duplicate model_gen structs for every type.
+autobind:
+  - "storeapi/internal/models"
+
+models:
+  # No custom ID scalar: server/src (type-graphql) never annotates an id
+  # field with `() => ID`, so every "id" in the real schema — and every
+  # client query written against it — is a plain String, never ID. Binding
+  # the builtin ID scalar here would make gqlgen accept the `ID` type name
+  # in schema files, which we don't use, so it's omitted entirely.
+  #
+  # Named DateTime (not the more Go-idiomatic "Time") to match
+  # type-graphql's default scalar name for a TS `Date` field
+  # (GraphQLISODateTime) — the client's queries declare variables as
+  # `DateTime`, and GraphQL scalar names must match exactly.
+  DateTime:
+    model:
+      - github.com/99designs/gqlgen/graphql.Time
+  # These fields are FieldResolvers on the Node side (looked up on demand,
+  # not eager-loaded), not plain struct getters — even where the Go struct
+  # happens to have a same-named field (kept around for FK/cascade-delete
+  # tags), force gqlgen to generate a resolver instead of autobinding to it.
+  User:
+    fields:
+      tokens:
+        resolver: true
+  UserProduct:
+    fields:
+      product:
+        resolver: true
+  OrderProduct:
+    fields:
+      product:
+        resolver: true
+  Order:
+    fields:
+      user:
+        resolver: true
+      address:
+        resolver: true
+      orderedProducts:
+        resolver: true

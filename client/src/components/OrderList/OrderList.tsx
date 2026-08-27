@@ -21,21 +21,11 @@ const OrderList: FC<Props> = ({ orders, isEditable }) => {
   return (
     <div className={styles.container}>
       {orders.map((order) => {
-        const shippedOn = order.shippedOn?.toLocaleDateString
-          ? order.shippedOn
-          : new Date(order.shippedOn as Date);
-
-        const completedOn = order.completedOn?.toLocaleDateString
-          ? order.completedOn
-          : new Date(order.completedOn as Date);
-
         return (
           <details key={order.id} className={styles.item}>
             <summary>
-              {order.createdAt.toLocaleDateString
-                ? order.createdAt.toLocaleDateString()
-                : new Date(order.createdAt).toLocaleDateString()}{" "}
-              - {priceToCurrency(order.totalCost)}
+              {getLocalDateString(order.createdAt)} -{" "}
+              {priceToCurrency(order.totalCost)}
               <br />
               {addressToString(order.address)}
             </summary>
@@ -63,7 +53,7 @@ const OrderList: FC<Props> = ({ orders, isEditable }) => {
               )}
               <li>
                 {!order.isShipped && "Not "}Shipped
-                {order.isShipped && ` ${getLocalDateString(shippedOn)}`}
+                {order.shippedOn && ` ${getLocalDateString(order.shippedOn)}`}
               </li>
               {order.trackingNumber && (
                 <li>
@@ -80,7 +70,7 @@ const OrderList: FC<Props> = ({ orders, isEditable }) => {
               )}
               <li>
                 {!order.isComplete && "Not "}Completed
-                {order.isComplete && ` ${getLocalDateString(completedOn)}`}
+                {order.completedOn && ` ${getLocalDateString(order.completedOn)}`}
               </li>
               {order.orderedProducts.map((orderedProduct) => {
                 return (

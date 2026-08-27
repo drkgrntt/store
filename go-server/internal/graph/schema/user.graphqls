@@ -1,0 +1,28 @@
+# Ported from server/src/models/User.ts + server/src/resolvers/user.ts.
+#
+# Only the fields that are @Field()-annotated (or added by a @FieldResolver)
+# on the Node side are exposed here. `password` stays server-only, same as
+# there.
+type User {
+  id: String!
+  email: String!
+  isAdmin: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  tokens: [Token!]!
+  addresses: [Address!]!
+  billingAddress: Address
+  shippingAddresses: [Address!]!
+  orders: [Order!]!
+  cart: [UserProduct!]!
+}
+
+# Ported from server/src/models/Token.ts. Only id/value/userId/createdAt/
+# updatedAt carry @Field() on the Node side (expiry/issued are DB-only).
+type Token {
+  id: String!
+  value: String!
+  userId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

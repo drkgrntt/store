@@ -1,0 +1,5 @@
+# Ported from server/src/resolvers/general.ts. Analytic itself is never a
+# GraphQL type on the Node side (no @ObjectType()) — ping just writes one.
+extend type Mutation {
+  ping(path: String!): String!
+}

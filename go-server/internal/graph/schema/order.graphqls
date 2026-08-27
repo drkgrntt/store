@@ -1,0 +1,76 @@
+# Ported from server/src/models/Order.ts, OrderProduct.ts +
+# server/src/resolvers/order.ts.
+#
+# count/price/shippingCost/subTotal/totalCost are Float, matching what an
+# un-annotated `@Field()` on a TS `number` infers to on the Node side —
+# see product.graphqls for why this matters for real client compatibility,
+# not just wire fidelity.
+type OrderProduct {
+  id: String!
+  count: Float!
+  price: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  product: Product!
+}
+
+type Order {
+  id: String!
+  userId: String!
+  addressId: String
+  shippedOn: DateTime
+  completedOn: DateTime
+  trackingNumber: String
+  paymentIntentId: String!
+  notes: String
+  taxRate: Float!
+  shippingCost: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  user: User!
+  address: Address!
+  orderedProducts: [OrderProduct!]!
+  isShipped: Boolean!
+  isComplete: Boolean!
+  subTotal: Float!
+  totalCost: Float!
+}
+
+type OrderPage {
+  hasMore: Boolean!
+  nextPage: Float
+  edges: [Order!]!
+}
+
+extend type Query {
+  allOrders(
+    page: Float
+    perPage: Float
+    isShipped: Boolean
+    isComplete: Boolean
+  ): OrderPage!
+  orders: [Order!]!
+  order(id: String!): Order
+  clientSecret(totalCost: Float!, clientSecret: String): String
+  paymentSucceeded(clientSecret: String!): Boolean!
+}
+
+extend type Mutation {
+  placeOrder(
+    addressId: String!
+    clientSecret: String!
+    notes: String
+    dryRun: Boolean
+    localDelivery: Boolean
+  ): Order!
+  updateOrder(
+    id: String!
+    shippedOn: DateTime
+    completedOn: DateTime
+    trackingNumber: String
+    notes: String
+  ): Order!
+  sendMessage(email: String!, message: String!): Boolean!
+}

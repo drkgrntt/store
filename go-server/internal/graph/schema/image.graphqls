@@ -1,0 +1,30 @@
+# Ported from server/src/resolvers/image.ts (Cloudinary).
+type ImageUploadSignature {
+  timestamp: Int!
+  signature: String!
+  cloudname: String!
+  apikey: String!
+}
+
+type Image {
+  url: String!
+  id: String
+}
+
+extend type Query {
+  imageUrls: [String!]!
+  images: [Image!]!
+  imageUploadSignature: ImageUploadSignature!
+}
+
+extend type Mutation {
+  deleteImage(id: String!): Boolean!
+  attachImage(
+    productId: String!
+    url: String!
+    primary: Boolean!
+    title: String
+    description: String
+  ): ProductImage!
+  detachImage(id: String!): Boolean!
+}

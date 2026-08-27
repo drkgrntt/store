@@ -1,0 +1,14 @@
+# Ported from server/src/models/UserProduct.ts + server/src/resolvers/cart.ts.
+type UserProduct {
+  id: String!
+  count: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  product: Product!
+}
+
+extend type Mutation {
+  addToCart(productId: String!): [UserProduct!]!
+  removeFromCart(productId: String!): [UserProduct!]!
+}

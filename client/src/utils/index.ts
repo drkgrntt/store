@@ -95,8 +95,14 @@ export const getMobileOperatingSystem = (): MobileOS | null => {
   }
 };
 
+// Pinning locale + timeZone makes this deterministic between Next's
+// server-side render (Node's runtime locale/timezone) and the browser's
+// hydration pass (the viewer's) — without it, the same Date can render as
+// different text in each, which React reports as a hydration mismatch.
+// Dates are stored/produced in UTC end to end (Postgres timestamptz, the Go
+// server's time.Now().UTC()), so displaying in UTC also just shows the date
+// as it's actually stored, not shifted by whichever timezone happens to be
+// rendering it.
 export const getLocalDateString = (date: Date) => {
-  return new Date(
-    new Date(date).setMinutes(date.getTimezoneOffset())
-  ).toLocaleDateString();
+  return new Date(date).toLocaleDateString("en-US", { timeZone: "UTC" });
 };

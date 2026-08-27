@@ -1,0 +1,22 @@
+# Ported from server/src/models/Category.ts + server/src/resolvers/category.ts.
+type Category {
+  id: String!
+  name: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  products: [Product!]!
+}
+
+extend type Query {
+  categories(search: String, list: Boolean): [Category!]!
+}
+
+extend type Mutation {
+  createCategory(name: String!): Category!
+  # contentId is accepted for schema parity with the Node resolver but not
+  # yet wired up — the Content/ContentCategory domain hasn't been ported.
+  attachCategory(categoryId: String!, productId: String, contentId: String): Boolean!
+  detachCategory(categoryId: String!, productId: String, contentId: String): Boolean!
+  clearFeatures: Boolean!
+}

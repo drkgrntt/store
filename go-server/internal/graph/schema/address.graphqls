@@ -1,0 +1,45 @@
+# Ported from server/src/models/Address.ts + server/src/resolvers/address.ts.
+type Address {
+  id: String!
+  recipient: String!
+  lineOne: String!
+  lineTwo: String
+  city: String!
+  state: String!
+  zipCode: String!
+  country: String!
+  # A plain string on the wire, not a real GraphQL enum — see AddressType
+  # in internal/models/address.go for why.
+  type: String!
+  userId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+extend type Query {
+  addresses: [Address!]!
+  address(id: String!): Address
+}
+
+extend type Mutation {
+  createAddress(
+    recipient: String!
+    lineOne: String!
+    lineTwo: String
+    city: String!
+    state: String!
+    zipCode: String!
+    type: String!
+  ): Address!
+  updateAddress(
+    id: String!
+    recipient: String
+    lineOne: String
+    lineTwo: String
+    city: String
+    state: String
+    zipCode: String
+    type: String
+  ): Address!
+  deleteAddress(id: String!): Boolean!
+}

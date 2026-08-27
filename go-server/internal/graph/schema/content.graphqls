@@ -1,0 +1,21 @@
+# Ported from server/src/models/Content.ts + server/src/resolvers/content.ts.
+# Note: no createdAt/updatedAt here — the Node model doesn't @Field() them
+# either, unlike every other model.
+type Content {
+  id: String!
+  title: String
+  detail: String!
+
+  categories: [Category!]!
+}
+
+extend type Query {
+  contents(search: String): [Content!]!
+  content(id: String!): Content
+}
+
+extend type Mutation {
+  createContent(detail: String!, title: String): Content!
+  updateContent(id: String!, title: String, detail: String): Content!
+  deleteContent(id: String!): Boolean!
+}

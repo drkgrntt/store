@@ -1,0 +1,13 @@
+services:
+  web:
+    build: .
+    container_name: store-api-go
+    restart: unless-stopped
+    # Postgres stays native on the host, so the container shares the host's
+    # network namespace instead of a bridge network, same as server/'s
+    # compose file. Point PORT in .env at whichever port this instance
+    # should listen on (use a different one than the Node server's while
+    # both run side by side during the migration).
+    network_mode: host
+    env_file:
+      - .env

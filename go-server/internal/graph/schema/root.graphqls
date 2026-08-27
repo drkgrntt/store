@@ -1,0 +1,24 @@
+scalar DateTime
+
+# Root Query/Mutation live here; each ported domain adds its own fields via
+# `extend type Query` / `extend type Mutation` in its own schema file
+# (see server/src/resolvers/index.ts for the Node server's resolver list
+# this is working through).
+type Query {
+  me: User
+}
+
+type Mutation {
+  register(email: String!, password: String!): User!
+  login(email: String!, password: String!): User!
+  changeEmail(email: String!): User!
+  resetPassword(old: String!, new: String!): Boolean!
+  forgotPassword(email: String!): Boolean!
+  resetForgottenPassword(
+    email: String!
+    password: String!
+    token: String!
+  ): Boolean!
+  logout: Boolean!
+  logoutEverywhere: Token!
+}
