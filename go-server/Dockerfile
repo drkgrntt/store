@@ -14,7 +14,10 @@ RUN CGO_ENABLED=0 go build -trimpath -o /out/app ./cmd/api
 
 # ---- runtime stage ----
 FROM alpine:3.20
-RUN apk add --no-cache ca-certificates tzdata \
+# postgresql-client provides pg_dump, which internal/database/backup.go
+# shells out to for the daily backup job — without it the job fails
+# silently at runtime since nothing at build time exercises that path.
+RUN apk add --no-cache ca-certificates tzdata postgresql-client \
     && adduser -D -H appuser
 WORKDIR /app
 COPY --from=build /out/app ./app
