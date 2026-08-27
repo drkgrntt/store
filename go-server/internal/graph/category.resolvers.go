@@ -6,6 +6,8 @@ package graph
 
 import (
 	"context"
+	"strings"
+
 	"storeapi/internal/models"
 )
 
@@ -26,13 +28,29 @@ func (r *categoryResolver) Products(ctx context.Context, obj *models.Category) (
 	return products, nil
 }
 
-// CreateCategory is the resolver for the createCategory field.
+// CreateCategory is the resolver for the createCategory field. The Node
+// resolver this replaces (CategoryResolver.createCategory) did a bare
+// `Category.create({ name })` with no check for an existing row of the
+// same name, and with no unique constraint backing it either — over the
+// years that produced several exact-duplicate categories (e.g. three rows
+// all named "Denim", created minutes apart). Rather than perpetuate that,
+// this looks up a case-insensitive, trimmed match first and returns it
+// instead of inserting a new row, so re-typing an existing category's
+// name is a no-op rather than a fork.
 func (r *mutationResolver) CreateCategory(ctx context.Context, name string) (*models.Category, error) {
 	if _, err := requireAdmin(ctx); err != nil {
 		return nil, err
 	}
 
-	category := &models.Category{Name: name}
+	normalized := strings.TrimSpace(name)
+
+	var existing models.Category
+	err := r.DB.Where("lower(trim(name)) = lower(?)", normalized).First(&existing).Error
+	if err == nil {
+		return &existing, nil
+	}
+
+	category := &models.Category{Name: normalized}
 	if err := r.DB.Create(category).Error; err != nil {
 		return nil, err
 	}
