@@ -1,0 +1,22 @@
+.container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.row {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+  align-items: flex-start;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+}

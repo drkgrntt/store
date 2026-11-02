@@ -6,7 +6,10 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"strings"
+
+	"gorm.io/gorm"
 
 	"storeapi/internal/models"
 )
@@ -111,19 +114,95 @@ func (r *mutationResolver) DetachCategory(ctx context.Context, categoryID string
 	return false, nil
 }
 
-// ClearFeatures is the resolver for the clearFeatures field.
-func (r *mutationResolver) ClearFeatures(ctx context.Context) (bool, error) {
+// featureCategoryName is the category whose attachment marks a product as
+// featured, matching the 'Feature' literal in the Node resolvers.
+const featureCategoryName = "Feature"
+
+// findCategoryByName does the same case-insensitive, trimmed lookup
+// CreateCategory uses to avoid duplicates.
+func (r *Resolver) findCategoryByName(name string) (*models.Category, error) {
+	var category models.Category
+	err := r.DB.Where("lower(trim(name)) = lower(?)", strings.TrimSpace(name)).First(&category).Error
+	if err != nil {
+		return nil, err
+	}
+	return &category, nil
+}
+
+// ClearFeatures is the resolver for the clearFeatures field. With no tag it
+// matches the Node resolver (de-feature everything); with a tag it only
+// de-features products that also carry that tag, e.g. a seasonal
+// "halloween" sweep.
+func (r *mutationResolver) ClearFeatures(ctx context.Context, tag *string) (bool, error) {
 	if _, err := requireAdmin(ctx); err != nil {
 		return false, err
 	}
 
-	result := r.DB.Where(
-		"category_id IN (SELECT id FROM categories WHERE name = ?)", "Feature",
-	).Delete(&models.ProductCategory{})
+	query := r.DB.Where(
+		"category_id IN (SELECT id FROM categories WHERE name = ?)", featureCategoryName,
+	)
+	if tag != nil && strings.TrimSpace(*tag) != "" {
+		tagCategory, err := r.findCategoryByName(*tag)
+		if err != nil {
+			return false, fmt.Errorf("tag %q not found: %w", *tag, err)
+		}
+		query = query.Where(
+			"product_id IN (SELECT product_id FROM product_categories WHERE category_id = ?)", tagCategory.ID,
+		)
+	}
+
+	result := query.Delete(&models.ProductCategory{})
 	if result.Error != nil {
 		return false, result.Error
 	}
 	return result.RowsAffected > 0, nil
+}
+
+// FeatureProducts is the resolver for the featureProducts field. It
+// attaches the Feature category to every product carrying the tag that
+// isn't already featured, creating the Feature category if it doesn't
+// exist yet.
+func (r *mutationResolver) FeatureProducts(ctx context.Context, tag string) (float64, error) {
+	if _, err := requireAdmin(ctx); err != nil {
+		return 0, err
+	}
+
+	tagCategory, err := r.findCategoryByName(tag)
+	if err != nil {
+		return 0, fmt.Errorf("tag %q not found: %w", tag, err)
+	}
+
+	var count int
+	err = r.DB.Transaction(func(tx *gorm.DB) error {
+		var feature models.Category
+		if err := tx.Where("name = ?", featureCategoryName).
+			FirstOrCreate(&feature, models.Category{Name: featureCategoryName}).Error; err != nil {
+			return err
+		}
+
+		var productIDs []string
+		if err := tx.Model(&models.ProductCategory{}).
+			Where("category_id = ?", tagCategory.ID).
+			Where("product_id NOT IN (SELECT product_id FROM product_categories WHERE category_id = ?)", feature.ID).
+			Distinct().
+			Pluck("product_id", &productIDs).Error; err != nil {
+			return err
+		}
+		if len(productIDs) == 0 {
+			return nil
+		}
+
+		links := make([]models.ProductCategory, len(productIDs))
+		for i, id := range productIDs {
+			links[i] = models.ProductCategory{ProductID: id, CategoryID: feature.ID}
+		}
+		count = len(links)
+		return tx.Create(&links).Error
+	})
+	if err != nil {
+		return 0, err
+	}
+	return float64(count), nil
 }
 
 // Categories is the resolver for the categories field.

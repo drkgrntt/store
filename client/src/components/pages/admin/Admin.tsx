@@ -10,6 +10,7 @@ import AdminFrame from "../../AdminFrame";
 import Button from "../../Button";
 import OrderList from "../../OrderList";
 import ProductList from "../../ProductList";
+import SeasonalFeatures from "../../SeasonalFeatures";
 import styles from "./Admin.module.scss";
 
 interface Props {}
@@ -134,6 +135,7 @@ const Admin: FC<Props> = () => {
     <AdminFrame className={styles.container}>
       <div className={styles.products}>
         <h3>Products</h3>
+        <SeasonalFeatures />
         <ProductList adminView />
       </div>
       <div className={styles.orders}>

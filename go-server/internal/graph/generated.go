@@ -103,7 +103,7 @@ type ComplexityRoot struct {
 		AttachCategory         func(childComplexity int, categoryID string, productID *string, contentID *string) int
 		AttachImage            func(childComplexity int, productID string, url string, primary bool, title *string, description *string) int
 		ChangeEmail            func(childComplexity int, email string) int
-		ClearFeatures          func(childComplexity int) int
+		ClearFeatures          func(childComplexity int, tag *string) int
 		CreateAddress          func(childComplexity int, recipient string, lineOne string, lineTwo *string, city string, state string, zipCode string, typeArg string) int
 		CreateCategory         func(childComplexity int, name string) int
 		CreateContent          func(childComplexity int, detail string, title *string) int
@@ -114,6 +114,7 @@ type ComplexityRoot struct {
 		DeleteProduct          func(childComplexity int, id string) int
 		DetachCategory         func(childComplexity int, categoryID string, productID *string, contentID *string) int
 		DetachImage            func(childComplexity int, id string) int
+		FeatureProducts        func(childComplexity int, tag string) int
 		ForgotPassword         func(childComplexity int, email string) int
 		Login                  func(childComplexity int, email string, password string) int
 		Logout                 func(childComplexity int) int
@@ -275,7 +276,8 @@ type MutationResolver interface {
 	CreateCategory(ctx context.Context, name string) (*models.Category, error)
 	AttachCategory(ctx context.Context, categoryID string, productID *string, contentID *string) (bool, error)
 	DetachCategory(ctx context.Context, categoryID string, productID *string, contentID *string) (bool, error)
-	ClearFeatures(ctx context.Context) (bool, error)
+	ClearFeatures(ctx context.Context, tag *string) (bool, error)
+	FeatureProducts(ctx context.Context, tag string) (float64, error)
 	CreateContent(ctx context.Context, detail string, title *string) (*models.Content, error)
 	UpdateContent(ctx context.Context, id string, title *string, detail *string) (*models.Content, error)
 	DeleteContent(ctx context.Context, id string) (bool, error)
@@ -608,7 +610,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Mutation.ClearFeatures(childComplexity), true
+		args, err := ec.field_Mutation_clearFeatures_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ClearFeatures(childComplexity, args["tag"].(*string)), true
 
 	case "Mutation.createAddress":
 		if e.complexity.Mutation.CreateAddress == nil {
@@ -729,6 +736,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DetachImage(childComplexity, args["id"].(string)), true
+
+	case "Mutation.featureProducts":
+		if e.complexity.Mutation.FeatureProducts == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_featureProducts_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.FeatureProducts(childComplexity, args["tag"].(string)), true
 
 	case "Mutation.forgotPassword":
 		if e.complexity.Mutation.ForgotPassword == nil {
@@ -1805,6 +1824,21 @@ func (ec *executionContext) field_Mutation_changeEmail_args(ctx context.Context,
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_clearFeatures_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *string
+	if tmp, ok := rawArgs["tag"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tag"))
+		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["tag"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createAddress_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -2078,6 +2112,21 @@ func (ec *executionContext) field_Mutation_detachImage_args(ctx context.Context,
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_featureProducts_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["tag"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tag"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["tag"] = arg0
 	return args, nil
 }
 
@@ -5091,7 +5140,7 @@ func (ec *executionContext) _Mutation_clearFeatures(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ClearFeatures(rctx)
+		return ec.resolvers.Mutation().ClearFeatures(rctx, fc.Args["tag"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5108,7 +5157,7 @@ func (ec *executionContext) _Mutation_clearFeatures(ctx context.Context, field g
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_clearFeatures(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_clearFeatures(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -5117,6 +5166,72 @@ func (ec *executionContext) fieldContext_Mutation_clearFeatures(_ context.Contex
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_clearFeatures_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_featureProducts(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_featureProducts(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().FeatureProducts(rctx, fc.Args["tag"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_featureProducts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_featureProducts_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -12951,6 +13066,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "clearFeatures":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_clearFeatures(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "featureProducts":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_featureProducts(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
