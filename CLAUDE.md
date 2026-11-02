@@ -58,3 +58,13 @@ npm run build
 npm run lint    # next lint
 ```
 Next.js 13 pages router. `NEXT_PUBLIC_API_URL` (baked into the build — see client/docker-compose.yml's build `args`) points at a backend's `/graphql` endpoint. `src/utils/createWithApollo.tsx` is the `withApollo` HOC wiring `ApolloClient`/`ApolloProvider` into pages, keeping a single client instance across page transitions (`globalApolloClient`) and supporting SSR via `getInitialProps`. Global client-side state (cart, notifications) lives in React context providers under `src/providers/`, not Apollo's cache.
+
+## Deploying
+
+Production runs on the host reachable as `ssh debian`, checked out at `~/sites/store` (tracks `origin/main`). There's no CI; deploys are manual:
+```
+ssh debian 'cd ~/sites/store && git pull --ff-only'
+ssh debian 'cd ~/sites/store/go-server && docker compose up -d --build'   # container: store-api-go
+ssh debian 'cd ~/sites/store/client && docker compose up -d --build'      # container: store-client
+```
+Only rebuild the app(s) that changed. `client/.env` is tracked but carries local modifications on the server (it supplies the `NEXT_PUBLIC_*` build args) — don't overwrite or commit it. Workflow used so far: feature branch → PR via `gh` → merge to `main` → delete branch → deploy.
