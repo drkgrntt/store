@@ -18,5 +18,10 @@ extend type Mutation {
   # yet wired up — the Content/ContentCategory domain hasn't been ported.
   attachCategory(categoryId: String!, productId: String, contentId: String): Boolean!
   detachCategory(categoryId: String!, productId: String, contentId: String): Boolean!
-  clearFeatures: Boolean!
+  # De-features every featured product, or, when tag is given, only the
+  # featured products that also carry that (existing) tag.
+  clearFeatures(tag: String): Boolean!
+  # Features every product carrying the (existing) tag that isn't already
+  # featured. Returns how many products were newly featured.
+  featureProducts(tag: String!): Float!
 }
