@@ -12,8 +12,13 @@ func init() {
 type Analytic struct {
 	Base
 
-	IP        string
-	UserAgent string `gorm:"type:varchar(510)"`
+	IP string
+	// Column is "useragent", not gorm's default "user_agent": Node's model
+	// field is `useragent` (server/src/models/Analytic.ts), and Sequelize's
+	// underscored:true leaves a single lowercase word as-is. The live table
+	// already has ~57k rows in "useragent"; without this tag AutoMigrate adds
+	// a second "user_agent" column and new rows silently land there.
+	UserAgent string `gorm:"column:useragent;type:varchar(510)"`
 	Page      string
 	// Composite index backs the correlated COUNT(*) subquery that
 	// product_helpers.go's findProducts uses to sort by view count

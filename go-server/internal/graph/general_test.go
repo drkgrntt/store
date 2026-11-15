@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"storeapi/internal/models"
@@ -148,13 +149,34 @@ func TestPingNeverFailsOnBadInput(t *testing.T) {
 
 func TestAnalyticColumnNamesMatchNode(t *testing.T) {
 	e := newEnv(t)
-	// Node's Analytic.useragent (underscored:true) -> column "useragent".
-	// The live database already has that column; Go's UserAgent field maps to
-	// "user_agent", so existing rows' column is orphaned and new rows land in a
-	// differently-named column.
-	var n int64
-	e.DB.Raw(`SELECT count(*) FROM information_schema.columns WHERE table_name='analytics' AND column_name='useragent'`).Scan(&n)
-	if n != 1 {
-		parityBug(t, "analytics user-agent column is user_agent in Go but useragent in Node (server/src/models/Analytic.ts:25, go models/analytic.go UserAgent)")
+	// Node's Analytic.useragent (underscored:true) -> column "useragent". The
+	// live table already holds ~57k rows there, so Go must write to the same
+	// column rather than letting AutoMigrate add a parallel "user_agent".
+	req := httptest.NewRequest(http.MethodPost, "/graphql", strings.NewReader(
+		`{"query":"mutation { ping(path: \"/products\") }"}`))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", "Mozilla/5.0 column-test")
+	if _, err := e.App.Test(req, -1); err != nil {
+		t.Fatal(err)
+	}
+
+	var got string
+	if err := e.DB.Raw(`SELECT useragent FROM analytics WHERE page = '/products'`).Scan(&got).Error; err != nil {
+		t.Fatalf("reading useragent column: %v", err)
+	}
+	if got != "Mozilla/5.0 column-test" {
+		t.Fatalf("useragent column = %q, want the pinged user agent", got)
+	}
+
+	var hasUnderscored int64
+	e.DB.Raw(`SELECT count(*) FROM information_schema.columns WHERE table_name='analytics' AND column_name='user_agent'`).Scan(&hasUnderscored)
+	if hasUnderscored != 0 {
+		// A leftover from an earlier migration of this scratch DB is harmless
+		// as long as nothing was written to it.
+		var wrote int64
+		e.DB.Raw(`SELECT count(*) FROM analytics WHERE user_agent IS NOT NULL`).Scan(&wrote)
+		if wrote != 0 {
+			t.Fatalf("%d row(s) written to user_agent; Go must write only to useragent", wrote)
+		}
 	}
 }
