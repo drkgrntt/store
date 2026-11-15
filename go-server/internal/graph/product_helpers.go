@@ -20,8 +20,15 @@ func (r *Resolver) findProducts(ctx context.Context, page, perPage int, active *
 	query := r.DB.Model(&models.Product{})
 
 	if user != nil && user.IsAdmin {
+		// Node starts from the customer `where` ({isActive: true, Op.or:
+		// [madeToOrder, quantity > 0]}) and only resets it to {} when `active`
+		// is undefined; with an explicit `active` it just overwrites isActive,
+		// so the stock filter survives. That is what keeps an admin browsing
+		// the storefront view (which sends active: true) seeing the same
+		// in-stock products customers see. The admin list sends no `active`
+		// and so still sees everything.
 		if active != nil {
-			query = query.Where("is_active = ?", *active)
+			query = query.Where("is_active = ? AND (is_made_to_order = ? OR quantity > 0)", *active, true)
 		}
 	} else {
 		query = query.Where("is_active = ? AND (is_made_to_order = ? OR quantity > 0)", true, true)

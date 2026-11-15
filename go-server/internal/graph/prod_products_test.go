@@ -53,13 +53,6 @@ func TestProdProductsVisibility(t *testing.T) {
 			r.NoErrors(t)
 			got := prodSorted(prodStrs(r, "products.edges", "title"))
 			if !prodEq(got, tc.want) {
-				if tc.name == "admin active=true" {
-					// Node keeps the quantity/madeToOrder `Op.or` clause in
-					// `where` when an admin passes an explicit `active`
-					// (only active===undefined resets `where = {}`), so a sold
-					// out, non-made-to-order product is hidden. Go drops it.
-					parityBug(t, "products(active:X) as admin should still apply the (isMadeToOrder OR quantity>0) filter (product.ts:~95-101 vs product_helpers.go:25-29)")
-				}
 				t.Fatalf("got %v want %v", got, tc.want)
 			}
 		})
@@ -78,7 +71,6 @@ func TestProdProductsAdminActiveFalseKeepsStockFilter(t *testing.T) {
 	got := prodSorted(prodStrs(r, "products.edges", "title"))
 	// Node: where = {isActive:false, [Op.or]:[mto, qty>0]} -> only inactiveStocked.
 	if !prodEq(got, []string{"inactiveStocked"}) {
-		parityBug(t, "admin products(active:false) returns inactive sold-out products; Node still applies stock filter (product.ts:~95-101)")
 		t.Fatalf("got %v", got)
 	}
 }
