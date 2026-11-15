@@ -45,6 +45,8 @@ type Env struct {
 	t   *testing.T
 	DB  *gorm.DB
 	App *fiber.App
+	// Res is the live Resolver; set Res.Payments / Res.Mailer to inject fakes.
+	Res *graph.Resolver
 
 	tokens map[string]string // user ID -> token, minted once per user
 }
@@ -94,11 +96,12 @@ func newEnv(t *testing.T) *Env {
 	app := fiber.New()
 	app.Use(middleware.DeserializeToken(db))
 	app.Use(middleware.AttachDataLoaders(db))
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{DB: db}}))
+	res := &graph.Resolver{DB: db}
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: res}))
 	srv.AddTransport(transport.POST{})
 	app.Post("/graphql", adaptor.HTTPHandler(srv))
 
-	return &Env{t: t, DB: db, App: app, tokens: map[string]string{}}
+	return &Env{t: t, DB: db, App: app, Res: res, tokens: map[string]string{}}
 }
 
 // NewUser inserts a user (password "password123") and returns it.
