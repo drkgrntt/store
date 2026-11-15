@@ -8,7 +8,6 @@ package graph
 import (
 	"context"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 
@@ -24,8 +23,7 @@ import (
 func (r *Resolver) checkPaymentSucceeded(ctx context.Context, clientSecret string) (bool, error) {
 	paymentIntentID := strings.Split(clientSecret, "_secret")[0]
 
-	sc := stripe.NewClient(os.Getenv("STRIPE_SECRET_KEY"))
-	paymentIntent, err := sc.V1PaymentIntents.Retrieve(ctx, paymentIntentID, nil)
+	paymentIntent, err := r.payments().RetrieveIntent(ctx, paymentIntentID)
 	if err != nil {
 		return false, err
 	}

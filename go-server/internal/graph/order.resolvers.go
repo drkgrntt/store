@@ -9,7 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"math"
-	"os"
 	"storeapi/internal/emails"
 	"storeapi/internal/logger"
 	"storeapi/internal/models"
@@ -148,10 +147,10 @@ func (r *mutationResolver) PlaceOrder(ctx context.Context, addressID string, cli
 	}
 
 	// Matches the Node resolver: these are awaited inline with no error handling of their own, so a failed send surfaces as a placeOrder error even though the order above is already committed.
-	if _, err := emails.Send(emails.AdminNewOrder, variables, ""); err != nil {
+	if _, err := r.mailer().Send(emails.AdminNewOrder, variables, ""); err != nil {
 		return nil, err
 	}
-	if _, err := emails.Send(emails.CustomerNewOrder, variables, user.Email); err != nil {
+	if _, err := r.mailer().Send(emails.CustomerNewOrder, variables, user.Email); err != nil {
 		return nil, err
 	}
 
@@ -228,7 +227,7 @@ func (r *mutationResolver) UpdateOrder(ctx context.Context, id string, shippedOn
 			"totalCost":      fmt.Sprintf("%.2f", float64(totalCost)/100),
 		}
 
-		if _, err := emails.Send(emails.OrderHasShipped, variables, orderUser.Email); err != nil {
+		if _, err := r.mailer().Send(emails.OrderHasShipped, variables, orderUser.Email); err != nil {
 			logger.Error("Error sending order-shipped email", "error", err)
 		}
 	}
@@ -238,7 +237,7 @@ func (r *mutationResolver) UpdateOrder(ctx context.Context, id string, shippedOn
 
 // SendMessage is the resolver for the sendMessage field.
 func (r *mutationResolver) SendMessage(ctx context.Context, email string, message string) (bool, error) {
-	_, err := emails.Send(emails.ContactMessage, emails.Variables{"email": email, "message": message}, "")
+	_, err := r.mailer().Send(emails.ContactMessage, emails.Variables{"email": email, "message": message}, "")
 	return err == nil, nil
 }
 
@@ -440,17 +439,15 @@ func (r *queryResolver) ClientSecret(ctx context.Context, totalCost float64, cli
 	tax := math.Floor(models.CurrentTaxRate * float64(subTotal))
 	fmt.Fprintf(&description, "Tax - $%.2f \n", tax/100)
 
-	sc := stripe.NewClient(os.Getenv("STRIPE_SECRET_KEY"))
-
 	var paymentIntent *stripe.PaymentIntent
 	if clientSecret != nil && *clientSecret != "" {
 		paymentIntentID := strings.Split(*clientSecret, "_secret")[0]
-		paymentIntent, err = sc.V1PaymentIntents.Retrieve(ctx, paymentIntentID, nil)
+		paymentIntent, err = r.payments().RetrieveIntent(ctx, paymentIntentID)
 		if err != nil {
 			return nil, err
 		}
 		if paymentIntent.Status != stripe.PaymentIntentStatusSucceeded {
-			paymentIntent, err = sc.V1PaymentIntents.Update(ctx, paymentIntentID, &stripe.PaymentIntentUpdateParams{
+			paymentIntent, err = r.payments().UpdateIntent(ctx, paymentIntentID, &stripe.PaymentIntentUpdateParams{
 				Amount:      stripe.Int64(int64(totalCost)),
 				Description: stripe.String(description.String()),
 			})
@@ -459,7 +456,7 @@ func (r *queryResolver) ClientSecret(ctx context.Context, totalCost float64, cli
 			}
 		}
 	} else {
-		paymentIntent, err = sc.V1PaymentIntents.Create(ctx, &stripe.PaymentIntentCreateParams{
+		paymentIntent, err = r.payments().CreateIntent(ctx, &stripe.PaymentIntentCreateParams{
 			Amount:      stripe.Int64(int64(totalCost)),
 			Description: stripe.String(description.String()),
 			Currency:    stripe.String("usd"),

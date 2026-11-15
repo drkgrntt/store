@@ -8,6 +8,11 @@ import "gorm.io/gorm"
 
 type Resolver struct {
 	DB *gorm.DB
+
+	// Optional overrides for external services; nil means the real Stripe /
+	// Mailgun clients (see services.go). Set by tests.
+	Payments PaymentGateway
+	Mailer   Mailer
 }
 
 // tokenDaysValid matches Token.generate's default `daysValid: number = 30`

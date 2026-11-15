@@ -141,7 +141,7 @@ func (r *mutationResolver) ForgotPassword(ctx context.Context, email string) (bo
 		},
 	}
 
-	_, err = emails.Send(emails.ForgotPassword, variables, user.Email)
+	_, err = r.mailer().Send(emails.ForgotPassword, variables, user.Email)
 	return err == nil, nil
 }
 
