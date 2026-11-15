@@ -111,30 +111,3 @@ func (r *userResolver) Cart(ctx context.Context, obj *models.User) ([]*models.Us
 func (r *Resolver) User() UserResolver { return &userResolver{r} }
 
 type userResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *userResolver) loadAddresses(ctx context.Context, userID string) ([]*models.Address, error) {
-	l := loaders(ctx)
-
-	addressIDs, err := l.AddressIDsByUser.Load(ctx, userID)
-	if err != nil {
-		return nil, err
-	}
-	addresses, err := l.Address.LoadAll(ctx, addressIDs)
-	if err != nil {
-		return nil, err
-	}
-
-	out := make([]*models.Address, 0, len(addresses))
-	for _, a := range addresses {
-		if a != nil {
-			out = append(out, a)
-		}
-	}
-	return out, nil
-}

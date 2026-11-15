@@ -7,11 +7,10 @@ package graph
 import (
 	"context"
 	"fmt"
+	"storeapi/internal/models"
 	"strings"
 
 	"gorm.io/gorm"
-
-	"storeapi/internal/models"
 )
 
 // Products is the resolver for the products field.
@@ -31,16 +30,16 @@ func (r *categoryResolver) Products(ctx context.Context, obj *models.Category) (
 	return products, nil
 }
 
-// CreateCategory is the resolver for the createCategory field. The Node
-// resolver this replaces (CategoryResolver.createCategory) did a bare
-// `Category.create({ name })` with no check for an existing row of the
-// same name, and with no unique constraint backing it either — over the
-// years that produced several exact-duplicate categories (e.g. three rows
-// all named "Denim", created minutes apart). Rather than perpetuate that,
-// this looks up a case-insensitive, trimmed match first and returns it
-// instead of inserting a new row, so re-typing an existing category's
-// name is a no-op rather than a fork.
+// CreateCategory is the resolver for the createCategory field.
 func (r *mutationResolver) CreateCategory(ctx context.Context, name string) (*models.Category, error) {
+	// The Node resolver this replaces (CategoryResolver.createCategory) did a bare
+	// Category.create({ name }) with no check for an existing row of the same
+	// name, and with no unique constraint backing it either — over the years that
+	// produced several exact-duplicate categories (e.g. three rows all named
+	// "Denim", created minutes apart). Rather than perpetuate that, this looks up
+	// a case-insensitive, trimmed match first and returns it instead of inserting
+	// a new row, so re-typing an existing category's name is a no-op rather than a
+	// fork.
 	if _, err := requireAdmin(ctx); err != nil {
 		return nil, err
 	}
@@ -114,26 +113,11 @@ func (r *mutationResolver) DetachCategory(ctx context.Context, categoryID string
 	return false, nil
 }
 
-// featureCategoryName is the category whose attachment marks a product as
-// featured, matching the 'Feature' literal in the Node resolvers.
-const featureCategoryName = "Feature"
-
-// findCategoryByName does the same case-insensitive, trimmed lookup
-// CreateCategory uses to avoid duplicates.
-func (r *Resolver) findCategoryByName(name string) (*models.Category, error) {
-	var category models.Category
-	err := r.DB.Where("lower(trim(name)) = lower(?)", strings.TrimSpace(name)).First(&category).Error
-	if err != nil {
-		return nil, err
-	}
-	return &category, nil
-}
-
-// ClearFeatures is the resolver for the clearFeatures field. With no tag it
-// matches the Node resolver (de-feature everything); with a tag it only
-// de-features products that also carry that tag, e.g. a seasonal
-// "halloween" sweep.
+// ClearFeatures is the resolver for the clearFeatures field.
 func (r *mutationResolver) ClearFeatures(ctx context.Context, tag *string) (bool, error) {
+	// With no tag it matches the Node resolver (de-feature everything); with a tag
+	// it only de-features products that also carry that tag, e.g. a seasonal
+	// "halloween" sweep.
 	if _, err := requireAdmin(ctx); err != nil {
 		return false, err
 	}
@@ -158,11 +142,11 @@ func (r *mutationResolver) ClearFeatures(ctx context.Context, tag *string) (bool
 	return result.RowsAffected > 0, nil
 }
 
-// FeatureProducts is the resolver for the featureProducts field. It
-// attaches the Feature category to every product carrying the tag that
-// isn't already featured, creating the Feature category if it doesn't
-// exist yet.
+// FeatureProducts is the resolver for the featureProducts field.
 func (r *mutationResolver) FeatureProducts(ctx context.Context, tag string) (float64, error) {
+	// It attaches the Feature category to every product carrying the tag that
+	// isn't already featured, creating the Feature category if it doesn't exist
+	// yet.
 	if _, err := requireAdmin(ctx); err != nil {
 		return 0, err
 	}
