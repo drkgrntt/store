@@ -5,7 +5,8 @@
     "dev": "next dev -p 4444",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check:gql": "graphql-inspector validate \"src/**/*.{ts,tsx}\" \"../go-server/internal/graph/schema/*.graphqls\""
   },
   "dependencies": {
     "@apollo/client": "^3.7.0",
@@ -22,6 +23,7 @@
     "sharp": "^0.35.3"
   },
   "devDependencies": {
+    "@graphql-inspector/cli": "7.0.2",
     "@types/node": "^18.11.9",
     "@types/react": "^18.0.25",
     "eslint": "^8.26.0",
