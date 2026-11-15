@@ -125,7 +125,7 @@ func TestSvcPlaceOrderSuccess(t *testing.T) {
 	// Committed rows.
 	var orders []models.Order
 	e.DB.Find(&orders)
-	if len(orders) != 1 || orders[0].UserID != u.ID || orders[0].AddressID != addr.ID || orders[0].Notes != "leave on porch" {
+	if len(orders) != 1 || orders[0].UserID != u.ID || orders[0].AddressID != addr.ID || deref(orders[0].Notes) != "leave on porch" {
 		t.Fatalf("orders = %+v", orders)
 	}
 	var lines []models.OrderProduct
@@ -389,6 +389,19 @@ func TestSvcUpdateOrderShippedEmail(t *testing.T) {
 		resp.NoErrors(t)
 		if !resp.Bool(t, "updateOrder.isShipped") {
 			t.Error("order should still be saved as shipped")
+		}
+	})
+
+	t.Run("no email for an empty tracking number (Node truthiness check)", func(t *testing.T) {
+		e, _, mail := svcSetup(t)
+		admin := e.NewUser("admin@example.com", true)
+		buyer := e.NewUser("buyer@example.com", false)
+		p := ordProduct(t, e, "Alpha", 1000, 5, true, false)
+		o := ordOrder(t, e, buyer, ordAddress(t, e, buyer), time.Now(), ordLine{P: p, Count: 1, Price: 1000})
+
+		e.Do(q, map[string]any{"id": o.ID, "s": "2026-11-10T12:00:00Z", "tn": ""}, admin).NoErrors(t)
+		if len(mail.sent) != 0 {
+			t.Errorf("unexpected emails: %v", mail.templates())
 		}
 	})
 

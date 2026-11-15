@@ -17,12 +17,12 @@ func TestAuthChangeEmail(t *testing.T) {
 	const q = `mutation($e:String!){ changeEmail(email:$e){ id email isAdmin } }`
 
 	t.Run("anonymous", func(t *testing.T) {
-		authDo(e,q, map[string]any{"e": "x@example.com"}, nil).HasError(t, "Not authenticated")
+		authDo(e, q, map[string]any{"e": "x@example.com"}, nil).HasError(t, "Not authenticated")
 	})
 
 	t.Run("invalid and duplicate leave DB unchanged", func(t *testing.T) {
-		authDo(e,q, map[string]any{"e": "not-an-email"}, u).HasError(t, "is not a valid email address")
-		if len(authDo(e,q, map[string]any{"e": "taken@example.com"}, u).Errors) == 0 {
+		authDo(e, q, map[string]any{"e": "not-an-email"}, u).HasError(t, "is not a valid email address")
+		if len(authDo(e, q, map[string]any{"e": "taken@example.com"}, u).Errors) == 0 {
 			t.Error("duplicate email accepted")
 		}
 		if authUserByEmail(t, e, "old@example.com").ID != u.ID {
@@ -31,7 +31,7 @@ func TestAuthChangeEmail(t *testing.T) {
 	})
 
 	t.Run("success", func(t *testing.T) {
-		r := authDo(e,q, map[string]any{"e": "new@example.com"}, u)
+		r := authDo(e, q, map[string]any{"e": "new@example.com"}, u)
 		r.NoErrors(t)
 		if r.Str(t, "changeEmail.email") != "new@example.com" || r.Str(t, "changeEmail.id") != u.ID {
 			t.Errorf("raw: %s", r.Raw)
@@ -48,18 +48,18 @@ func TestAuthResetPassword(t *testing.T) {
 	const q = `mutation($o:String!,$n:String!){ resetPassword(old:$o,new:$n) }`
 
 	t.Run("anonymous", func(t *testing.T) {
-		authDo(e,q, map[string]any{"o": "password123", "n": "x"}, nil).HasError(t, "Not authenticated")
+		authDo(e, q, map[string]any{"o": "password123", "n": "x"}, nil).HasError(t, "Not authenticated")
 	})
 
 	t.Run("wrong old password", func(t *testing.T) {
-		authDo(e,q, map[string]any{"o": "bad", "n": "newpass"}, u).HasError(t, "Invalid old password")
+		authDo(e, q, map[string]any{"o": "bad", "n": "newpass"}, u).HasError(t, "Invalid old password")
 		if authUserByEmail(t, e, "rp@example.com").ComparePassword("password123") != nil {
 			t.Error("password changed on failure")
 		}
 	})
 
 	t.Run("success", func(t *testing.T) {
-		r := authDo(e,q, map[string]any{"o": "password123", "n": "newpass"}, u)
+		r := authDo(e, q, map[string]any{"o": "password123", "n": "newpass"}, u)
 		r.NoErrors(t)
 		if !r.Bool(t, "resetPassword") {
 			t.Error("want true")
@@ -81,7 +81,7 @@ func TestAuthForgotPassword(t *testing.T) {
 	const q = `mutation($e:String!){ forgotPassword(email:$e) }`
 
 	t.Run("unknown email returns true without side effects", func(t *testing.T) {
-		r := authDo(e,q, map[string]any{"e": "ghost@example.com"}, nil)
+		r := authDo(e, q, map[string]any{"e": "ghost@example.com"}, nil)
 		r.NoErrors(t)
 		if !r.Bool(t, "forgotPassword") {
 			t.Error("must not reveal whether the address exists")
@@ -94,7 +94,7 @@ func TestAuthForgotPassword(t *testing.T) {
 	})
 
 	t.Run("known email (any case) mints a 1-day token", func(t *testing.T) {
-		r := authDo(e,q, map[string]any{"e": "FP@Example.com"}, nil)
+		r := authDo(e, q, map[string]any{"e": "FP@Example.com"}, nil)
 		r.NoErrors(t)
 		// Mailgun is unconfigured and HTTPS is routed to a dead proxy (see
 		// init in auth_test.go), so the send fails; Node returns !!result.
@@ -134,7 +134,7 @@ func TestAuthResetForgottenPassword(t *testing.T) {
 
 	t.Run("invalid tokens", func(t *testing.T) {
 		for name, tok := range map[string]string{"empty": "", "garbage": "x.y.z", "no dots": "abc"} {
-			r := authDo(e,q, map[string]any{"e": "rfp@example.com", "p": "new", "t": tok}, nil)
+			r := authDo(e, q, map[string]any{"e": "rfp@example.com", "p": "new", "t": tok}, nil)
 			if len(r.Errors) != 1 || r.Errors[0] != linkErr {
 				t.Errorf("%s: errors = %v", name, r.Errors)
 			}
@@ -146,7 +146,7 @@ func TestAuthResetForgottenPassword(t *testing.T) {
 
 	t.Run("expired token", func(t *testing.T) {
 		tok := mint(t, -1)
-		r := authDo(e,q, map[string]any{"e": "rfp@example.com", "p": "new", "t": tok}, nil)
+		r := authDo(e, q, map[string]any{"e": "rfp@example.com", "p": "new", "t": tok}, nil)
 		if len(r.Errors) != 1 || r.Errors[0] != linkErr {
 			t.Errorf("errors = %v", r.Errors)
 		}
@@ -158,7 +158,7 @@ func TestAuthResetForgottenPassword(t *testing.T) {
 	tok := mint(t, 1)
 
 	t.Run("email mismatch", func(t *testing.T) {
-		r := authDo(e,q, map[string]any{"e": "someone@else.com", "p": "new", "t": tok}, nil)
+		r := authDo(e, q, map[string]any{"e": "someone@else.com", "p": "new", "t": tok}, nil)
 		if len(r.Errors) != 1 || r.Errors[0] != mismatchErr {
 			t.Errorf("errors = %v", r.Errors)
 		}
@@ -168,7 +168,7 @@ func TestAuthResetForgottenPassword(t *testing.T) {
 	})
 
 	t.Run("success is case-insensitive on email and needs no session", func(t *testing.T) {
-		r := authDo(e,q, map[string]any{"e": "RFP@EXAMPLE.com", "p": "brandnew", "t": tok}, nil)
+		r := authDo(e, q, map[string]any{"e": "RFP@EXAMPLE.com", "p": "brandnew", "t": tok}, nil)
 		r.NoErrors(t)
 		if !r.Bool(t, "resetForgottenPassword") {
 			t.Error("want true")
@@ -185,7 +185,7 @@ func TestAuthResetForgottenPassword(t *testing.T) {
 	// replayed until it expires. Port keeps that (single-use is NOT Node
 	// behavior); pin it so a "fix" is a conscious decision.
 	t.Run("token is not consumed (matches Node)", func(t *testing.T) {
-		r := authDo(e,q, map[string]any{"e": "rfp@example.com", "p": "again", "t": tok}, nil)
+		r := authDo(e, q, map[string]any{"e": "rfp@example.com", "p": "again", "t": tok}, nil)
 		r.NoErrors(t)
 		if !pwOK("again") {
 			t.Error("replay failed; Node allows it")
@@ -197,7 +197,7 @@ func TestAuthResetForgottenPassword(t *testing.T) {
 
 	t.Run("forged signature", func(t *testing.T) {
 		forged := models.UnsignTokenValue(tok) + ".AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-		r := authDo(e,q, map[string]any{"e": "rfp@example.com", "p": "hax", "t": forged}, nil)
+		r := authDo(e, q, map[string]any{"e": "rfp@example.com", "p": "hax", "t": forged}, nil)
 		if len(r.Errors) != 1 || r.Errors[0] != linkErr {
 			t.Errorf("errors = %v", r.Errors)
 		}

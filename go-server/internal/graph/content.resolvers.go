@@ -29,10 +29,7 @@ func (r *mutationResolver) CreateContent(ctx context.Context, detail string, tit
 		return nil, err
 	}
 
-	content := &models.Content{Detail: detail}
-	if title != nil {
-		content.Title = *title
-	}
+	content := &models.Content{Detail: detail, Title: title}
 	if err := r.DB.Create(content).Error; err != nil {
 		return nil, err
 	}
@@ -50,8 +47,8 @@ func (r *mutationResolver) UpdateContent(ctx context.Context, id string, title *
 		return nil, errors.New("Invalid id")
 	}
 
-	if title != nil {
-		content.Title = *title
+	if argProvided(ctx, "title") {
+		content.Title = title
 	}
 	if detail != nil {
 		content.Detail = *detail

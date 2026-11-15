@@ -242,7 +242,7 @@ func TestOrdUpdateOrder(t *testing.T) {
 			t.Errorf("nested fields: %s", r.Raw)
 		}
 		got := reload(o.ID)
-		if got.Notes != "hi" || got.CompletedOn == nil || !got.CompletedOn.Equal(time.Date(2024, 3, 5, 10, 0, 0, 0, time.UTC)) || got.ShippedOn != nil {
+		if deref(got.Notes) != "hi" || got.CompletedOn == nil || !got.CompletedOn.Equal(time.Date(2024, 3, 5, 10, 0, 0, 0, time.UTC)) || got.ShippedOn != nil {
 			t.Errorf("db state: %+v", got)
 		}
 	})
@@ -253,7 +253,7 @@ func TestOrdUpdateOrder(t *testing.T) {
 		r := ordDo(e, `mutation($id: String!) { updateOrder(id: $id, completedOn: "2024-03-05T10:00:00Z") { id } }`, map[string]any{"id": o.ID}, admin)
 		r.NoErrors(t)
 		got := reload(o.ID)
-		if got.Notes != "keep" || got.TrackingNumber != "TRK1" {
+		if deref(got.Notes) != "keep" || deref(got.TrackingNumber) != "TRK1" {
 			t.Errorf("clobbered: %+v", got)
 		}
 	})
@@ -274,7 +274,7 @@ func TestOrdUpdateOrder(t *testing.T) {
 		o := fresh()
 		ordDo(e, `mutation($id: String!) { updateOrder(id: $id, shippedOn: "2024-03-05T00:00:00Z", trackingNumber: "TRK123") { id } }`, map[string]any{"id": o.ID}, admin)
 		got := reload(o.ID)
-		if got.ShippedOn == nil || got.TrackingNumber != "TRK123" {
+		if got.ShippedOn == nil || deref(got.TrackingNumber) != "TRK123" {
 			t.Errorf("shipment not saved: %+v", got)
 		}
 	})
@@ -285,7 +285,6 @@ func TestOrdUpdateOrder(t *testing.T) {
 		r := ordDo(e, `mutation($id: String!) { updateOrder(id: $id, shippedOn: null, completedOn: null) { isShipped isComplete } }`, map[string]any{"id": o.ID}, admin)
 		r.NoErrors(t)
 		if r.Bool(t, "updateOrder.isShipped") || r.Bool(t, "updateOrder.isComplete") {
-			parityBug(t, "updateOrder ignores explicit null (shippedOn/completedOn/trackingNumber/notes); Node clears the column since only `undefined` is skipped")
 			t.Errorf("explicit null did not clear: %s", r.Raw)
 		}
 	})

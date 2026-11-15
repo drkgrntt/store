@@ -39,11 +39,11 @@ func (r *mutationResolver) AttachImage(ctx context.Context, productID string, ur
 	}
 
 	record.Primary = primary
-	if title != nil {
-		record.Title = *title
+	if argProvided(ctx, "title") {
+		record.Title = title
 	}
-	if description != nil {
-		record.Description = *description
+	if argProvided(ctx, "description") {
+		record.Description = description
 	}
 
 	// GORM's Save creates when ID is unset and updates otherwise, matching

@@ -11,7 +11,7 @@ import (
 
 func contContent(t *testing.T, e *Env, title, detail string) *models.Content {
 	t.Helper()
-	c := &models.Content{Title: title, Detail: detail}
+	c := &models.Content{Title: strp(title), Detail: detail}
 	if err := e.DB.Create(c).Error; err != nil {
 		t.Fatal(err)
 	}
@@ -54,7 +54,7 @@ func TestContentAdminGates(t *testing.T) {
 	e.DB.Model(&models.Content{}).Count(&n)
 	var got models.Content
 	e.DB.First(&got, "id = ?", ct.ID)
-	if n != 1 || got.Title != "t" {
+	if n != 1 || deref(got.Title) != "t" {
 		t.Fatalf("gated mutations changed state: n=%d %+v", n, got)
 	}
 }
@@ -104,7 +104,6 @@ func TestContentCreateWithoutTitleIsNull(t *testing.T) {
 	r := catDo(e, `mutation { createContent(detail:"body") { id title } }`, nil, admin)
 	r.NoErrors(t)
 	if r.Get("createContent.title") != nil {
-		parityBug(t, "createContent without title returns \"\" (Content.Title is a non-pointer string); Node returns null (server/src/resolvers/content.ts createContent, go content.resolvers.go CreateContent)")
 	}
 }
 
@@ -130,7 +129,7 @@ func TestContentUpdate(t *testing.T) {
 	r.NoErrors(t)
 	var got models.Content
 	e.DB.First(&got, "id = ?", ct.ID)
-	if got.Title != "" || got.Detail != "nd" {
+	if deref(got.Title) != "" || got.Detail != "nd" {
 		t.Fatalf("db: %+v", got)
 	}
 	// Unknown id.

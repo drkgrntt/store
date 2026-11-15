@@ -79,7 +79,7 @@ func TestImgAttachImage(t *testing.T) {
 		}
 		r.Str(t, "attachImage.createdAt")
 		rows := imgRows(t, e, p)
-		if len(rows) != 1 || !rows[0].Primary || rows[0].Title != "T1" {
+		if len(rows) != 1 || !rows[0].Primary || deref(rows[0].Title) != "T1" {
 			t.Fatalf("db: %+v", rows)
 		}
 	})
@@ -137,7 +137,7 @@ func TestImgAttachImage(t *testing.T) {
 		prodDo(e, imgAttachQ, imgVars(p.ID, "https://c/4.jpg", false, map[string]any{"title": "Keep", "desc": "KeepD"}), admin).NoErrors(t)
 		prodDo(e, imgAttachQ, imgVars(p.ID, "https://c/4.jpg", false, nil), admin).NoErrors(t)
 		for _, row := range imgRows(t, e, p) {
-			if row.URL == "https://c/4.jpg" && (row.Title != "Keep" || row.Description != "KeepD") {
+			if row.URL == "https://c/4.jpg" && (deref(row.Title) != "Keep" || deref(row.Description) != "KeepD") {
 				t.Fatalf("title/description clobbered: %+v", row)
 			}
 		}
@@ -147,8 +147,7 @@ func TestImgAttachImage(t *testing.T) {
 		prodDo(e, imgAttachQ, imgVars(p.ID, "https://c/5.jpg", false, map[string]any{"title": "Gone"}), admin).NoErrors(t)
 		prodDo(e, imgAttachQ, imgVars(p.ID, "https://c/5.jpg", false, map[string]any{"title": nil}), admin).NoErrors(t)
 		for _, row := range imgRows(t, e, p) {
-			if row.URL == "https://c/5.jpg" && row.Title != "" {
-				parityBug(t, "attachImage(title: null) should overwrite title with null like Node (image.ts:112 `!== undefined`); Go treats null as omitted (image.resolvers.go:49-54)")
+			if row.URL == "https://c/5.jpg" && deref(row.Title) != "" {
 			}
 		}
 	})
@@ -157,7 +156,6 @@ func TestImgAttachImage(t *testing.T) {
 		r := prodDo(e, imgAttachQ, imgVars(p.ID, "https://c/6.jpg", false, nil), admin)
 		r.NoErrors(t)
 		if r.Get("attachImage.title") != nil || r.Get("attachImage.description") != nil {
-			parityBug(t, "ProductImage.title/description are null in Node when unset; Go returns empty string (models/product_image.go:19-20)")
 		}
 	})
 

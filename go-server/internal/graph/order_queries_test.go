@@ -160,7 +160,6 @@ func TestOrdUnsetNullableStringsAreNull(t *testing.T) {
 	r := ordDo(e, `query($id: String!) { order(id: $id) { notes trackingNumber } }`, map[string]any{"id": o.ID}, u)
 	r.NoErrors(t)
 	if r.Get("order.notes") != nil || r.Get("order.trackingNumber") != nil {
-		parityBug(t, "unset notes/trackingNumber return \"\" instead of null (Node columns NULL; models.Order uses plain string)")
 		t.Errorf("want nulls: %s", r.Raw)
 	}
 }

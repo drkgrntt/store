@@ -26,7 +26,7 @@ type Address struct {
 
 	Recipient string      `gorm:"not null" json:"recipient"`
 	LineOne   string      `gorm:"not null" json:"lineOne"`
-	LineTwo   string      `json:"lineTwo,omitempty"`
+	LineTwo   *string     `json:"lineTwo,omitempty"`
 	City      string      `gorm:"not null" json:"city"`
 	State     string      `gorm:"not null" json:"state"`
 	ZipCode   string      `gorm:"not null" json:"zipCode"`
@@ -51,8 +51,8 @@ func (a *Address) AfterSave(tx *gorm.DB) error {
 // String matches addressToString in server/src/utils/index.ts.
 func (a *Address) String() string {
 	str := fmt.Sprintf("%s %s", a.Recipient, a.LineOne)
-	if a.LineTwo != "" {
-		str += " " + a.LineTwo
+	if a.LineTwo != nil && *a.LineTwo != "" {
+		str += " " + *a.LineTwo
 	}
 	str += fmt.Sprintf(", %s, %s %s, %s", a.City, a.State, a.ZipCode, a.Country)
 	return str

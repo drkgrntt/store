@@ -322,8 +322,8 @@ func TestAuthMe(t *testing.T) {
 	})
 
 	t.Run("me.tokens are signed values of own tokens only", func(t *testing.T) {
-		tok := authMint(e,u)
-		authMint(e,other)
+		tok := authMint(e, u)
+		authMint(e, other)
 		r := e.DoWithToken(`{ me { tokens { id value userId } } }`, nil, tok)
 		r.NoErrors(t)
 		n := r.Len(t, "me.tokens")
@@ -373,7 +373,7 @@ func TestAuthMe(t *testing.T) {
 	})
 
 	t.Run("bad signature is rejected and the row destroyed", func(t *testing.T) {
-		tok := authMint(e,u)
+		tok := authMint(e, u)
 		parts := strings.Split(tok, ".")
 		forged := parts[0] + "." + parts[1] + ".AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 		rejected(t, forged)
@@ -402,7 +402,7 @@ func TestAuthMe(t *testing.T) {
 	})
 
 	t.Run("token signed with another secret", func(t *testing.T) {
-		tok := authMint(e,u)
+		tok := authMint(e, u)
 		claims := jwt.MapClaims{}
 		if _, _, err := jwt.NewParser().ParseUnverified(tok, claims); err != nil {
 			t.Fatal(err)
@@ -430,9 +430,9 @@ func TestAuthLogout(t *testing.T) {
 	})
 
 	t.Run("deletes only the presented token and clears cookie", func(t *testing.T) {
-		tokA := authMint(e,u)
-		tokB := authMint(e,u)
-		otherTok := authMint(e,other)
+		tokA := authMint(e, u)
+		tokB := authMint(e, u)
+		otherTok := authMint(e, other)
 		before := authCountTokens(t, e, u.ID)
 
 		r := e.DoWithToken(`mutation{ logout }`, nil, tokA)
@@ -457,7 +457,7 @@ func TestAuthLogout(t *testing.T) {
 
 	t.Run("production cookie attrs", func(t *testing.T) {
 		t.Setenv("NODE_ENV", "production")
-		tok := authMint(e,u)
+		tok := authMint(e, u)
 		r := e.DoWithToken(`mutation{ logout }`, nil, tok)
 		r.NoErrors(t)
 		authAssertClearedCookie(t, r.Cookie("token"), true)
@@ -473,8 +473,8 @@ func TestAuthLogoutEverywhere(t *testing.T) {
 		e.Do(`mutation{ logoutEverywhere{ id } }`, nil, nil).HasError(t, "Not authenticated")
 	})
 
-	old1, old2 := authMint(e,u), authMint(e,u)
-	otherTok := authMint(e,other)
+	old1, old2 := authMint(e, u), authMint(e, u)
+	otherTok := authMint(e, other)
 
 	r := e.DoWithToken(`mutation{ logoutEverywhere{ id value userId createdAt updatedAt } }`, nil, old1)
 	r.NoErrors(t)

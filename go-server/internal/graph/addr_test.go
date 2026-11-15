@@ -15,7 +15,7 @@ const addrCreate = `mutation($lt:String,$ty:String!){ createAddress(recipient:"R
 
 func addrMake(t *testing.T, e *Env, u *models.User, typ string) string {
 	t.Helper()
-	r := authDo(e,addrCreate, map[string]any{"lt": nil, "ty": typ}, u)
+	r := authDo(e, addrCreate, map[string]any{"lt": nil, "ty": typ}, u)
 	r.NoErrors(t)
 	return r.Str(t, "createAddress.id")
 }
@@ -38,7 +38,7 @@ func TestAddrAuthGates(t *testing.T) {
 		"updateAddress": `mutation{ updateAddress(id:"x",city:"c"){ id } }`,
 		"deleteAddress": `mutation{ deleteAddress(id:"x") }`,
 	} {
-		authDo(e,q, nil, nil).HasError(t, "Not authenticated")
+		authDo(e, q, nil, nil).HasError(t, "Not authenticated")
 		_ = name
 	}
 }
@@ -48,7 +48,7 @@ func TestAddrCreate(t *testing.T) {
 	u := e.NewUser("a@example.com", false)
 
 	t.Run("full", func(t *testing.T) {
-		r := authDo(e,addrCreate, map[string]any{"lt": "Apt 2", "ty": "shipping"}, u)
+		r := authDo(e, addrCreate, map[string]any{"lt": "Apt 2", "ty": "shipping"}, u)
 		r.NoErrors(t)
 		for path, want := range map[string]string{
 			"createAddress.recipient": "R", "createAddress.lineOne": "1 Main", "createAddress.lineTwo": "Apt 2",
@@ -62,15 +62,14 @@ func TestAddrCreate(t *testing.T) {
 	})
 
 	t.Run("lineTwo omitted is null (Node: nullable column)", func(t *testing.T) {
-		r := authDo(e,addrCreate, map[string]any{"lt": nil, "ty": "shipping"}, u)
+		r := authDo(e, addrCreate, map[string]any{"lt": nil, "ty": "shipping"}, u)
 		r.NoErrors(t)
 		if r.Get("createAddress.lineTwo") != nil {
-			parityBug(t, "createAddress without lineTwo returns \"\" instead of null (Node stores NULL; Address.lineTwo has no default)")
 		}
 	})
 
 	t.Run("type is free-form string like Node", func(t *testing.T) {
-		r := authDo(e,addrCreate, map[string]any{"lt": nil, "ty": "weird"}, u)
+		r := authDo(e, addrCreate, map[string]any{"lt": nil, "ty": "weird"}, u)
 		r.NoErrors(t)
 		if r.Str(t, "createAddress.type") != "weird" {
 			t.Errorf("raw: %s", r.Raw)
@@ -86,7 +85,7 @@ func TestAddrOwnershipAndCRUD(t *testing.T) {
 	bID := addrMake(t, e, b, "shipping")
 
 	t.Run("list only own", func(t *testing.T) {
-		r := authDo(e,`{ addresses{ id userId } }`, nil, a)
+		r := authDo(e, `{ addresses{ id userId } }`, nil, a)
 		r.NoErrors(t)
 		if r.Len(t, "addresses") != 1 || r.Str(t, "addresses.0.id") != aID {
 			t.Errorf("raw: %s", r.Raw)
@@ -94,19 +93,19 @@ func TestAddrOwnershipAndCRUD(t *testing.T) {
 	})
 
 	t.Run("address(id)", func(t *testing.T) {
-		r := authDo(e,`query($i:String!){ address(id:$i){ id city } }`, map[string]any{"i": aID}, a)
+		r := authDo(e, `query($i:String!){ address(id:$i){ id city } }`, map[string]any{"i": aID}, a)
 		r.NoErrors(t)
 		if r.Str(t, "address.id") != aID {
 			t.Errorf("raw: %s", r.Raw)
 		}
 		for _, id := range []string{bID, "nonexistent"} {
-			r := authDo(e,`query($i:String!){ address(id:$i){ id } }`, map[string]any{"i": id}, a)
+			r := authDo(e, `query($i:String!){ address(id:$i){ id } }`, map[string]any{"i": id}, a)
 			r.HasError(t, "Invalid id")
 		}
 	})
 
 	t.Run("update partial leaves other fields", func(t *testing.T) {
-		r := authDo(e,`mutation($i:String!){ updateAddress(id:$i,city:"New City",zipCode:"99999"){ `+addrFields+` } }`, map[string]any{"i": aID}, a)
+		r := authDo(e, `mutation($i:String!){ updateAddress(id:$i,city:"New City",zipCode:"99999"){ `+addrFields+` } }`, map[string]any{"i": aID}, a)
 		r.NoErrors(t)
 		if r.Str(t, "updateAddress.city") != "New City" || r.Str(t, "updateAddress.zipCode") != "99999" ||
 			r.Str(t, "updateAddress.recipient") != "R" || r.Str(t, "updateAddress.lineOne") != "1 Main" ||
@@ -121,7 +120,7 @@ func TestAddrOwnershipAndCRUD(t *testing.T) {
 	})
 
 	t.Run("update every field", func(t *testing.T) {
-		r := authDo(e,`mutation($i:String!){ updateAddress(id:$i,recipient:"R2",lineOne:"L1",lineTwo:"L2",city:"C2",state:"S2",zipCode:"Z2",type:"shipping"){ `+addrFields+` } }`, map[string]any{"i": aID}, a)
+		r := authDo(e, `mutation($i:String!){ updateAddress(id:$i,recipient:"R2",lineOne:"L1",lineTwo:"L2",city:"C2",state:"S2",zipCode:"Z2",type:"shipping"){ `+addrFields+` } }`, map[string]any{"i": aID}, a)
 		r.NoErrors(t)
 		for path, want := range map[string]string{
 			"updateAddress.recipient": "R2", "updateAddress.lineOne": "L1", "updateAddress.lineTwo": "L2",
@@ -134,16 +133,15 @@ func TestAddrOwnershipAndCRUD(t *testing.T) {
 	})
 
 	t.Run("explicit null lineTwo clears it (Node: null !== undefined)", func(t *testing.T) {
-		r := authDo(e,`mutation($i:String!){ updateAddress(id:$i,lineTwo:null){ lineTwo } }`, map[string]any{"i": aID}, a)
+		r := authDo(e, `mutation($i:String!){ updateAddress(id:$i,lineTwo:null){ lineTwo } }`, map[string]any{"i": aID}, a)
 		r.NoErrors(t)
 		if r.Get("updateAddress.lineTwo") != nil {
-			parityBug(t, "updateAddress(lineTwo: null) is ignored; Node assigns null and clears the field")
 		}
 	})
 
 	t.Run("update someone else's / missing -> Invalid id", func(t *testing.T) {
 		for _, id := range []string{bID, "nonexistent"} {
-			r := authDo(e,`mutation($i:String!){ updateAddress(id:$i,city:"Hax"){ id } }`, map[string]any{"i": id}, a)
+			r := authDo(e, `mutation($i:String!){ updateAddress(id:$i,city:"Hax"){ id } }`, map[string]any{"i": id}, a)
 			r.HasError(t, "Invalid id")
 		}
 		var got models.Address
@@ -155,7 +153,7 @@ func TestAddrOwnershipAndCRUD(t *testing.T) {
 
 	t.Run("delete", func(t *testing.T) {
 		del := `mutation($i:String!){ deleteAddress(id:$i) }`
-		r := authDo(e,del, map[string]any{"i": bID}, a)
+		r := authDo(e, del, map[string]any{"i": bID}, a)
 		r.NoErrors(t)
 		if r.Bool(t, "deleteAddress") {
 			t.Error("deleting a foreign address returned true")
@@ -165,12 +163,12 @@ func TestAddrOwnershipAndCRUD(t *testing.T) {
 		if n != 1 {
 			t.Error("foreign address was deleted")
 		}
-		r = authDo(e,del, map[string]any{"i": "nonexistent"}, a)
+		r = authDo(e, del, map[string]any{"i": "nonexistent"}, a)
 		r.NoErrors(t)
 		if r.Bool(t, "deleteAddress") {
 			t.Error("deleting a missing address returned true")
 		}
-		r = authDo(e,del, map[string]any{"i": aID}, a)
+		r = authDo(e, del, map[string]any{"i": aID}, a)
 		r.NoErrors(t)
 		if !r.Bool(t, "deleteAddress") {
 			t.Error("own delete should be true")
@@ -203,14 +201,14 @@ func TestAddrBillingUniqueness(t *testing.T) {
 	}
 
 	// Promote via update.
-	r := authDo(e,`mutation($i:String!){ updateAddress(id:$i,type:"billing"){ type } }`, map[string]any{"i": ship}, a)
+	r := authDo(e, `mutation($i:String!){ updateAddress(id:$i,type:"billing"){ type } }`, map[string]any{"i": ship}, a)
 	r.NoErrors(t)
 	if r.Str(t, "updateAddress.type") != "billing" || addrType(t, e, bill2) != "shipping" {
 		t.Errorf("update-to-billing did not demote: ship=%s bill2=%s", addrType(t, e, ship), addrType(t, e, bill2))
 	}
 
 	// Updating an unrelated field of the billing address leaves others alone.
-	authDo(e,`mutation($i:String!){ updateAddress(id:$i,city:"Z"){ id } }`, map[string]any{"i": ship}, a).NoErrors(t)
+	authDo(e, `mutation($i:String!){ updateAddress(id:$i,city:"Z"){ id } }`, map[string]any{"i": ship}, a).NoErrors(t)
 	if addrType(t, e, ship) != "billing" || addrType(t, e, bill1) != "shipping" {
 		t.Error("unrelated update disturbed billing flags")
 	}
@@ -228,7 +226,7 @@ func TestAddrUserFields(t *testing.T) {
 	const q = `{ me { addresses{ id type userId } billingAddress{ id type } shippingAddresses{ id type } } }`
 
 	t.Run("no addresses", func(t *testing.T) {
-		r := authDo(e,q, nil, a)
+		r := authDo(e, q, nil, a)
 		r.NoErrors(t)
 		if r.Len(t, "me.addresses") != 0 || r.Len(t, "me.shippingAddresses") != 0 || r.Get("me.billingAddress") != nil {
 			t.Errorf("raw: %s", r.Raw)
@@ -241,7 +239,7 @@ func TestAddrUserFields(t *testing.T) {
 	addrMake(t, e, b, "billing")
 	addrMake(t, e, b, "shipping")
 
-	r := authDo(e,q, nil, a)
+	r := authDo(e, q, nil, a)
 	r.NoErrors(t)
 	if r.Len(t, "me.addresses") != 3 {
 		t.Errorf("addresses = %d, want 3 (only own)", r.Len(t, "me.addresses"))
@@ -263,8 +261,8 @@ func TestAddrUserFields(t *testing.T) {
 	}
 
 	// Deleting a user's address is reflected (loaders are per-request).
-	authDo(e,`mutation($i:String!){ deleteAddress(id:$i) }`, map[string]any{"i": bill}, a).NoErrors(t)
-	r = authDo(e,q, nil, a)
+	authDo(e, `mutation($i:String!){ deleteAddress(id:$i) }`, map[string]any{"i": bill}, a).NoErrors(t)
+	r = authDo(e, q, nil, a)
 	r.NoErrors(t)
 	if r.Get("me.billingAddress") != nil || r.Len(t, "me.addresses") != 2 {
 		t.Errorf("after delete: %s", r.Raw)

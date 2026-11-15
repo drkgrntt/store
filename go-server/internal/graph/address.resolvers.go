@@ -30,9 +30,7 @@ func (r *mutationResolver) CreateAddress(ctx context.Context, recipient string, 
 		ZipCode:   zipCode,
 		Type:      models.AddressType(typeArg),
 		UserID:    user.ID,
-	}
-	if lineTwo != nil {
-		address.LineTwo = *lineTwo
+		LineTwo:   lineTwo,
 	}
 
 	if err := r.DB.Create(address).Error; err != nil {
@@ -59,8 +57,8 @@ func (r *mutationResolver) UpdateAddress(ctx context.Context, id string, recipie
 	if lineOne != nil {
 		address.LineOne = *lineOne
 	}
-	if lineTwo != nil {
-		address.LineTwo = *lineTwo
+	if argProvided(ctx, "lineTwo") {
+		address.LineTwo = lineTwo
 	}
 	if city != nil {
 		address.City = *city

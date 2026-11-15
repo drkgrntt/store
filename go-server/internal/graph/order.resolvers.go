@@ -27,10 +27,7 @@ func (r *mutationResolver) PlaceOrder(ctx context.Context, addressID string, cli
 
 	isDryRun := boolOr(dryRun, false)
 	isLocalDelivery := boolOr(localDelivery, false)
-	notesValue := ""
-	if notes != nil {
-		notesValue = *notes
-	}
+	notesValue := strOr(notes)
 
 	tx := r.DB.Begin()
 	if tx.Error != nil {
@@ -64,7 +61,7 @@ func (r *mutationResolver) PlaceOrder(ctx context.Context, addressID string, cli
 		AddressID:       addressID,
 		UserID:          user.ID,
 		PaymentIntentID: paymentIntentID,
-		Notes:           notesValue,
+		Notes:           notes,
 		TaxRate:         models.CurrentTaxRate,
 		ShippingCost:    shippingCost,
 	}
@@ -168,20 +165,24 @@ func (r *mutationResolver) UpdateOrder(ctx context.Context, id string, shippedOn
 		return nil, errors.New("Invalid id")
 	}
 
-	shouldSendShippedEmail := (order.ShippedOn == nil || order.TrackingNumber == "") &&
-		trackingNumber != nil && shippedOn != nil
+	// Node: (!order.shippedOn || !order.trackingNumber) && trackingNumber && shippedOn
+	// (truthiness, so an empty tracking number never triggers the email).
+	shouldSendShippedEmail := (order.ShippedOn == nil || strOr(order.TrackingNumber) == "") &&
+		strOr(trackingNumber) != "" && shippedOn != nil
 
-	if shippedOn != nil {
+	// Node assigns whenever the argument is not undefined, so an explicit
+	// null clears the column while an omitted argument leaves it alone.
+	if argProvided(ctx, "shippedOn") {
 		order.ShippedOn = shippedOn
 	}
-	if completedOn != nil {
+	if argProvided(ctx, "completedOn") {
 		order.CompletedOn = completedOn
 	}
-	if trackingNumber != nil {
-		order.TrackingNumber = *trackingNumber
+	if argProvided(ctx, "trackingNumber") {
+		order.TrackingNumber = trackingNumber
 	}
-	if notes != nil {
-		order.Notes = *notes
+	if argProvided(ctx, "notes") {
+		order.Notes = notes
 	}
 
 	if err := r.DB.Save(&order).Error; err != nil {
@@ -219,7 +220,7 @@ func (r *mutationResolver) UpdateOrder(ctx context.Context, id string, shippedOn
 			"trackingNumber": *trackingNumber,
 			"orderId":        order.ID,
 			"address":        address.String(),
-			"notes":          order.Notes,
+			"notes":          strOr(order.Notes),
 			"productList":    productList,
 			"subTotal":       fmt.Sprintf("%.2f", float64(subTotal)/100),
 			"shippingCost":   fmt.Sprintf("%.2f", float64(order.ShippingCost)/100),

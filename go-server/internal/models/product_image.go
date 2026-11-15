@@ -13,10 +13,10 @@ func init() {
 type ProductImage struct {
 	Base
 
-	URL         string `gorm:"not null" json:"url"`
-	Title       string `json:"title,omitempty"`
-	Description string `json:"description,omitempty"`
-	Primary     bool   `gorm:"column:primary;not null;default:false" json:"primary"`
+	URL         string  `gorm:"not null" json:"url"`
+	Title       *string `json:"title,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Primary     bool    `gorm:"column:primary;not null;default:false" json:"primary"`
 
 	ProductID string   `gorm:"not null;index" json:"-"`
 	Product   *Product `gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE" json:"-"`

@@ -26,10 +26,10 @@ type Order struct {
 
 	ShippedOn      *time.Time `json:"shippedOn,omitempty"`
 	CompletedOn    *time.Time `json:"completedOn,omitempty"`
-	TrackingNumber string     `json:"trackingNumber,omitempty"`
+	TrackingNumber *string    `json:"trackingNumber,omitempty"`
 	// unique, not uniqueIndex — see the comment on User.Email for why.
 	PaymentIntentID string  `gorm:"unique;not null" json:"paymentIntentId"`
-	Notes           string  `gorm:"type:varchar(1000)" json:"notes,omitempty"`
+	Notes           *string `gorm:"type:varchar(1000)" json:"notes,omitempty"`
 	TaxRate         float64 `gorm:"not null;default:0" json:"taxRate"`
 	ShippingCost    int     `gorm:"not null;default:0" json:"shippingCost"`
 
