@@ -4,7 +4,8 @@ FROM node:20-alpine AS build
 WORKDIR /src
 
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+# --ignore-engines: @graphql-inspector/cli (dev-only, check:gql) has a transitive dep wanting Node >=22
+RUN yarn install --frozen-lockfile --ignore-engines
 
 COPY . .
 
